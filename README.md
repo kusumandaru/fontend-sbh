@@ -1,5 +1,7 @@
 # frontend-sbh
 
+<img src="https://ci.appveyor.com/api/projects/status/8f7a92y0wa6w6y2b?svg=true" alt="Project Build">
+
 ## Project setup
 ```
 yarn install
