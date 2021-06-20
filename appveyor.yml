@@ -1,0 +1,20 @@
+environment:
+  nodejs_version: "12"
+
+install:
+  - ps: Install-Product node $env:nodejs_versions
+  - yarn --network-timeout 600000
+
+
+build_script:
+  - yarn build
+
+cache:
+  - node_modules -> appveyor.yml, **\package.json, yarn.lock
+  - '%LOCALAPPDATA%\Yarn -> appveyor.yml, **\package.json, yarn.lock'
+
+build: off
+
+branches:
+  except:
+    - docs
