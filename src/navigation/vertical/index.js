@@ -5,11 +5,6 @@ export default [
     icon: 'HomeIcon',
   },
   {
-    title: 'Second Page',
-    route: 'second-page',
-    icon: 'FileIcon',
-  },
-  {
     title: 'User List',
     route: 'user-list',
     icon: 'FileIcon',

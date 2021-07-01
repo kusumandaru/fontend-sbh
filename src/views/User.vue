@@ -1,5 +1,18 @@
 <template>
   <b-row>
+    <b-col cols="12">
+      <b-button
+        v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+        variant="outline-primary"
+        @click="addUser"
+      >
+        <feather-icon
+          icon="UserIcon"
+          class="mr-50"
+        />
+        <span class="align-middle">Add User</span>
+      </b-button>
+    </b-col>
     <b-col
       md="2"
       sm="4"
@@ -138,6 +151,7 @@
 import {
   BTable, BAvatar, BBadge, BRow, BCol, BFormGroup, BFormSelect, BPagination, BInputGroup, BFormInput, BInputGroupAppend, BButton,
 } from 'bootstrap-vue'
+import Ripple from 'vue-ripple-directive'
 
 export default {
   components: {
@@ -199,10 +213,6 @@ export default {
         .map(f => ({ text: f.label, value: f.key }))
     },
   },
-  // created() {
-  //   this.$http.get('engine-rest/user')
-  //     .then(res => { this.items = res.data })
-  // },
   mounted() {
     // Set the initial number of items
     this.retrieveUsers()
@@ -227,6 +237,12 @@ export default {
       this.$http.get('engine-rest/user')
         .then(res => { this.items = res.data })
     },
+    addUser() {
+      this.$router.push('user-add')
+    },
+  },
+  directives: {
+    Ripple,
   },
 }
 </script>
