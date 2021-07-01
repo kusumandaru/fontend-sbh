@@ -1,24 +1,52 @@
+const path = require('path')
+
 module.exports = {
-  // devServer: {
-  //   port: 8081,
-  // }
-  // proxy all webpack dev-server requests starting with /api
-  // to our Spring Boot backend (localhost:8088) using http-proxy-middleware
-  // see https://cli.vuejs.org/config/#devserver-proxy
+  publicPath: '/',
   devServer: {
-    proxy: {
-      '/engine-rest': {
-        target: 'http://localhost:8080',
-        ws: true,
-        changeOrigin: true
+    disableHostCheck: true,
+    port: 8081,
+    public: '127.0.0.1:8081'
+  },
+  css: {
+    loaderOptions: {
+      sass: {
+        sassOptions: {
+          includePaths: ['./node_modules', './src/assets'],
+        },
       },
     },
-    port: 8081,
-    // proxy: 'http://localhost:8080'
-
   },
-  // Change build paths to make them Maven compatible
-  // see https://cli.vuejs.org/config/
-  outputDir: 'target/dist',
-  assetsDir: 'static'
+  configureWebpack: {
+    resolve: {
+      alias: {
+        '@themeConfig': path.resolve(__dirname, 'themeConfig.js'),
+        '@core': path.resolve(__dirname, 'src/@core'),
+        '@validations': path.resolve(__dirname, 'src/@core/utils/validations/validations.js'),
+        '@axios': path.resolve(__dirname, 'src/libs/axios'),
+      },
+    },
+  },
+  chainWebpack: config => {
+    config.module
+      .rule('vue')
+      .use('vue-loader')
+      .loader('vue-loader')
+      .tap(options => {
+        // eslint-disable-next-line no-param-reassign
+        options.transformAssetUrls = {
+          img: 'src',
+          image: 'xlink:href',
+          'b-avatar': 'src',
+          'b-img': 'src',
+          'b-img-lazy': ['src', 'blank-src'],
+          'b-card': 'img-src',
+          'b-card-img': 'src',
+          'b-card-img-lazy': ['src', 'blank-src'],
+          'b-carousel-slide': 'img-src',
+          'b-embed': 'src',
+        }
+        return options
+      })
+  },
+  transpileDependencies: ['vue-echarts', 'resize-detector'],
 }
