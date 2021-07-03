@@ -39,9 +39,37 @@ const router = new VueRouter({
       },
     },
     {
-      path: '/register-project',
-      name: 'register-project',
-      component: () => import('@/views/RegisterProject.vue'),
+      path: '/project-register',
+      name: 'project-register',
+      component: () => import('@/views/ProjectRegister.vue'),
+      meta: {
+        pageTitle: 'Register Project',
+        breadcrumb: [
+          {
+            text: 'Register Project',
+            active: true,
+          },
+        ],
+      },
+    },
+    {
+      path: '/project-list',
+      name: 'project-list',
+      component: () => import('@/views/ProjectList.vue'),
+      meta: {
+        pageTitle: 'List Project',
+        breadcrumb: [
+          {
+            text: 'List Project',
+            active: true,
+          },
+        ],
+      },
+    },
+    {
+      path: '/project-add',
+      name: 'project-add',
+      component: () => import('@/views/ProjectRegister.vue'),
       meta: {
         pageTitle: 'Register Project',
         breadcrumb: [
