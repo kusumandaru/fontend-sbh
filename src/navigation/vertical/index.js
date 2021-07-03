@@ -7,11 +7,16 @@ export default [
   {
     title: 'User List',
     route: 'user-list',
-    icon: 'FileIcon',
+    icon: 'UserIcon',
   },
   {
     title: 'Register Project',
-    route: 'register-project',
-    icon: 'FileIcon',
+    route: 'project-register',
+    icon: 'PackageIcon',
+  },
+  {
+    title: 'List Project',
+    route: 'project-list',
+    icon: 'PackageIcon',
   },
 ]

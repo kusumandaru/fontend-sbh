@@ -60,6 +60,11 @@ body {
   transition: all 0.3s ease;
 }
 
+.highlight:not(.djs-connection) .djs-visual > :nth-child(1) {
+  fill:#34ebc6 !important; /* color elements as green */
+  fill-opacity: 75% !important;
+}
+
 @keyframes rotate {
   0% {
     -webkit-transform: rotate(0deg);
