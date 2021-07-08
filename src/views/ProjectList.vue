@@ -26,10 +26,13 @@
         <b-card-text>
           <ul>
             <li v-for="(value, name) in taskVariables" :key="value">
-              {{ name }} : {{ value.value }}
+              {{ name }}: {{ value }}
             </li>
           </ul>
         </b-card-text>
+        <template>
+          <b-img v-bind="paymentProps" fluid alt="Responsive image" />
+        </template>
       </b-modal>
       <b-modal
         id="modal-success"
@@ -155,7 +158,7 @@
             </span>
             <b-form-select
               v-model="pageLength"
-              :options="['3','5','10']"
+              :options="['10','20','50']"
               class="mx-1"
               @input="(value)=>props.perPageChanged({currentPerPage:value})"
             />
@@ -196,7 +199,7 @@
 
 <script>
 import {
-  BAvatar, BBadge, BCardText, BPagination, BFormGroup, BFormInput, BFormSelect, BDropdown, BDropdownItem,
+  BAvatar, BBadge, BCardText, BPagination, BFormGroup, BFormInput, BFormSelect, BDropdown, BDropdownItem, BImg,
 } from 'bootstrap-vue'
 import { VueGoodTable } from 'vue-good-table'
 import store from '@/store/index'
@@ -216,10 +219,11 @@ export default {
     BFormSelect,
     BDropdown,
     BDropdownItem,
+    BImg,
   },
   data() {
     return {
-      pageLength: 3,
+      pageLength: 20,
       dir: false,
       columns: [
         {
@@ -261,6 +265,14 @@ export default {
       diagramShow: false,
       diagramXML: null,
       activityId: null,
+      paymentProps: {
+        center: true,
+        fluidGrow: true,
+        blank: true,
+        blankColor: '#bbb',
+        class: 'my-5',
+      },
+      proofOfPaymentUrl: '',
       options: {
         propertiesPanel: {},
         additionalModules: [],
@@ -318,8 +330,14 @@ export default {
       this.$router.go(this.$router.currentRoute)
     },
     retrieveVariables(taskId) {
-      this.$http.get(`engine-rest/task/${taskId}/variables`)
-        .then(res => { this.taskVariables = res.data })
+      this.$http.get(`engine-rest/new-building/variables/${taskId}`)
+        .then(res => {
+          this.taskVariables = res.data
+          const results = { ...this.taskVariables }
+          this.getImageUrl(results.proof_of_payment_url)
+          this.$delete(this.taskVariables, 'proof_of_payment_url')
+          this.$delete(this.taskVariables, 'proof_of_payment')
+        })
       this.variableShow = true
     },
     retrieveDiagrams(processDefinitionId, processInstanceId) {
@@ -344,6 +362,10 @@ export default {
     },
     handleLoading: function () {
       console.log('diagram loading')
+    },
+    getImageUrl(imageUrl) {
+      this.paymentProps.blank = false
+      this.paymentProps.src = imageUrl
     },
     /* eslint-enable object-shorthand */
 

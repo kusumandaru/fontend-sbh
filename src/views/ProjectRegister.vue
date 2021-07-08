@@ -6,10 +6,12 @@
         <h6>Jenis Sertifikasi *</h6>
         <b-form-group>
           <v-select
+            id="certificationType"
             v-model="selectedCertification"
             :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-            label="certificationType"
+            label="text"
             :options="certificationOption"
+            :selectable="option => ! option.value.includes('select_value')"
           />
         </b-form-group>
       </b-col>
@@ -19,10 +21,12 @@
         <h6>Jenis Gedung *</h6>
         <b-form-group>
           <v-select
+            id="buildingType"
             v-model="selectedBuilding"
             :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-            label="buildingType"
+            label="text"
             :options="buildingOption"
+            :selectable="option => ! option.value.includes('select_value')"
           />
         </b-form-group>
       </b-col>
@@ -113,10 +117,12 @@
         <h6>Propinsi *</h6>
         <b-form-group>
           <v-select
+            id="provinceType"
             v-model="selectedProvince"
             :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-            label="provinceType"
+            label="text"
             :options="provinceOption"
+            :selectable="option => ! option.value.includes('select_value')"
           />
         </b-form-group>
       </b-col>
@@ -126,10 +132,12 @@
         <h6>Kabupaten/Kota Madya *</h6>
         <b-form-group>
           <v-select
+            id="cityType"
             v-model="selectedCity"
             :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-            label="cityType"
+            label="text"
             :options="cityOption"
+            :selectable="option => ! option.value.includes('select_value')"
           />
         </b-form-group>
       </b-col>
@@ -190,6 +198,22 @@
         </b-form-group>
       </b-col>
 
+       <!--Proof of payment -->
+      <b-col md="12">
+        <b-form-group>
+          <label>Proof of Payment</label>
+          <b-form-file
+            v-model="proofOfPayment"
+            placeholder="Choose a file or drop it here..."
+            drop-placeholder="Drop file here..."
+          />
+
+          <b-card-text class="my-1">
+            Selected file: <strong>{{ proofOfPayment ? proofOfPayment.name : '' }}</strong>
+          </b-card-text>
+        </b-form-group>
+      </b-col>
+
       <!-- submit and reset -->
       <b-col>
         <b-button
@@ -198,6 +222,7 @@
           variant="primary"
           class="mr-1"
           @click="submitProject"
+          :disabled="isLoading"
         >
           Submit
         </b-button>
@@ -235,6 +260,7 @@ import {
   BCardText,
   BRow,
   BCol,
+  BFormFile,
   BFormGroup,
   BFormInput,
   BForm,
@@ -256,6 +282,7 @@ export default {
     BCardText,
     BRow,
     BCol,
+    BFormFile,
     BFormGroup,
     BInputGroup,
     BInputGroupPrepend,
@@ -272,14 +299,34 @@ export default {
   },
   data() {
     return {
-      selectedCertification: { certificationType: 'New Building' },
-      certificationOption: [{ certificationType: 'New Building' }],
-      selectedBuilding: { buildingType: 'Office' },
-      buildingOption: [{ buildingType: 'Office' }, { buildingType: 'Mall' }, { buildingType: 'Hotel' }, { buildingType: 'Hospital' }, { buildingType: 'Apartment' }],
-      selectedProvince: { provinceType: 'DKI Jakarta' },
-      provinceOption: [{ provinceType: 'DKI Jakarta' }, { provinceType: 'Jawa Timur' }, { provinceType: 'Jawa Barat' }, { provinceType: 'Jawa Tengah' }],
-      selectedCity: { cityType: 'Jakarta Selatan' },
-      cityOption: [{ cityType: 'Jakarta Selatan' }, { cityType: 'Jakarta Timur' }, { cityType: 'Jakarta Barat' }, { cityType: 'Jakarta Utara' }, { cityType: 'Jakarta Pusat' }],
+      selectedCertification: '',
+      certificationOption: [
+        { value: 'select_value', text: 'Select Value' },
+        { value: 'new_building', text: 'New Building' },
+      ],
+      selectedBuilding: '',
+      buildingOption: [
+        { value: 'office', text: 'Office' },
+        { value: 'mall', text: 'Mall' },
+        { value: 'hotel', text: 'Hotel' },
+        { value: 'hospital', text: 'Hospital' },
+        { value: 'apartment', text: 'Apartment' },
+      ],
+      selectedProvince: '',
+      provinceOption: [
+        { value: 'dki_jakarta', text: 'DKI Jakarta' },
+        { value: 'east_java', text: 'Jawa Timur' },
+        { value: 'west_java', text: 'Jawa Barat' },
+        { value: 'central_java', text: 'Jawa Tengah' },
+      ],
+      selectedCity: '',
+      cityOption: [
+        { value: 'south_jakarta', text: 'Jakarta Selatan' },
+        { value: 'east_jakarta', text: 'Jakarta Timur' },
+        { value: 'west_jakarta', text: 'Jakarta Barat' },
+        { value: 'north_jakarta', text: 'Jakarta Utara' },
+        { value: 'central_jakarta', text: 'Jakarta Pusat' },
+      ],
       buildingAddress: '',
       telephone: '',
       faximile: '',
@@ -287,11 +334,13 @@ export default {
       buildingName: '',
       owner: '',
       personInCharge: '',
+      proofOfPayment: null,
       maxChar: 200,
       required,
       successShow: false,
       result: {},
       resultId: null,
+      isLoading: null,
     }
   },
   computed: {
@@ -313,48 +362,32 @@ export default {
       this.personInCharge = ''
     },
     submitProject() {
-      const request = {
-        variables: {
-          certification_type: {
-            value: this.selectedCertification.certificationType, type: 'String',
-          },
-          building_type: {
-            value: this.selectedBuilding.buildingType, type: 'String',
-          },
-          building_name: {
-            value: this.buildingName, type: 'String',
-          },
-          owner: {
-            value: this.owner, type: 'String',
-          },
-          person_in_charge: {
-            value: this.personInCharge, type: 'String',
-          },
-          province: {
-            value: this.selectedProvince.provinceType, type: 'String',
-          },
-          city: {
-            value: this.selectedCity.cityType, type: 'String',
-          },
-          building_address: {
-            value: this.buildingAddress, type: 'String',
-          },
-          telephone: {
-            value: this.telephone, type: 'String',
-          },
-          faximile: {
-            value: this.faximile, type: 'String',
-          },
-          postalCode: {
-            value: this.postalCode, type: 'String',
-          },
+      this.isLoading = true
+      const request = new FormData()
+      request.append('certification_type', this.certification_type)
+      request.append('selected_building', this.selectedBuilding)
+      request.append('building_name', this.buildingName)
+      request.append('owner', this.owner)
+      request.append('person_in_charge', this.personInCharge)
+      request.append('selected_province', this.selectedProvince)
+      request.append('selected_city', this.selectedCity)
+      request.append('building_address', this.buildingAddress)
+      request.append('telephone', this.telephone)
+      request.append('faximile', this.faximile)
+      request.append('postal_code', this.postalCode)
+      request.append('file', this.proofOfPayment)
+
+      const config = {
+        header: {
+          'Content-Type': 'multipart/form-data',
         },
       }
-      this.$http.post('/engine-rest/process-definition/key/new-building-process/submit-form', request).then(res => {
+      this.$http.post('/engine-rest/new-building/create-project', request, config).then(res => {
         this.result = JSON.parse(JSON.stringify(res.data))
         this.resultId = this.result.id
         console.log(this.result)
         this.successShow = true
+        this.isLoading = false
       })
     },
   },
