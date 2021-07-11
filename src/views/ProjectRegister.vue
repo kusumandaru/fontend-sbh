@@ -9,9 +9,9 @@
             id="certificationType"
             v-model="selectedCertification"
             :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-            label="text"
+            label="name"
             :options="certificationOption"
-            :selectable="option => ! option.value.includes('select_value')"
+            :selectable="option => ! option.id.includes('select_value')"
           />
         </b-form-group>
       </b-col>
@@ -24,14 +24,14 @@
             id="buildingType"
             v-model="selectedBuilding"
             :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-            label="text"
+            label="name"
             :options="buildingOption"
-            :selectable="option => ! option.value.includes('select_value')"
+            :selectable="option => ! option.id.includes('select_value')"
           />
         </b-form-group>
       </b-col>
 
-      <!-- pic -->
+      <!-- building -->
       <b-col cols="12">
         <b-form-group
           label="Nama Gedung *"
@@ -43,7 +43,7 @@
             </b-input-group-prepend>
             <b-form-input
               id="buildingName"
-              v-model="buildingName"
+              v-model.lazy="buildingName"
               type="text"
               placeholder="Enter Building Name"
             />
@@ -63,7 +63,7 @@
             </b-input-group-prepend>
             <b-form-input
               id="personInCharge"
-              v-model="personInCharge"
+              v-model.lazy="personInCharge"
               type="text"
               placeholder="Enter PIC Name"
             />
@@ -83,7 +83,7 @@
             </b-input-group-prepend>
             <b-form-input
               id="owner"
-              v-model="owner"
+              v-model.lazy="owner"
               type="text"
               placeholder="Enter Owner"
             />
@@ -103,7 +103,7 @@
             </b-input-group-prepend>
             <b-form-textarea
               id="building-address"
-              v-model="buildingAddress"
+              v-model.lazy="buildingAddress"
               :state="buildingAddress.length <= 200"
               placeholder="Enter maximum 200 characters"
               rows="3"
@@ -120,9 +120,10 @@
             id="provinceType"
             v-model="selectedProvince"
             :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-            label="text"
+            label="name"
             :options="provinceOption"
-            :selectable="option => ! option.value.includes('select_value')"
+            :selectable="option => ! option.id.includes('select_value')"
+            @input="getCities"
           />
         </b-form-group>
       </b-col>
@@ -135,9 +136,9 @@
             id="cityType"
             v-model="selectedCity"
             :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-            label="text"
+            label="name"
             :options="cityOption"
-            :selectable="option => ! option.value.includes('select_value')"
+            :selectable="option => ! option.id.includes('select_value')"
           />
         </b-form-group>
       </b-col>
@@ -151,7 +152,7 @@
             name="PostalCode"
           >
             <b-form-input
-              v-model="postalCode"
+              v-model.lazy="postalCode"
               :state="errors.length > 0 ? false:null"
               placeholder="Enter Number Only"
             />
@@ -170,7 +171,7 @@
             name="Telephone"
           >
             <b-form-input
-              v-model="telephone"
+              v-model.lazy="telephone"
               :state="errors.length > 0 ? false:null"
               placeholder="Enter Character, Numbers, Dash, Underscores"
             />
@@ -189,7 +190,7 @@
             name="Faximile"
           >
             <b-form-input
-              v-model="faximile"
+              v-model.lazy="faximile"
               :state="errors.length > 0 ? false:null"
               placeholder="Enter Character, Numbers, Dash, Underscores"
             />
@@ -301,32 +302,21 @@ export default {
     return {
       selectedCertification: '',
       certificationOption: [
-        { value: 'select_value', text: 'Select Value' },
-        { value: 'new_building', text: 'New Building' },
+        { id: 'select_value', name: 'Select Value' },
+        { id: 'new_building', name: 'New Building' },
       ],
       selectedBuilding: '',
       buildingOption: [
-        { value: 'office', text: 'Office' },
-        { value: 'mall', text: 'Mall' },
-        { value: 'hotel', text: 'Hotel' },
-        { value: 'hospital', text: 'Hospital' },
-        { value: 'apartment', text: 'Apartment' },
+        { id: 'office', name: 'Office' },
+        { id: 'mall', name: 'Mall' },
+        { id: 'hotel', name: 'Hotel' },
+        { id: 'hospital', name: 'Hospital' },
+        { id: 'apartment', name: 'Apartment' },
       ],
       selectedProvince: '',
-      provinceOption: [
-        { value: 'dki_jakarta', text: 'DKI Jakarta' },
-        { value: 'east_java', text: 'Jawa Timur' },
-        { value: 'west_java', text: 'Jawa Barat' },
-        { value: 'central_java', text: 'Jawa Tengah' },
-      ],
+      provinceOption: [],
       selectedCity: '',
-      cityOption: [
-        { value: 'south_jakarta', text: 'Jakarta Selatan' },
-        { value: 'east_jakarta', text: 'Jakarta Timur' },
-        { value: 'west_jakarta', text: 'Jakarta Barat' },
-        { value: 'north_jakarta', text: 'Jakarta Utara' },
-        { value: 'central_jakarta', text: 'Jakarta Pusat' },
-      ],
+      cityOption: [],
       buildingAddress: '',
       telephone: '',
       faximile: '',
@@ -339,9 +329,13 @@ export default {
       required,
       successShow: false,
       result: {},
+      provinces: {},
       resultId: null,
       isLoading: null,
     }
+  },
+  created() {
+    this.getProvinces()
   },
   computed: {
     validation() {
@@ -361,22 +355,35 @@ export default {
       this.owner = ''
       this.personInCharge = ''
     },
+    getProvinces() {
+      this.$http.get('/engine-rest/master/provinces').then(res => {
+        this.provinceOption = JSON.parse(JSON.stringify(res.data))
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+    getCities(value) {
+      this.$http.get(`/engine-rest/master/provinces/${value.id}/cities`).then(res => {
+        this.cityOption = JSON.parse(JSON.stringify(res.data))
+      }).catch(error => {
+        console.log(error)
+      })
+    },
     submitProject() {
       this.isLoading = true
       const request = new FormData()
-      request.append('certification_type', this.certification_type)
-      request.append('selected_building', this.selectedBuilding)
+      request.append('certification_type', this.selectedCertification.id)
+      request.append('building_type', this.selectedBuilding.id)
       request.append('building_name', this.buildingName)
       request.append('owner', this.owner)
       request.append('person_in_charge', this.personInCharge)
-      request.append('selected_province', this.selectedProvince)
-      request.append('selected_city', this.selectedCity)
+      request.append('province', this.selectedProvince.id)
+      request.append('city', this.selectedCity.id)
       request.append('building_address', this.buildingAddress)
       request.append('telephone', this.telephone)
       request.append('faximile', this.faximile)
       request.append('postal_code', this.postalCode)
       request.append('file', this.proofOfPayment)
-
       const config = {
         header: {
           'Content-Type': 'multipart/form-data',
@@ -388,6 +395,9 @@ export default {
         console.log(this.result)
         this.successShow = true
         this.isLoading = false
+      }).catch(function (error) {
+        this.isLoading = false
+        console.log(error)
       })
     },
   },
