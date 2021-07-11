@@ -20,18 +20,75 @@
         ok-title="Accept"
         modal-class="modal-success"
         centered
-        title="Variable Modal"
+        title="Detail Project"
         v-model="variableShow"
       >
         <b-card-text>
-          <ul>
-            <li v-for="(value, name) in taskVariables" :key="value">
-              {{ name }}: {{ value }}
-            </li>
-          </ul>
+          <b-row>
+            <b-col cols="12">
+              <b-form-group label="Tipe Sertifikasi">
+                <div class="form-control">{{ taskVariables['certification_type'] }}</div>
+              </b-form-group>
+            </b-col>
+
+            <b-col cols="12">
+              <b-form-group label="Jenis Gedung">
+                <div class="form-control">{{ taskVariables['building_type'] }}</div>
+              </b-form-group>
+            </b-col>
+
+            <b-col cols="12">
+              <b-form-group label="Nama Gedung">
+                <div class="form-control">{{ taskVariables['building_name'] }}</div>
+              </b-form-group>
+            </b-col>
+
+            <b-col cols="12">
+              <b-form-group label="Pemilik">
+                <div class="form-control">{{ taskVariables['owner'] }}</div>
+              </b-form-group>
+            </b-col>
+
+            <b-col cols="12">
+              <b-form-group label="Alamat Gedung">
+                <div class="form-control">{{ taskVariables['building_address'] }}</div>
+              </b-form-group>
+            </b-col>
+
+            <b-col cols="12">
+              <b-form-group label="Provinsi">
+                <div class="form-control">{{ taskVariables['province_name'] }}</div>
+              </b-form-group>
+            </b-col>
+
+            <b-col cols="12">
+              <b-form-group label="Kota/Kabupaten">
+                <div class="form-control">{{ taskVariables['city_name'] }}</div>
+              </b-form-group>
+            </b-col>
+
+            <b-col cols="12">
+              <b-form-group label="Kode Pos">
+                <div class="form-control">{{ taskVariables['postal_code'] }}</div>
+              </b-form-group>
+            </b-col>
+
+            <b-col cols="12">
+              <b-form-group label="Telepon">
+                <div class="form-control">{{ taskVariables['telephone'] }}</div>
+              </b-form-group>
+            </b-col>
+
+            <b-col cols="12">
+              <b-form-group label="Fax">
+                <div class="form-control">{{ taskVariables['faximile'] }}</div>
+              </b-form-group>
+            </b-col>
+
+          </b-row>
         </b-card-text>
         <template>
-          <b-img v-bind="paymentProps" fluid alt="Responsive image" />
+          <b-img v-bind="paymentProps" fluid alt="Proof of Payment" />
         </template>
       </b-modal>
       <b-modal
@@ -227,15 +284,35 @@ export default {
       dir: false,
       columns: [
         {
-          label: 'ID',
-          field: 'id',
-        },
-        {
           label: 'Process Name',
           field: 'name',
           filterOptions: {
             enabled: true,
             placeholder: 'Search Process',
+          },
+        },
+        {
+          label: 'Certification Type',
+          field: 'certificationType',
+          filterOptions: {
+            enabled: true,
+            placeholder: 'Search Certification Type',
+          },
+        },
+        {
+          label: 'Building Type',
+          field: 'buildingType',
+          filterOptions: {
+            enabled: true,
+            placeholder: 'Search Building Type',
+          },
+        },
+        {
+          label: ' Building Name',
+          field: 'buildingName',
+          filterOptions: {
+            enabled: true,
+            placeholder: 'Search Building Name',
           },
         },
         {
@@ -248,7 +325,7 @@ export default {
         },
         {
           label: 'Created At',
-          field: 'created',
+          field: 'createTime',
         },
         {
           label: 'Action',
@@ -310,7 +387,7 @@ export default {
   },
   methods: {
     retrieveProjects() {
-      this.$http.get('engine-rest/task')
+      this.$http.get('engine-rest/new-building/tasks')
         .then(res => { this.rows = res.data })
     },
     claimProject(taskId) {
@@ -364,6 +441,7 @@ export default {
       console.log('diagram loading')
     },
     getImageUrl(imageUrl) {
+      debugger
       this.paymentProps.blank = false
       this.paymentProps.src = imageUrl
     },
