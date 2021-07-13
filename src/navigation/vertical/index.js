@@ -10,7 +10,7 @@ export default [
     icon: 'UserIcon',
   },
   {
-    title: 'Register Project',
+    title: 'Create Project',
     route: 'project-register',
     icon: 'PackageIcon',
   },

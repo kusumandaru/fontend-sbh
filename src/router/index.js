@@ -43,10 +43,10 @@ const router = new VueRouter({
       name: 'project-register',
       component: () => import('@/views/ProjectRegister.vue'),
       meta: {
-        pageTitle: 'Register Project',
+        pageTitle: 'Create Project',
         breadcrumb: [
           {
-            text: 'Register Project',
+            text: 'Create Project',
             active: true,
           },
         ],
@@ -71,10 +71,10 @@ const router = new VueRouter({
       name: 'project-add',
       component: () => import('@/views/ProjectRegister.vue'),
       meta: {
-        pageTitle: 'Register Project',
+        pageTitle: 'Create Project',
         breadcrumb: [
           {
-            text: 'Register Project',
+            text: 'Create Project',
             active: true,
           },
         ],
