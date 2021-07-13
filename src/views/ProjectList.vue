@@ -85,6 +85,12 @@
               </b-form-group>
             </b-col>
 
+             <b-col cols="12">
+              <b-form-group label="Gross Floor Area">
+                <div class="form-control">{{ taskVariables['gross_floor_area'] }}</div>
+              </b-form-group>
+            </b-col>
+
           </b-row>
         </b-card-text>
         <template>
@@ -256,7 +262,7 @@
 
 <script>
 import {
-  BAvatar, BBadge, BCardText, BPagination, BFormGroup, BFormInput, BFormSelect, BDropdown, BDropdownItem, BImg,
+  BAvatar, BBadge, BCardText, BCol, BPagination, BFormGroup, BFormInput, BFormSelect, BDropdown, BDropdownItem, BImg, BRow,
 } from 'bootstrap-vue'
 import { VueGoodTable } from 'vue-good-table'
 import store from '@/store/index'
@@ -269,6 +275,7 @@ export default {
     VueBpmn,
     BAvatar,
     BCardText,
+    BCol,
     BBadge,
     BPagination,
     BFormGroup,
@@ -277,6 +284,7 @@ export default {
     BDropdown,
     BDropdownItem,
     BImg,
+    BRow,
   },
   data() {
     return {
@@ -407,13 +415,17 @@ export default {
       this.$router.go(this.$router.currentRoute)
     },
     retrieveVariables(taskId) {
+      this.taskVariables = {}
+      this.paymentProps.blank = true
       this.$http.get(`engine-rest/new-building/variables/${taskId}`)
         .then(res => {
           this.taskVariables = res.data
           const results = { ...this.taskVariables }
-          this.getImageUrl(results.proof_of_payment_url)
-          this.$delete(this.taskVariables, 'proof_of_payment_url')
-          this.$delete(this.taskVariables, 'proof_of_payment')
+          if (Object.keys(results).length > 0) {
+            this.getImageUrl(results.proof_of_payment_url)
+            this.$delete(this.taskVariables, 'proof_of_payment_url')
+            this.$delete(this.taskVariables, 'proof_of_payment')
+          }
         })
       this.variableShow = true
     },
@@ -441,9 +453,10 @@ export default {
       console.log('diagram loading')
     },
     getImageUrl(imageUrl) {
-      debugger
-      this.paymentProps.blank = false
-      this.paymentProps.src = imageUrl
+      if (imageUrl !== undefined) {
+        this.paymentProps.blank = false
+        this.paymentProps.src = imageUrl
+      }
     },
     /* eslint-enable object-shorthand */
 
