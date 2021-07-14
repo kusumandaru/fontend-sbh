@@ -16,12 +16,28 @@ export default [
       {
         title: 'Create Project',
         route: 'project-register',
-        icon: 'PackageIcon',
+        icon: 'BookIcon',
       },
       {
         title: 'List Project',
         route: 'project-list',
-        icon: 'PackageIcon',
+        icon: 'BookIcon',
+      },
+      {
+        title: 'Master Data',
+        icon: 'SettingsIcon',
+        children: [
+          {
+            title: 'Master City',
+            route: 'city-list',
+            icon: 'MapIcon',
+          },
+          {
+            title: 'Master Province',
+            route: 'province-list',
+            icon: 'MapIcon',
+          },
+        ],
       },
     ],
   },

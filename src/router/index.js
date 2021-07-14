@@ -81,6 +81,34 @@ const router = new VueRouter({
       },
     },
     {
+      path: '/city-list',
+      name: 'city-list',
+      component: () => import('@/views/CityList.vue'),
+      meta: {
+        pageTitle: 'List City',
+        breadcrumb: [
+          {
+            text: 'List City',
+            active: true,
+          },
+        ],
+      },
+    },
+    {
+      path: '/province-list',
+      name: 'province-list',
+      component: () => import('@/views/ProvinceList.vue'),
+      meta: {
+        pageTitle: 'List Province',
+        breadcrumb: [
+          {
+            text: 'List Province',
+            active: true,
+          },
+        ],
+      },
+    },
+    {
       path: '/login',
       name: 'login',
       component: () => import('@/views/Login.vue'),
