@@ -67,6 +67,20 @@ const router = new VueRouter({
       },
     },
     {
+      path: '/client-project-list',
+      name: 'client-project-list',
+      component: () => import('@/views/ClientProjectList.vue'),
+      meta: {
+        pageTitle: 'List Client Project',
+        breadcrumb: [
+          {
+            text: 'List Client Project',
+            active: true,
+          },
+        ],
+      },
+    },
+    {
       path: '/project-add',
       name: 'project-add',
       component: () => import('@/views/ProjectRegister.vue'),
