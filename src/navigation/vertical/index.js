@@ -20,6 +20,11 @@ export default [
     icon: 'BookIcon',
   },
   {
+    title: 'List Client Project',
+    route: 'client-project-list',
+    icon: 'BookIcon',
+  },
+  {
     title: 'Master Data',
     icon: 'SettingsIcon',
     children: [
