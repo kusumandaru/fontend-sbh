@@ -29,6 +29,9 @@ require('@/assets/scss/style.scss')
 // import font
 require('@core/assets/fonts/feather/iconfont.css')
 
+// date parser
+Vue.use(require('vue-moment'))
+
 Vue.config.productionTip = false
 
 new Vue({

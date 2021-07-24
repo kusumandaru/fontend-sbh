@@ -167,6 +167,17 @@
             >
               <template v-slot:button-content>
                 <feather-icon
+                  :id="`project-row-${props.row.id}-preview-icon`"
+                  icon="EyeIcon"
+                  size="16"
+                  class="mx-1"
+                  @click="$router.push({ name: 'project-preview', params: { id: props.row.id }})"
+                />
+                <b-tooltip
+                  title="Preview Project"
+                  :target="`project-row-${props.row.id}-preview-icon`"
+                />
+                <feather-icon
                   icon="MoreVerticalIcon"
                   size="16"
                   class="text-body align-middle mr-25"
@@ -263,7 +274,7 @@
 
 <script>
 import {
-  BAvatar, BBadge, BCardText, BCol, BPagination, BFormGroup, BFormInput, BFormSelect, BDropdown, BDropdownItem, BImg, BRow,
+  BAvatar, BBadge, BCardText, BCol, BPagination, BFormGroup, BFormInput, BFormSelect, BDropdown, BDropdownItem, BImg, BRow, BTooltip,
 } from 'bootstrap-vue'
 import { VueGoodTable } from 'vue-good-table'
 import store from '@/store/index'
@@ -284,6 +295,7 @@ export default {
     BFormSelect,
     BDropdown,
     BDropdownItem,
+    BTooltip,
     BImg,
     BRow,
   },
@@ -430,11 +442,6 @@ export default {
           this.taskDiagrams = res.data
           this.diagramXML = this.taskDiagrams.bpmn20Xml
         })
-      // this.$http.get(`engine-rest/process-instance/${processInstanceId}/activity-instances`)
-      //   .then(res => {
-      //     this.activityInstances = res.data
-      //     this.activityId = this.activityInstances.childActivityInstances[0].activityId
-      //   })
       this.activityId = taskDefinitionKey
       this.diagramShow = true
     },

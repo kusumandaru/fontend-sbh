@@ -1,0 +1,166 @@
+// ================================================================================================
+//  File Name: app-project.scss
+//  Description: Project Layout page layouts SCSS.
+//  ----------------------------------------------------------------------------------------------
+//  Item Name: Vuexy HTML Admin Template
+//  Version: 1.0
+//  Author: PIXINVENT
+//  Author URL: http://www.themeforest.net/user/pixinvent
+// ================================================================================================
+
+@import '../bootstrap-extended/include'; // Bootstrap includes
+@import '../components/include'; // Components includes
+
+$product-details-bg: #fcfcfc;
+$project-spacing: 1.45rem 0;
+$project-card-body-padding: 2.5rem;
+
+// Project Preview, Edit & Add
+.project-preview,
+.project-edit,
+.project-add {
+  .project-padding {
+    padding-left: $project-card-body-padding;
+    padding-right: $project-card-body-padding;
+  }
+  .table {
+    th:first-child,
+    td:first-child {
+      padding-left: 2.5rem;
+    }
+  }
+  .logo-wrapper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.9rem;
+    .project-logo {
+      font-size: 2.142rem;
+      font-weight: bold;
+      letter-spacing: -0.54px;
+      margin-left: 1rem;
+      margin-bottom: 0;
+    }
+  }
+  .project-title {
+    font-size: 1.285rem;
+    margin-bottom: 1rem;
+    .project-number {
+      font-weight: 600;
+    }
+  }
+  .project-date-wrapper {
+    display: flex;
+    align-items: center;
+
+    &:not(:last-of-type) {
+      margin-bottom: 0.5rem;
+    }
+
+    .project-date-title {
+      width: 7rem;
+      margin-bottom: 0;
+    }
+    .project-date {
+      margin-left: 0.5rem;
+      font-weight: 600;
+      margin-bottom: 0;
+    }
+  }
+  .project-spacing {
+    margin: $project-spacing;
+  }
+  .project-number-date {
+    .title {
+      width: 115px;
+    }
+  }
+  .project-total-wrapper {
+    width: 100%;
+    max-width: 12rem;
+    .project-total-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      .project-total-title {
+        margin-bottom: 0.35rem;
+      }
+      .project-total-amount {
+        margin-bottom: 0.35rem;
+        font-weight: 600;
+      }
+    }
+  }
+
+  @media (min-width: 768px) {
+    .project-title {
+      text-align: right;
+      margin-bottom: 3rem;
+    }
+  }
+}
+
+// Project Edit & Add
+.project-edit,
+.project-add {
+  .project-preview-card {
+    .project-title {
+      text-align: left;
+      margin-right: 3.5rem;
+      margin-bottom: 0;
+    }
+    .project-edit-input,
+    .project-edit-input-group {
+      max-width: 11.21rem;
+    }
+    .project-product-details {
+      background-color: $product-details-bg;
+      padding: 3.75rem 3.45rem 2.3rem 3.45rem;
+      .product-details-border {
+        border: 1px solid $border-color;
+        border-radius: $border-radius;
+      }
+    }
+    .project-to-title {
+      margin-bottom: 1.9rem;
+    }
+    .col-title {
+      position: absolute;
+      top: -3.2rem;
+    }
+    .item-options-menu {
+      min-width: 20rem;
+    }
+    .repeater-wrapper {
+      &:not(:last-child) {
+        margin-bottom: 3rem;
+      }
+    }
+    .project-calculations {
+      .total-amt-title {
+        width: 100px;
+      }
+    }
+  }
+  @media (max-width: 769px) {
+    .project-preview-card {
+      .project-title {
+        margin-right: 0;
+        width: 115px;
+      }
+      .project-edit-input {
+        max-width: 100%;
+      }
+    }
+  }
+  @media (max-width: 992px) {
+    .col-title {
+      top: -1.5rem !important;
+    }
+  }
+  @media print {
+    hr {
+      margin-top: 1rem !important;
+      margin-bottom: 1rem !important;
+    }
+  }
+}

@@ -39,9 +39,9 @@ const router = new VueRouter({
       },
     },
     {
-      path: '/project-register',
+      path: '/project/register',
       name: 'project-register',
-      component: () => import('@/views/ProjectRegister.vue'),
+      component: () => import('@/views/register_project/ProjectRegister.vue'),
       meta: {
         pageTitle: 'Create Project',
         breadcrumb: [
@@ -53,9 +53,9 @@ const router = new VueRouter({
       },
     },
     {
-      path: '/project-list',
+      path: '/project/list',
       name: 'project-list',
-      component: () => import('@/views/ProjectList.vue'),
+      component: () => import('@/views/register_project/ProjectList.vue'),
       meta: {
         pageTitle: 'List Project',
         breadcrumb: [
@@ -67,9 +67,14 @@ const router = new VueRouter({
       },
     },
     {
+      path: '/project/preview/:id',
+      name: 'project-preview',
+      component: () => import('@/views/register_project/ProjectPreview.vue'),
+    },
+    {
       path: '/client-project-list',
       name: 'client-project-list',
-      component: () => import('@/views/ClientProjectList.vue'),
+      component: () => import('@/views/register_project/ClientProjectList.vue'),
       meta: {
         pageTitle: 'List Client Project',
         breadcrumb: [
@@ -83,7 +88,7 @@ const router = new VueRouter({
     {
       path: '/project-add',
       name: 'project-add',
-      component: () => import('@/views/ProjectRegister.vue'),
+      component: () => import('@/views/register_project/ProjectRegister.vue'),
       meta: {
         pageTitle: 'Create Project',
         breadcrumb: [
@@ -97,7 +102,7 @@ const router = new VueRouter({
     {
       path: '/city-list',
       name: 'city-list',
-      component: () => import('@/views/CityList.vue'),
+      component: () => import('@/views/master/CityList.vue'),
       meta: {
         pageTitle: 'List City',
         breadcrumb: [
@@ -111,7 +116,7 @@ const router = new VueRouter({
     {
       path: '/province-list',
       name: 'province-list',
-      component: () => import('@/views/ProvinceList.vue'),
+      component: () => import('@/views/master/ProvinceList.vue'),
       meta: {
         pageTitle: 'List Province',
         breadcrumb: [
