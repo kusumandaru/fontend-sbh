@@ -91,7 +91,7 @@
           <!-- Spacer -->
           <hr class="project-spacing">
 
-          <!-- project Client & Payment Details -->
+          <!-- project Client -->
           <b-card-body
             v-if="projectData.owner"
             class="project-padding pt-0"
@@ -162,11 +162,20 @@
           <hr class="project-spacing">
 
           <!-- Note -->
-          <b-card-body class="project-padding pt-0">
+          <!-- <b-card-body class="project-padding pt-0">
             <span class="font-weight-bold">Proof of Payment: </span>
             <b-img-lazy v-bind="paymentProps" fluid alt="Proof of Payment" />
             <span></span>
-          </b-card-body>
+          </b-card-body> -->
+
+          <b-button
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="info"
+            class="btn-icon"
+            @click="downloadLink">
+            <feather-icon icon="ArchiveIcon" />
+          Download Proof Of Payment Here
+          </b-button>
         </b-card>
       </b-col>
 
@@ -226,7 +235,7 @@ import {
 import store from '@/store'
 import router from '@/router'
 import {
-  BRow, BCol, BCard, BCardBody, BCardText, BButton, BAlert, BImgLazy, BLink, VBToggle,
+  BRow, BCol, BCard, BCardBody, BCardText, BButton, BAlert, BLink, VBToggle,
 } from 'bootstrap-vue'
 import Logo from '@core/layouts/components/Logo.vue'
 import Ripple from 'vue-ripple-directive'
@@ -246,7 +255,6 @@ export default {
     BCardText,
     BButton,
     BAlert,
-    BImgLazy,
     BLink,
 
     Logo,
@@ -255,6 +263,7 @@ export default {
   setup() {
     const projectData = ref(null)
     const claim = ref(null)
+    // const download = ref(null)
 
     const PROJECT_APP_STORE_MODULE_NAME = 'app-project'
 
@@ -311,23 +320,34 @@ export default {
         })
     }
 
+    const downloadLink = () => {
+      window.open(paymentProps.src)
+      // store.dispatch('app-project/downloadLink', { url: paymentProps.src })
+      //   .then(response => {
+      //     const blob = new Blob([response.data])
+      //     const link = document.createElement('a')
+      //     link.href = URL.createObjectURL(blob)
+      //     link.download = 'Proof Of Payment'
+      //     link.click()
+      //     URL.revokeObjectURL(link.href)
+      //   })
+      //   .catch(error => {
+      //     if (error.response.status === 404) {
+      //       download.value = undefined
+      //     }
+      //     if (error.response.status === 500) {
+      //       download.value = undefined
+      //     }
+      //   })
+    }
+
     return {
       projectData,
       printProject,
       paymentProps,
       approveProject,
+      downloadLink,
     }
-  },
-  created() {
-    // this.getImageUrl(this.projectData.proof_of_payment_url)
-  },
-  methods: {
-    getImageUrl(imageUrl) {
-      if (imageUrl !== undefined) {
-        this.paymentProps.blank = false
-        this.paymentProps.src = imageUrl
-      }
-    },
   },
 }
 </script>

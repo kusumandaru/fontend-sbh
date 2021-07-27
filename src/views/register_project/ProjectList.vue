@@ -177,44 +177,22 @@
                   title="Preview Project"
                   :target="`project-row-${props.row.id}-preview-icon`"
                 />
+
                 <feather-icon
-                  icon="MoreVerticalIcon"
+                  :id="`project-row-${props.row.id}-activity-icon`"
+                  icon="ActivityIcon"
                   size="16"
-                  class="text-body align-middle mr-25"
+                  class="mx-1"
+                  @click="retrieveDiagrams(props.row.processDefinitionId, props.row.taskDefinitionKey)"
+                />
+                <b-tooltip
+                  title="Activity Process"
+                  :target="`project-row-${props.row.id}-activity-icon`"
                 />
               </template>
-              <b-dropdown-item @click="retrieveVariables(props.row.id)">
-                <feather-icon
-                  icon="Edit2Icon"
-                  class="mr-50"
-                />
-                <span>Detail</span>
-              </b-dropdown-item>
-              <b-dropdown-item @click="approveProject(props.row.id)">
-                <feather-icon
-                  icon="Edit2Icon"
-                  class="mr-50"
-                />
-                <span>Approve Create Project</span>
-              </b-dropdown-item>
-              <b-dropdown-item @click="rejectProject(props.row.id)">
-                <feather-icon
-                  icon="CheckIcon"
-                  class="mr-50"
-                />
-                <span>Reject Create Project</span>
-              </b-dropdown-item>
-              <b-dropdown-item @click="retrieveDiagrams(props.row.processDefinitionId, props.row.taskDefinitionKey)">
-                <feather-icon
-                  icon="ActivityIcon"
-                  class="mr-50"
-                />
-                <span>Diagram</span>
-              </b-dropdown-item>
             </b-dropdown>
           </span>
         </span>
-
         <!-- Column: Common -->
         <span v-else>
           {{ props.formattedRow[props.column.field] }}
@@ -274,7 +252,7 @@
 
 <script>
 import {
-  BAvatar, BBadge, BCardText, BCol, BPagination, BFormGroup, BFormInput, BFormSelect, BDropdown, BDropdownItem, BImg, BRow, BTooltip,
+  BAvatar, BBadge, BCardText, BCol, BPagination, BFormGroup, BFormInput, BFormSelect, BDropdown, BImg, BRow, BTooltip,
 } from 'bootstrap-vue'
 import { VueGoodTable } from 'vue-good-table'
 import store from '@/store/index'
@@ -294,7 +272,6 @@ export default {
     BFormInput,
     BFormSelect,
     BDropdown,
-    BDropdownItem,
     BTooltip,
     BImg,
     BRow,
