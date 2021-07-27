@@ -38,6 +38,14 @@ export default {
           .catch(error => reject(error))
       })
     },
+    downloadLink(ctx, { url }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`${url}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
     fetchClients() {
       return new Promise((resolve, reject) => {
         axios
