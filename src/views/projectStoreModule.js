@@ -24,24 +24,41 @@ export default {
     },
     approveProject(ctx, { id }) {
       return new Promise((resolve, reject) => {
+        const request = new FormData()
+        request.append('task_id', id)
+        const config = {
+          header: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
         axios
-          .get(`/engine-rest/new-building/accept-register-project/${id}`)
+          .post('/engine-rest/new-building/accept-register-project', request, config)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })
     },
-    rejectProject(ctx, { id }) {
+    rejectProject(ctx, { id, rejectionReason }) {
       return new Promise((resolve, reject) => {
+        debugger
+        const request = new FormData()
+        request.append('task_id', id)
+        request.append('rejected_reason', rejectionReason)
+
+        const config = {
+          header: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
         axios
-          .get(`/engine-rest/new-building/reject-register-project/${id}`)
+          .post('/engine-rest/new-building/reject-register-project', request, config)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })
     },
-    downloadLink(ctx, { url }) {
+    downloadLink(ctx, { id, filename }) {
       return new Promise((resolve, reject) => {
         axios
-          .get(`${url}`)
+          .get(`/engine-rest/new-building/url_file/${id}/${filename}`)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })
