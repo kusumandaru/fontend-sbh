@@ -12,7 +12,7 @@
       <!-- Header -->
       <div class="d-flex justify-content-between align-items-center content-sidebar-header px-2 py-1">
         <h5 class="mb-0">
-          Add Payment
+          Rejection
         </h5>
 
         <feather-icon
@@ -30,68 +30,15 @@
         @submit.prevent
       >
 
-        <!-- Project Balance -->
+        <!-- Note -->
         <b-form-group
-          label="Project Balance"
-          label-for="project-balance"
-        >
-          <b-form-input
-            id="project-balance"
-            v-model="addPaymentData.projectBalance"
-            trim
-            disabled
-          />
-        </b-form-group>
-
-        <!-- Payment Amount -->
-        <b-form-group
-          label="Payment Amount"
-          label-for="payment-amount"
-        >
-          <b-form-input
-            id="payment-amount"
-            v-model="addPaymentData.paymentAmount"
-            placeholder="$10000"
-            trim
-            type="number"
-          />
-        </b-form-group>
-
-        <!-- Payment Date -->
-        <b-form-group
-          label="Payment Date"
-          label-for="payment-date"
-        >
-          <flat-pickr
-            v-model="addPaymentData.paymentDate"
-            class="form-control"
-          />
-        </b-form-group>
-
-        <b-form-group
-          label="Payment Method"
-          label-for="payment-method"
-        >
-          <v-select
-            v-model="addPaymentData.paymentMethod"
-            :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-            :options="paymentMethods"
-            label="Payment Method"
-            placeholder="Select Payment Method"
-            input-id="payment-method"
-            :clearable="false"
-          />
-        </b-form-group>
-
-        <!-- Internal Payment Note -->
-        <b-form-group
-          label="Internal Payment Note"
-          label-for="internal-payment-note"
+          label="Note"
+          label-for="rejection-note"
         >
           <b-form-textarea
-            id="internal-payment-note"
-            v-model="addPaymentData.internalPaymentNote"
-            placeholder="Internal Payment Note"
+            id="rejection-note"
+            v-model="rejectionData.rejectionNote"
+            placeholder="Note"
             rows="5"
             trim
           />
@@ -104,9 +51,9 @@
             variant="primary"
             class="mr-2"
             type="submit"
-            @click="hide"
+            @click="rejectProject"
           >
-            Send
+            Submit
           </b-button>
           <b-button
             v-ripple.400="'rgba(186, 191, 199, 0.15)'"
@@ -123,48 +70,51 @@
 
 <script>
 import {
-  BSidebar, BForm, BFormGroup, BFormInput, BFormTextarea, BButton,
+  BSidebar, BForm, BFormGroup, BFormTextarea, BButton,
 } from 'bootstrap-vue'
 import { ref } from '@vue/composition-api'
 import Ripple from 'vue-ripple-directive'
-import flatPickr from 'vue-flatpickr-component'
-import vSelect from 'vue-select'
+import store from '@/store'
+import router from '@/router'
 
 export default {
   components: {
     BSidebar,
     BForm,
     BFormGroup,
-    BFormInput,
     BFormTextarea,
     BButton,
-
-    flatPickr,
-    vSelect,
   },
   directives: {
     Ripple,
   },
   setup() {
-    const paymentMethods = [
-      'Cash',
-      'Bank Transfer',
-      'Debit',
-      'Credit',
-      'Paypal',
-    ]
-
-    const addPaymentData = ref({
-      projectBalance: 5000,
-      paymentAmount: '',
-      paymentDate: '2020-11-11',
-      paymentMethod: null,
-      internalPaymentNote: '',
+    const rejectionData = ref({
+      rejectionNote: '',
     })
+    const claim = ref(null)
+
+    const rejectProject = () => {
+      store.dispatch('app-project/rejectProject', { id: router.currentRoute.params.id, rejectionReason: rejectionData.value.rejectionNote })
+        .then(response => {
+          claim.value = response.data
+        })
+        .catch(error => {
+          if (error.response.status === 404) {
+            claim.value = undefined
+          }
+          if (error.response.status === 500) {
+            claim.value = undefined
+          }
+        })
+        .finally(() => {
+          router.push({ name: 'project-list' })
+        })
+    }
 
     return {
-      paymentMethods,
-      addPaymentData,
+      rejectionData,
+      rejectProject,
     }
   },
 }

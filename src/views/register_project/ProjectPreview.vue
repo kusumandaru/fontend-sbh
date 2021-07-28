@@ -39,7 +39,6 @@
           <b-card-body class="project-padding pb-0">
 
             <div class="d-flex justify-content-between flex-md-row flex-column project-spacing mt-0">
-
               <!-- Header: Left Content -->
               <div>
                 <div class="logo-wrapper">
@@ -161,21 +160,123 @@
           <!-- Spacer -->
           <hr class="project-spacing">
 
-          <!-- Note -->
-          <!-- <b-card-body class="project-padding pt-0">
-            <span class="font-weight-bold">Proof of Payment: </span>
-            <b-img-lazy v-bind="paymentProps" fluid alt="Proof of Payment" />
-            <span></span>
-          </b-card-body> -->
+          <b-card-body class="project-padding pb-0">
+            <b-row>
 
-          <b-button
-            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-            variant="info"
-            class="btn-icon"
-            @click="downloadLink">
-            <feather-icon icon="ArchiveIcon" />
-          Download Proof Of Payment Here
-          </b-button>
+              <!-- Col: Certification Type -->
+              <b-col
+                cols="12"
+                md="6"
+                class="mt-md-0 mt-3"
+                order="2"
+                order-md="1"
+              >
+                <b-card-text
+                  class="mb-0"
+                  v-if="projectData.proof_of_payment">
+                  <span class="font-weight-bold">Bukti Pembayaran : </span>
+                  <b-button
+                    v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+                    variant="flat-primary"
+                    @click="downloadFile('proof_of_payment')">
+                    <feather-icon icon="ArchiveIcon" />
+                    Download
+                  </b-button>
+                </b-card-text>
+
+                <b-card-text
+                  class="mb-0"
+                  v-if="projectData.building_plan">
+                  <span class="font-weight-bold">Gambar denah bangunan : </span>
+                  <b-button
+                    v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+                    variant="flat-primary"
+                    @click="downloadFile('building_plan')">
+                    <feather-icon icon="ArchiveIcon" />
+                    Download
+                  </b-button>
+                </b-card-text>
+
+                <b-card-text
+                  class="mb-0"
+                  v-if="projectData.rt_rw">
+                  <span class="font-weight-bold">Peta RT/RW File : </span>
+                  <b-button
+                    v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+                    variant="flat-primary"
+                    @click="downloadFile('rt_rw')">
+                    <feather-icon icon="ArchiveIcon" />
+                    Download
+                  </b-button>
+                </b-card-text>
+
+                <b-card-text
+                  class="mb-0"
+                  v-if="projectData.upl_ukl">
+                  <span class="font-weight-bold">Salinan UPL/UKL File : </span>
+                  <b-button
+                    v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+                    variant="flat-primary"
+                    @click="downloadFile('upl_ukl')">
+                    <feather-icon icon="ArchiveIcon" />
+                    Download
+                  </b-button>
+                </b-card-text>
+
+                <b-card-text
+                  class="mb-0"
+                  v-if="projectData.earthquake_resistance">
+                  <span class="font-weight-bold">Syarat Tahan Gempa : </span>
+                  <b-button
+                    v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+                    variant="flat-primary"
+                    @click="downloadFile('earthquake_resistance')">
+                    <feather-icon icon="ArchiveIcon" />
+                    Download
+                  </b-button>
+                </b-card-text>
+
+                <b-card-text
+                  class="mb-0"
+                  v-if="projectData.disability_friendly">
+                  <span class="font-weight-bold">Syarat Penyandang Cacat : </span>
+                  <b-button
+                    v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+                    variant="flat-primary"
+                    @click="downloadFile('disability_friendly')">
+                    <feather-icon icon="ArchiveIcon" />
+                    Download
+                  </b-button>
+                </b-card-text>
+
+                <b-card-text
+                  class="mb-0"
+                  v-if="projectData.safety_and_fire_requirement">
+                  <span class="font-weight-bold">Syarat Keselamatan dan Kebakaran : </span>
+                  <b-button
+                    v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+                    variant="flat-primary"
+                    @click="downloadFile('safety_and_fire_requirement')">
+                    <feather-icon icon="ArchiveIcon" />
+                    Download
+                  </b-button>
+                </b-card-text>
+
+                <b-card-text
+                  class="mb-0"
+                  v-if="projectData.study_case_readiness">
+                  <span class="font-weight-bold">Pernyataan Bersedia Studi Kasus : </span>
+                  <b-button
+                    v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+                    variant="flat-primary"
+                    @click="downloadFile('study_case_readiness')">
+                    <feather-icon icon="ArchiveIcon" />
+                    Download
+                  </b-button>
+                </b-card-text>
+              </b-col>
+            </b-row>
+          </b-card-body>
         </b-card>
       </b-col>
 
@@ -320,25 +421,22 @@ export default {
         })
     }
 
-    const downloadLink = () => {
-      window.open(paymentProps.src)
-      // store.dispatch('app-project/downloadLink', { url: paymentProps.src })
-      //   .then(response => {
-      //     const blob = new Blob([response.data])
-      //     const link = document.createElement('a')
-      //     link.href = URL.createObjectURL(blob)
-      //     link.download = 'Proof Of Payment'
-      //     link.click()
-      //     URL.revokeObjectURL(link.href)
-      //   })
-      //   .catch(error => {
-      //     if (error.response.status === 404) {
-      //       download.value = undefined
-      //     }
-      //     if (error.response.status === 500) {
-      //       download.value = undefined
-      //     }
-      //   })
+    const downloadFile = fileName => {
+      store.dispatch('app-project/downloadLink', {
+        id: projectData.value.task_id,
+        filename: fileName,
+      })
+        .then(response => {
+          window.open(response.data.url)
+        })
+        .catch(error => {
+          if (error.response.status === 404) {
+            console.log(error)
+          }
+          if (error.response.status === 500) {
+            console.log(error)
+          }
+        })
     }
 
     return {
@@ -346,7 +444,7 @@ export default {
       printProject,
       paymentProps,
       approveProject,
-      downloadLink,
+      downloadFile,
     }
   },
 }
