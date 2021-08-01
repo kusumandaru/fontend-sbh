@@ -166,7 +166,7 @@
               <!-- Col: Certification Type -->
               <b-col
                 cols="12"
-                md="6"
+                md="12"
                 class="mt-md-0 mt-3"
                 order="2"
                 order-md="1"
@@ -174,102 +174,108 @@
                 <b-card-text
                   class="mb-0"
                   v-if="projectData.proof_of_payment">
-                  <span class="font-weight-bold">Bukti Pembayaran : </span>
                   <b-button
                     v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                     variant="flat-primary"
                     @click="downloadFile('proof_of_payment')">
                     <feather-icon icon="ArchiveIcon" />
-                    Download
+                    Download Bukti Pembayaran
                   </b-button>
                 </b-card-text>
 
                 <b-card-text
                   class="mb-0"
                   v-if="projectData.building_plan">
-                  <span class="font-weight-bold">Gambar denah bangunan : </span>
                   <b-button
                     v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                     variant="flat-primary"
                     @click="downloadFile('building_plan')">
                     <feather-icon icon="ArchiveIcon" />
-                    Download
+                    Download Gambar denah bangunan
                   </b-button>
                 </b-card-text>
 
                 <b-card-text
                   class="mb-0"
                   v-if="projectData.rt_rw">
-                  <span class="font-weight-bold">Peta RT/RW File : </span>
                   <b-button
                     v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                     variant="flat-primary"
                     @click="downloadFile('rt_rw')">
                     <feather-icon icon="ArchiveIcon" />
-                    Download
+                    Download Peta RT/RW
                   </b-button>
                 </b-card-text>
 
                 <b-card-text
                   class="mb-0"
                   v-if="projectData.upl_ukl">
-                  <span class="font-weight-bold">Salinan UPL/UKL File : </span>
                   <b-button
                     v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                     variant="flat-primary"
                     @click="downloadFile('upl_ukl')">
                     <feather-icon icon="ArchiveIcon" />
-                    Download
+                    Download Salinan UPL/UKL
                   </b-button>
                 </b-card-text>
 
                 <b-card-text
                   class="mb-0"
                   v-if="projectData.earthquake_resistance">
-                  <span class="font-weight-bold">Syarat Tahan Gempa : </span>
                   <b-button
                     v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                     variant="flat-primary"
                     @click="downloadFile('earthquake_resistance')">
                     <feather-icon icon="ArchiveIcon" />
-                    Download
+                    Download Syarat Tahan Gempa
                   </b-button>
                 </b-card-text>
 
                 <b-card-text
                   class="mb-0"
                   v-if="projectData.disability_friendly">
-                  <span class="font-weight-bold">Syarat Penyandang Cacat : </span>
                   <b-button
                     v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                     variant="flat-primary"
                     @click="downloadFile('disability_friendly')">
                     <feather-icon icon="ArchiveIcon" />
-                    Download
+                    Download Syarat Penyandang Cacat
                   </b-button>
                 </b-card-text>
 
                 <b-card-text
                   class="mb-0"
                   v-if="projectData.safety_and_fire_requirement">
-                  <span class="font-weight-bold">Syarat Keselamatan dan Kebakaran : </span>
                   <b-button
                     v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                     variant="flat-primary"
                     @click="downloadFile('safety_and_fire_requirement')">
                     <feather-icon icon="ArchiveIcon" />
-                    Download
+                    Download Syarat Keselamatan dan Kebakaran
                   </b-button>
                 </b-card-text>
 
                 <b-card-text
                   class="mb-0"
                   v-if="projectData.study_case_readiness">
-                  <span class="font-weight-bold">Pernyataan Bersedia Studi Kasus : </span>
                   <b-button
                     v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                     variant="flat-primary"
                     @click="downloadFile('study_case_readiness')">
+                    <feather-icon icon="ArchiveIcon" />
+                    Download Pernyataan Bersedia Studi Kasus
+                  </b-button>
+                </b-card-text>
+
+                <!-- Spacer -->
+                <hr class="project-spacing">
+
+                <b-card-text
+                  class="mb-0">
+                  <span class="font-weight-bold">Semua berkas : </span>
+                  <b-button
+                    variant="gradient-primary"
+                    @click="downloadAllFiles">
                     <feather-icon icon="ArchiveIcon" />
                     Download
                   </b-button>
@@ -439,12 +445,34 @@ export default {
         })
     }
 
+    const downloadAllFiles = () => {
+      store.dispatch('app-project/downloadAllFiles', {
+        id: projectData.value.task_id,
+      })
+        .then(response => {
+          const blob = new Blob([response.data], { type: 'application/zip' })
+          const url = window.URL.createObjectURL(blob)
+
+          window.open(url)
+        })
+        .catch(error => {
+          if (error.response.status === 404) {
+            console.log(error)
+          }
+          if (error.response.status === 500) {
+            console.log(error)
+          }
+        })
+    }
+
     return {
       projectData,
       printProject,
       paymentProps,
       approveProject,
       downloadFile,
+      downloadAllFiles,
+
     }
   },
 }

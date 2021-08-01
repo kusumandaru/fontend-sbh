@@ -63,6 +63,16 @@ export default {
           .catch(error => reject(error))
       })
     },
+    downloadAllFiles(ctx, { id }) {
+      return new Promise((resolve, reject) => {
+        axios({
+          method: 'get',
+          url: `/engine-rest/new-building/archived_files/${id}`,
+          responseType: 'arraybuffer',
+        }).then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
     fetchClients() {
       return new Promise((resolve, reject) => {
         axios
