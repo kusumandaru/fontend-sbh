@@ -17,6 +17,7 @@ yarn serve
 ### Compiles and minifies for production
 ```
 yarn build
+npm exec serve -l 8081 dist
 ```
 
 ### Lints and fixes files
