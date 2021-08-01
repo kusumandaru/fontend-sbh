@@ -10,8 +10,12 @@ build_script:
   - yarn build
 
 cache:
-  - node_modules -> appveyor.yml, **\package.json, yarn.lock
-  - '%LOCALAPPDATA%\Yarn -> appveyor.yml, **\package.json, yarn.lock'
+  - node_modules
+  - '%APPDATA%\npm-cache'
+  - '%USERPROFILE%\.electron'
+  - '%USERPROFILE%\AppData\Local\Yarn\cache'
+  # - node_modules -> appveyor.yml, **\package.json, yarn.lock
+  # - '%LOCALAPPDATA%\Yarn -> appveyor.yml, **\package.json, yarn.lock'
 
 build: off
 
