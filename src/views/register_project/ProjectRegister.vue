@@ -26,7 +26,7 @@
 
         <!-- Building Type -->
         <b-col md="6">
-          <h6>Jenis Gedung *</h6>
+          <h6>Fungsi Gedung *</h6>
           <b-form-group>
             <validation-provider
               #default="{ errors }"
@@ -103,7 +103,7 @@
         <!-- owner -->
         <b-col cols="12">
           <b-form-group
-            label="Pemilik"
+            label="Pemilik Gedung"
             label-for="owner"
           >
             <b-input-group class="input-group-merge">
@@ -251,10 +251,52 @@
           </b-form-group>
         </b-col>
 
+        <!--Handphone-->
+        <b-col md="6">
+          <b-form-group>
+            <label>Handphone</label>
+            <validation-provider
+              #default="{ errors }"
+              rules="required|integer"
+              name="Handphone"
+            >
+              <b-form-input
+                v-model.lazy="handphone"
+                :state="errors.length > 0 ? false:null"
+                placeholder="Enter mobile phone number"
+                :raw="false"
+                :options="options.number"
+              />
+              <small class="text-danger">{{ errors[0] }}</small>
+            </validation-provider>
+          </b-form-group>
+        </b-col>
+
+        <!--Telephone-->
+        <b-col md="6">
+          <b-form-group>
+            <label>Email</label>
+            <validation-provider
+              #default="{ errors }"
+              rules="required|email"
+              name="Email"
+            >
+              <b-form-input
+                v-model.lazy="email"
+                :state="errors.length > 0 ? false:null"
+                placeholder="Enter email address"
+                :raw="false"
+                :options="options.email"
+              />
+              <small class="text-danger">{{ errors[0] }}</small>
+            </validation-provider>
+          </b-form-group>
+        </b-col>
+
         <!-- gross floor area -->
         <b-col cols="12">
           <b-form-group
-            label="Gross floor area *"
+            label="Total Luas Lantai Gedung (Gross floor area) *"
             label-for="grossFloorArea"
             description="total luas lantai dari semua lantai bangunan dihitung dengan dimensi luar bangunan termasuk struktur, sekat, koridor, tangga"
           >
@@ -283,7 +325,7 @@
         <!--Proof of payment -->
         <b-col md="12">
           <b-form-group>
-            <label>Proof of Payment</label>
+            <label>Bukti Pembayaran (Proof of Payment)</label>
             <validation-provider
               #default="{ errors }"
               name="Proof Of Payment"
@@ -307,11 +349,16 @@
           <b-button
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             type="submit"
-            variant="primary"
+            variant="secondary"
             class="mr-1"
             @click="submitProject"
             :disabled="isLoading"
           >
+            <b-spinner
+              small
+              type="grow"
+              v-if="isLoading"
+            />
             Submit
           </b-button>
           <b-button
@@ -330,6 +377,7 @@
         ok-only
         ok-variant="success"
         ok-title="Accept"
+        @ok="gotoIndex"
         modal-class="modal-success"
         centered
         title="Success Modal"
@@ -358,9 +406,12 @@ import {
   BInputGroup,
   BInputGroupPrepend,
   BModal,
+  BSpinner,
 } from 'bootstrap-vue'
+import router from '@/router'
 import Ripple from 'vue-ripple-directive'
 import vSelect from 'vue-select'
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import {
   required, email, confirmed, url, between, alpha, integer, password, min, digits, alphaDash, length,
@@ -380,6 +431,7 @@ export default {
     BFormTextarea,
     BButton,
     BModal,
+    BSpinner,
     ValidationProvider,
     ValidationObserver,
     vSelect,
@@ -408,6 +460,8 @@ export default {
       buildingAddress: '',
       telephone: '',
       faximile: '',
+      handphone: '',
+      email: '',
       postalCode: '',
       buildingName: '',
       owner: '',
@@ -419,7 +473,7 @@ export default {
       result: {},
       provinces: {},
       resultId: null,
-      isLoading: null,
+      isLoading: false,
       options: {
         number: {
           numeral: true,
@@ -474,6 +528,8 @@ export default {
       this.buildingAddress = ''
       this.telephone = ''
       this.faximile = ''
+      this.handphone = ''
+      this.email = ''
       this.postalCode = ''
       this.buildingName = ''
       this.owner = ''
@@ -492,6 +548,17 @@ export default {
         this.cityOption = JSON.parse(JSON.stringify(res.data))
       }).catch(error => {
         console.log(error)
+      })
+    },
+    showToast(variant, titleToast, description) {
+      this.$toast({
+        component: ToastificationContent,
+        props: {
+          title: titleToast,
+          icon: 'BellIcon',
+          text: description,
+          variant,
+        },
       })
     },
     submitProject() {
@@ -519,16 +586,21 @@ export default {
           }
           this.$http.post('/engine-rest/new-building/create-project', request, config).then(res => {
             this.result = JSON.parse(JSON.stringify(res.data))
-            this.resultId = this.result.id
             console.log(this.result)
             this.successShow = true
             this.isLoading = false
           }).catch(function (error) {
             this.isLoading = false
             console.log(error)
+            this.showToast('danger', 'Cannot Save', 'There is error when submit data, contact administrator')
           })
+        } else {
+          this.showToast('danger', 'Cannot Save', 'There is any empty data')
         }
       })
+    },
+    gotoIndex() {
+      router.push({ name: 'project-list' })
     },
   },
 }

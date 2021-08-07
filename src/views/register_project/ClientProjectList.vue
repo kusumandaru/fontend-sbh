@@ -32,7 +32,7 @@
             </b-col>
 
             <b-col cols="12">
-              <b-form-group label="Jenis Gedung">
+              <b-form-group label="Fungsi Gedung">
                 <div class="form-control">{{ taskVariables['building_type'] }}</div>
               </b-form-group>
             </b-col>
@@ -44,7 +44,7 @@
             </b-col>
 
             <b-col cols="12">
-              <b-form-group label="Pemilik">
+              <b-form-group label="Pemilik Gedung">
                 <div class="form-control">{{ taskVariables['owner'] }}</div>
               </b-form-group>
             </b-col>
