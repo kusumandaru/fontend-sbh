@@ -37,9 +37,9 @@
                 id="buildingType"
                 v-model="selectedBuilding"
                 :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                label="name"
+                label="nameId"
                 :options="buildingOption"
-                :selectable="option => ! option.id.includes('select_value')"
+                :selectable="option => ! option.code.includes('select_value')"
               />
               <small class="text-danger">{{ errors[0] }}</small>
             </validation-provider>
@@ -446,13 +446,7 @@ export default {
         { id: 'new_building', name: 'New Building' },
       ],
       selectedBuilding: '',
-      buildingOption: [
-        { id: 'office', name: 'Office' },
-        { id: 'mall', name: 'Mall' },
-        { id: 'hotel', name: 'Hotel' },
-        { id: 'hospital', name: 'Hospital' },
-        { id: 'apartment', name: 'Apartment' },
-      ],
+      buildingOption: [],
       selectedProvince: '',
       provinceOption: [],
       selectedCity: '',
@@ -513,6 +507,7 @@ export default {
     }
   },
   created() {
+    this.getBuildingTypes()
     this.getProvinces()
   },
   computed: {
@@ -546,6 +541,13 @@ export default {
     getCities(value) {
       this.$http.get(`/engine-rest/master/provinces/${value.id}/cities`).then(res => {
         this.cityOption = JSON.parse(JSON.stringify(res.data))
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+    getBuildingTypes() {
+      this.$http.get('/engine-rest/master/building_types').then(res => {
+        this.buildingOption = JSON.parse(JSON.stringify(res.data))
       }).catch(error => {
         console.log(error)
       })

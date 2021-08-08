@@ -38,6 +38,11 @@ export default [
         route: 'province-list',
         icon: 'MapIcon',
       },
+      {
+        title: 'Master Building Type',
+        route: 'building-type-list',
+        icon: 'MapIcon',
+      },
     ],
   },
 ]

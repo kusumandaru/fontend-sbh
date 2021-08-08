@@ -128,6 +128,20 @@ const router = new VueRouter({
       },
     },
     {
+      path: '/building-type-list',
+      name: 'building-type-list',
+      component: () => import('@/views/master/BuildingTypeList.vue'),
+      meta: {
+        pageTitle: 'List Building Type',
+        breadcrumb: [
+          {
+            text: 'List Building Type',
+            active: true,
+          },
+        ],
+      },
+    },
+    {
       path: '/login',
       name: 'login',
       component: () => import('@/views/Login.vue'),
