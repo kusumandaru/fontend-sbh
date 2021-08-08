@@ -1,30 +1,70 @@
 <template>
   <div>
-    <b-card title="Kick start your project 🚀">
-      <b-card-text>All the best for your new project.</b-card-text>
-      <b-card-text>Please make sure to read our <b-link
-        href="https://pixinvent.com/demo/vuexy-vuejs-admin-dashboard-template/documentation/"
-        target="_blank"
+    <b-row>
+      <b-col
+        lg="3"
+        sm="6"
       >
-        Template Documentation
-      </b-link> to understand where to go from here and how to use our template.</b-card-text>
-    </b-card>
+        <statistic-card-horizontal
+          icon="ShoppingBagIcon"
+          color="success"
+          statistic-title="Tenant"
+          :statistic="tenantCount"
+        />
+      </b-col>
+      <b-col
+        lg="3"
+        sm="6"
+      >
+        <statistic-card-horizontal
+          icon="UserIcon"
+          color="primary"
+          statistic-title="User"
+          :statistic="userCount"
+        />
+      </b-col>
 
-    <b-card title="Want to integrate JWT? 🔒">
-      <b-card-text>We carefully crafted JWT flow so you can implement JWT with ease and with minimum efforts.</b-card-text>
-      <b-card-text>Please read our  JWT Documentation to get more out of JWT authentication.</b-card-text>
-    </b-card>
+      <b-col
+        lg="4"
+        md="6"
+      >
+        <card-advance-bussiness-sharks />
+      </b-col>
+    </b-row>
   </div>
 </template>
 
 <script>
-import { BCard, BCardText, BLink } from 'bootstrap-vue'
+import { BRow, BCol } from 'bootstrap-vue'
+import StatisticCardHorizontal from '@core/components/statistics-cards/StatisticCardHorizontal.vue'
+import CardAdvanceBussinessSharks from './CardAdvanceBussinessSharks.vue'
 
 export default {
   components: {
-    BCard,
-    BCardText,
-    BLink,
+    BRow,
+    BCol,
+    StatisticCardHorizontal,
+    CardAdvanceBussinessSharks,
+  },
+  data() {
+    return {
+      userCount: 0,
+      tenantCount: 0,
+    }
+  },
+  created() {
+    this.retrieveUserCount()
+    this.retrieveTenantCount()
+  },
+  methods: {
+    retrieveUserCount() {
+      this.$http.get('engine-rest/tenant/count')
+        .then(res => { this.userCount = res.data.count })
+    },
+    retrieveTenantCount() {
+      this.$http.get('engine-rest/user/count')
+        .then(res => { this.tenantCount = res.data.count })
+    },
   },
 }
 </script>
