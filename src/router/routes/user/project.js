@@ -1,8 +1,8 @@
 export default [
   {
-    path: '/project-add',
-    name: 'project-add',
-    component: () => import('@/views/register_project/ProjectRegister.vue'),
+    path: '/project/register',
+    name: 'project-register',
+    component: () => import('@/views/client/project/Register.vue'),
     meta: {
       pageTitle: 'Create Project',
       breadcrumb: [
@@ -18,7 +18,7 @@ export default [
   {
     path: '/client-project-list',
     name: 'client-project-list',
-    component: () => import('@/views/register_project/ClientProjectList.vue'),
+    component: () => import('@/views/client/project/ClientProjectList.vue'),
     meta: {
       pageTitle: 'List Client Project',
       breadcrumb: [

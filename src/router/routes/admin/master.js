@@ -1,8 +1,8 @@
 export default [
   {
-    path: '/master/city',
+    path: '/admin/master/city',
     name: 'city-list',
-    component: () => import('@/views/master/CityList.vue'),
+    component: () => import('@/views/admin/master/CityList.vue'),
     meta: {
       pageTitle: 'List City',
       breadcrumb: [
@@ -16,9 +16,9 @@ export default [
     },
   },
   {
-    path: '/master/province',
+    path: '/admin/master/province',
     name: 'province-list',
-    component: () => import('@/views/master/ProvinceList.vue'),
+    component: () => import('@/views/admin/master/ProvinceList.vue'),
     meta: {
       pageTitle: 'List Province',
       breadcrumb: [

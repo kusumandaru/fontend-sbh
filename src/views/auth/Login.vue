@@ -202,6 +202,7 @@ import store from '@/store/index'
 import { getHomeRouteForLoggedInUser } from '@/auth/utils'
 
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
+import { roleAbility, initialAbility } from '@/libs/acl/config'
 
 export default {
   directives: {
@@ -264,7 +265,8 @@ export default {
               useJwt.setToken(response.data.accessToken)
               useJwt.setRefreshToken(response.data.refreshToken)
               localStorage.setItem('userData', JSON.stringify(userData))
-              this.$ability.update([{ action: 'manage', subject: 'all' }])
+              const data = roleAbility[userData.roles]
+              this.$ability.update(initialAbility.concat(data))
 
               // ? This is just for demo purpose as well.
               // ? Because we are showing eCommerce app's cart items count in navbar
