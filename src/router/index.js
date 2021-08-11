@@ -1,5 +1,13 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import { canNavigate } from '@/libs/acl/routeProtection'
+import { isUserLoggedIn, getHomeRouteForLoggedInUser } from '@/auth/utils'
+import auth from './routes/auth'
+import user from './routes/user'
+import adminMaster from './routes/admin/master'
+import adminProject from './routes/admin/project'
+import adminUser from './routes/admin/user'
+import userProject from './routes/user/project'
 
 Vue.use(VueRouter)
 
@@ -22,131 +30,24 @@ const router = new VueRouter({
             active: true,
           },
         ],
+        action: 'read',
+        resource: 'auth',
       },
     },
+    ...auth,
+    ...user,
+    ...adminMaster,
+    ...adminProject,
+    ...adminUser,
+    ...userProject,
     {
-      path: '/user-list',
-      name: 'user-list',
-      component: () => import('@/views/User.vue'),
-      meta: {
-        pageTitle: 'User List',
-        breadcrumb: [
-          {
-            text: 'User List',
-            active: true,
-          },
-        ],
-      },
-    },
-    {
-      path: '/project/register',
-      name: 'project-register',
-      component: () => import('@/views/register_project/ProjectRegister.vue'),
-      meta: {
-        pageTitle: 'Create Project',
-        breadcrumb: [
-          {
-            text: 'Create Project',
-            active: true,
-          },
-        ],
-      },
-    },
-    {
-      path: '/project/list',
-      name: 'project-list',
-      component: () => import('@/views/register_project/ProjectList.vue'),
-      meta: {
-        pageTitle: 'List Project',
-        breadcrumb: [
-          {
-            text: 'List Project',
-            active: true,
-          },
-        ],
-      },
-    },
-    {
-      path: '/project/preview/:id',
-      name: 'project-preview',
-      component: () => import('@/views/register_project/ProjectPreview.vue'),
-    },
-    {
-      path: '/client-project-list',
-      name: 'client-project-list',
-      component: () => import('@/views/register_project/ClientProjectList.vue'),
-      meta: {
-        pageTitle: 'List Client Project',
-        breadcrumb: [
-          {
-            text: 'List Client Project',
-            active: true,
-          },
-        ],
-      },
-    },
-    {
-      path: '/project-add',
-      name: 'project-add',
-      component: () => import('@/views/register_project/ProjectRegister.vue'),
-      meta: {
-        pageTitle: 'Create Project',
-        breadcrumb: [
-          {
-            text: 'Create Project',
-            active: true,
-          },
-        ],
-      },
-    },
-    {
-      path: '/city-list',
-      name: 'city-list',
-      component: () => import('@/views/master/CityList.vue'),
-      meta: {
-        pageTitle: 'List City',
-        breadcrumb: [
-          {
-            text: 'List City',
-            active: true,
-          },
-        ],
-      },
-    },
-    {
-      path: '/province-list',
-      name: 'province-list',
-      component: () => import('@/views/master/ProvinceList.vue'),
-      meta: {
-        pageTitle: 'List Province',
-        breadcrumb: [
-          {
-            text: 'List Province',
-            active: true,
-          },
-        ],
-      },
-    },
-    {
-      path: '/building-type-list',
-      name: 'building-type-list',
-      component: () => import('@/views/master/BuildingTypeList.vue'),
-      meta: {
-        pageTitle: 'List Building Type',
-        breadcrumb: [
-          {
-            text: 'List Building Type',
-            active: true,
-          },
-        ],
-      },
-    },
-    {
-      path: '/login',
-      name: 'login',
-      component: () => import('@/views/Login.vue'),
+      path: '/error-401',
+      name: 'not-authorized',
+      component: () => import('@/views/error/NotAuthorized.vue'),
       meta: {
         layout: 'full',
+        action: 'read',
+        resource: 'auth',
       },
     },
     {
@@ -155,6 +56,8 @@ const router = new VueRouter({
       component: () => import('@/views/error/Error404.vue'),
       meta: {
         layout: 'full',
+        action: 'read',
+        resource: 'auth',
       },
     },
     {
@@ -172,6 +75,26 @@ router.afterEach(() => {
   if (appLoading) {
     appLoading.style.display = 'none'
   }
+})
+
+router.beforeEach((to, _, next) => {
+  const isLoggedIn = isUserLoggedIn()
+
+  if (!canNavigate(to)) {
+    // Redirect to login if not logged in
+    // ! We updated login route name here from `auth-login` to `login` in starter-kit
+    if (!isLoggedIn) return next({ name: 'auth-login' })
+
+    // If logged in => not authorized
+    return next({ name: 'not-authorized' })
+  }
+
+  // Redirect if logged in
+  if (to.meta.redirectIfLoggedIn && isLoggedIn) {
+    next(getHomeRouteForLoggedInUser())
+  }
+
+  return next()
 })
 
 export default router
