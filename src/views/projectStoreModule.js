@@ -39,7 +39,6 @@ export default {
     },
     rejectProject(ctx, { id, rejectionReason }) {
       return new Promise((resolve, reject) => {
-        debugger
         const request = new FormData()
         request.append('task_id', id)
         request.append('rejected_reason', rejectionReason)
