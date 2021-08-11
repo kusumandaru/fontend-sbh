@@ -201,13 +201,13 @@ export default {
         .then(res => { this.rows = res.data })
     },
     /* eslint-disable object-shorthand */
-    handleError: function (err) {
+    handleError(err) {
       console.error('failed to show diagram', err)
     },
-    handleShown: function () {
+    handleShown() {
       console.log('diagram shown')
     },
-    handleLoading: function () {
+    handleLoading() {
       console.log('diagram loading')
     },
     /* eslint-enable object-shorthand */
