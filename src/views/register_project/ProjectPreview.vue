@@ -297,6 +297,7 @@
 
           <!-- Button: Approve -->
           <b-button
+            v-if="adminTasks.includes(projectData.definition_key)"
             v-ripple.400="'rgba(186, 191, 199, 0.15)'"
             variant="success"
             class="mb-75"
@@ -308,6 +309,7 @@
 
           <!-- Button: Reject -->
           <b-button
+            v-if="adminTasks.includes(projectData.definition_key)"
             v-b-toggle.sidebar-project-reject
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             variant="danger"
@@ -315,6 +317,28 @@
             block
           >
             Reject
+          </b-button>
+
+          <!-- Button: Edit -->
+          <b-button
+            v-if="clientTasks.includes(projectData.definition_key)"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="primary"
+            class="mb-75"
+            block
+          >
+            Edit
+          </b-button>
+
+          <!-- Button: Submit -->
+          <b-button
+            v-if="clientTasks.includes(projectData.definition_key)"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="success"
+            class="mb-75"
+            block
+          >
+            Submit
           </b-button>
 
           <!-- Button: Print -->
@@ -465,8 +489,12 @@ export default {
         })
     }
 
+    const adminTasks = ['check-registration-project', 'check-document-building']
+    const clientTasks = ['fill-registration-project', 'fill-document-building']
     return {
       projectData,
+      adminTasks,
+      clientTasks,
       printProject,
       paymentProps,
       approveProject,

@@ -385,7 +385,7 @@ export default {
   },
   methods: {
     retrieveProjects() {
-      this.$http.get('engine-rest/new-building/tasks/admin')
+      this.$http.get('engine-rest/new-building/tasks')
         .then(res => { this.rows = res.data })
     },
     approveProject(taskId) {
