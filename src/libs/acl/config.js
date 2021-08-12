@@ -20,8 +20,8 @@ export const roleAbility = {
       subject: 'master',
     },
     {
-      action: 'manage',
-      subject: 'dashboard',
+      action: 'read',
+      resource: 'home',
     },
   ],
   user: [
@@ -31,7 +31,7 @@ export const roleAbility = {
     },
     {
       action: 'read',
-      subject: 'dashboard',
+      resource: 'home',
     },
   ],
 }

@@ -215,6 +215,7 @@ import { togglePasswordVisibility } from '@core/mixins/ui/forms'
 import store from '@/store/index'
 import useJwt from '@/auth/jwt/useJwt'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
+import { roleAbility, initialAbility } from '@/libs/acl/config'
 
 export default {
   components: {
@@ -275,7 +276,8 @@ export default {
               useJwt.setToken(response.data.accessToken)
               useJwt.setRefreshToken(response.data.refreshToken)
               localStorage.setItem('userData', JSON.stringify(response.data.userData))
-              this.$ability.update([{ action: 'read', subject: 'Auth' }])
+              const data = roleAbility[response.data.userData.roles]
+              this.$ability.update(initialAbility.concat(data))
               this.$router.replace('/')
                 .then(() => {
                   this.$toast({
