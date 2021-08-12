@@ -38,20 +38,23 @@
           class="px-xl-2 mx-auto"
         >
           <b-card-title
+            class="mb-1 font-weight-bold"
             title-tag="h2"
-            class="font-weight-bold mb-1"
           >
-            Welcome to Vuexy! 👋
+            Welcome to Greenship Certification!
           </b-card-title>
           <b-card-text class="mb-2">
             Please sign-in to your account and start the adventure
           </b-card-text>
 
           <!-- form -->
-          <validation-observer ref="loginValidation">
+          <validation-observer
+            ref="loginForm"
+            #default="{invalid}"
+          >
             <b-form
               class="auth-login-form mt-2"
-              @submit.prevent
+              @submit.prevent="login"
             >
               <!-- email -->
               <b-form-group
@@ -61,6 +64,7 @@
                 <validation-provider
                   #default="{ errors }"
                   name="Email"
+                  vid="email"
                   rules="required|email"
                 >
                   <b-form-input
@@ -78,13 +82,14 @@
               <b-form-group>
                 <div class="d-flex justify-content-between">
                   <label for="login-password">Password</label>
-                  <b-link :to="{name:'auth-forgot-password-v2'}">
+                  <b-link :to="{name:'auth-forgot-password'}">
                     <small>Forgot Password?</small>
                   </b-link>
                 </div>
                 <validation-provider
                   #default="{ errors }"
                   name="Password"
+                  vid="password"
                   rules="required"
                 >
                   <b-input-group
@@ -98,7 +103,7 @@
                       class="form-control-merge"
                       :type="passwordFieldType"
                       name="login-password"
-                      placeholder="············"
+                      placeholder="Password"
                     />
                     <b-input-group-append is-text>
                       <feather-icon
@@ -128,7 +133,7 @@
                 type="submit"
                 variant="primary"
                 block
-                @click="validationForm"
+                :disabled="invalid"
               >
                 Sign in
               </b-button>
@@ -137,7 +142,7 @@
 
           <b-card-text class="text-center mt-2">
             <span>New on our platform? </span>
-            <b-link :to="{name:'page-auth-register-v2'}">
+            <b-link :to="{name:'auth-register'}">
               <span>&nbsp;Create an account</span>
             </b-link>
           </b-card-text>
@@ -188,14 +193,21 @@
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import VuexyLogo from '@core/layouts/components/Logo.vue'
 import {
-  BRow, BCol, BLink, BFormGroup, BFormInput, BInputGroupAppend, BInputGroup, BFormCheckbox, BCardText, BCardTitle, BImg, BForm, BButton,
+  BRow, BCol, BLink, BFormGroup, BFormInput, BInputGroupAppend, BInputGroup, BFormCheckbox, BCardText, BCardTitle, BImg, BForm, BButton, VBTooltip,
 } from 'bootstrap-vue'
+import useJwt from '@/auth/jwt/useJwt'
 import { required, email } from '@validations'
 import { togglePasswordVisibility } from '@core/mixins/ui/forms'
 import store from '@/store/index'
+import { getHomeRouteForLoggedInUser } from '@/auth/utils'
+
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
+import { roleAbility, initialAbility } from '@/libs/acl/config'
 
 export default {
+  directives: {
+    'b-tooltip': VBTooltip,
+  },
   components: {
     BRow,
     BCol,
@@ -221,7 +233,8 @@ export default {
       password: '',
       userEmail: '',
       sideImg: require('@/assets/images/pages/login-v2.svg'),
-      // validation rulesimport store from '@/store/index'
+
+      // validation rules
       required,
       email,
     }
@@ -240,17 +253,43 @@ export default {
     },
   },
   methods: {
-    validationForm() {
-      this.$refs.loginValidation.validate().then(success => {
+    login() {
+      this.$refs.loginForm.validate().then(success => {
         if (success) {
-          this.$toast({
-            component: ToastificationContent,
-            props: {
-              title: 'Form Submitted',
-              icon: 'EditIcon',
-              variant: 'success',
-            },
+          useJwt.login({
+            username: this.userEmail,
+            password: this.password,
           })
+            .then(response => {
+              const { userData } = response.data
+              useJwt.setToken(response.data.accessToken)
+              useJwt.setRefreshToken(response.data.refreshToken)
+              localStorage.setItem('userData', JSON.stringify(userData))
+              const data = roleAbility[userData.roles]
+              this.$ability.update(initialAbility.concat(data))
+
+              // ? This is just for demo purpose as well.
+              // ? Because we are showing eCommerce app's cart items count in navbar
+              // this.$store.commit('app-ecommerce/UPDATE_CART_ITEMS_COUNT', userData.extras.eCommerceCartItemsCount)
+
+              // ? This is just for demo purpose. Don't think CASL is role based in this case, we used role in if condition just for ease
+              this.$router.replace(getHomeRouteForLoggedInUser(userData.roles[0]))
+                .then(() => {
+                  this.$toast({
+                    component: ToastificationContent,
+                    position: 'top-right',
+                    props: {
+                      title: `Welcome ${userData.fullName || userData.username}`,
+                      icon: 'CoffeeIcon',
+                      variant: 'success',
+                      text: `You have successfully logged in as ${userData.role}. Now you can start to explore!`,
+                    },
+                  })
+                })
+            })
+            .catch(error => {
+              this.$refs.loginForm.setErrors(error.response.data.error)
+            })
         }
       })
     },

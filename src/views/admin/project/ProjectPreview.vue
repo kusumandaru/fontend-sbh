@@ -44,7 +44,7 @@
                 <div class="logo-wrapper">
                   <logo />
                   <h3 class="text-primary project-logo">
-                     {{ projectData.building_name }}
+                    {{ projectData.building_name }}
                   </h3>
                 </div>
                 <p class="card-text mb-25">
@@ -172,96 +172,112 @@
                 order-md="1"
               >
                 <b-card-text
+                  v-if="projectData.proof_of_payment"
                   class="mb-0"
-                  v-if="projectData.proof_of_payment">
+                >
                   <b-button
                     v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                     variant="flat-primary"
-                    @click="downloadFile('proof_of_payment')">
+                    @click="downloadFile('proof_of_payment')"
+                  >
                     <feather-icon icon="ArchiveIcon" />
                     Download Bukti Pembayaran
                   </b-button>
                 </b-card-text>
 
                 <b-card-text
+                  v-if="projectData.building_plan"
                   class="mb-0"
-                  v-if="projectData.building_plan">
+                >
                   <b-button
                     v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                     variant="flat-primary"
-                    @click="downloadFile('building_plan')">
+                    @click="downloadFile('building_plan')"
+                  >
                     <feather-icon icon="ArchiveIcon" />
                     Download Gambar denah bangunan
                   </b-button>
                 </b-card-text>
 
                 <b-card-text
+                  v-if="projectData.rt_rw"
                   class="mb-0"
-                  v-if="projectData.rt_rw">
+                >
                   <b-button
                     v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                     variant="flat-primary"
-                    @click="downloadFile('rt_rw')">
+                    @click="downloadFile('rt_rw')"
+                  >
                     <feather-icon icon="ArchiveIcon" />
                     Download Peta RT/RW
                   </b-button>
                 </b-card-text>
 
                 <b-card-text
+                  v-if="projectData.upl_ukl"
                   class="mb-0"
-                  v-if="projectData.upl_ukl">
+                >
                   <b-button
                     v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                     variant="flat-primary"
-                    @click="downloadFile('upl_ukl')">
+                    @click="downloadFile('upl_ukl')"
+                  >
                     <feather-icon icon="ArchiveIcon" />
                     Download Salinan UPL/UKL
                   </b-button>
                 </b-card-text>
 
                 <b-card-text
+                  v-if="projectData.earthquake_resistance"
                   class="mb-0"
-                  v-if="projectData.earthquake_resistance">
+                >
                   <b-button
                     v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                     variant="flat-primary"
-                    @click="downloadFile('earthquake_resistance')">
+                    @click="downloadFile('earthquake_resistance')"
+                  >
                     <feather-icon icon="ArchiveIcon" />
                     Download Syarat Tahan Gempa
                   </b-button>
                 </b-card-text>
 
                 <b-card-text
+                  v-if="projectData.disability_friendly"
                   class="mb-0"
-                  v-if="projectData.disability_friendly">
+                >
                   <b-button
                     v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                     variant="flat-primary"
-                    @click="downloadFile('disability_friendly')">
+                    @click="downloadFile('disability_friendly')"
+                  >
                     <feather-icon icon="ArchiveIcon" />
                     Download Syarat Penyandang Cacat
                   </b-button>
                 </b-card-text>
 
                 <b-card-text
+                  v-if="projectData.safety_and_fire_requirement"
                   class="mb-0"
-                  v-if="projectData.safety_and_fire_requirement">
+                >
                   <b-button
                     v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                     variant="flat-primary"
-                    @click="downloadFile('safety_and_fire_requirement')">
+                    @click="downloadFile('safety_and_fire_requirement')"
+                  >
                     <feather-icon icon="ArchiveIcon" />
                     Download Syarat Keselamatan dan Kebakaran
                   </b-button>
                 </b-card-text>
 
                 <b-card-text
+                  v-if="projectData.study_case_readiness"
                   class="mb-0"
-                  v-if="projectData.study_case_readiness">
+                >
                   <b-button
                     v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                     variant="flat-primary"
-                    @click="downloadFile('study_case_readiness')">
+                    @click="downloadFile('study_case_readiness')"
+                  >
                     <feather-icon icon="ArchiveIcon" />
                     Download Pernyataan Bersedia Studi Kasus
                   </b-button>
@@ -271,11 +287,13 @@
                 <hr class="project-spacing">
 
                 <b-card-text
-                  class="mb-0">
+                  class="mb-0"
+                >
                   <span class="font-weight-bold">Semua berkas : </span>
                   <b-button
                     variant="gradient-primary"
-                    @click="downloadAllFiles">
+                    @click="downloadAllFiles"
+                  >
                     <feather-icon icon="ArchiveIcon" />
                     Download
                   </b-button>
@@ -297,6 +315,7 @@
 
           <!-- Button: Approve -->
           <b-button
+            v-if="adminTasks.includes(projectData.definition_key)"
             v-ripple.400="'rgba(186, 191, 199, 0.15)'"
             variant="success"
             class="mb-75"
@@ -308,6 +327,7 @@
 
           <!-- Button: Reject -->
           <b-button
+            v-if="adminTasks.includes(projectData.definition_key)"
             v-b-toggle.sidebar-project-reject
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             variant="danger"
@@ -315,6 +335,28 @@
             block
           >
             Reject
+          </b-button>
+
+          <!-- Button: Edit -->
+          <b-button
+            v-if="clientTasks.includes(projectData.definition_key)"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="primary"
+            class="mb-75"
+            block
+          >
+            Edit
+          </b-button>
+
+          <!-- Button: Submit -->
+          <b-button
+            v-if="clientTasks.includes(projectData.definition_key)"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="success"
+            class="mb-75"
+            block
+          >
+            Submit
           </b-button>
 
           <!-- Button: Print -->
@@ -347,7 +389,7 @@ import {
 import Logo from '@core/layouts/components/Logo.vue'
 import Ripple from 'vue-ripple-directive'
 import projectStoreModule from '@/views/projectStoreModule'
-import ProjectSidebarReject from '@/views/ProjectSidebarReject.vue'
+import ProjectSidebarReject from '@/views/admin/project/ProjectSidebarReject.vue'
 
 export default {
   directives: {
@@ -465,8 +507,12 @@ export default {
         })
     }
 
+    const adminTasks = ['check-registration-project', 'check-document-building']
+    const clientTasks = ['fill-registration-project', 'fill-document-building']
     return {
       projectData,
+      adminTasks,
+      clientTasks,
       printProject,
       paymentProps,
       approveProject,

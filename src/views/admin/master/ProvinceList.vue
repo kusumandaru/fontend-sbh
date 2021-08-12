@@ -34,7 +34,7 @@
 
         <!-- Column: Name -->
         <div
-          v-if="props.column.field === 'nameEn'"
+          v-if="props.column.field === 'name'"
           class="text-nowrap"
         >
           <!-- <span class="text-nowrap">{{ props.row.name }}</span> -->
@@ -42,18 +42,10 @@
 
         <!-- Column: Name -->
         <div
-          v-if="props.column.field === 'nameId'"
+          v-if="props.column.field === 'provinceId'"
           class="text-nowrap"
         >
-          <!-- <span class="text-nowrap">{{ props.row.name }}</span> -->
-        </div>
-
-        <!-- Column: Name -->
-        <div
-          v-if="props.column.field === 'buildingTypeId'"
-          class="text-nowrap"
-        >
-          <span class="text-nowrap">{{ props.row.buildingType.name }}</span>
+          <span class="text-nowrap">{{ props.row.province.name }}</span>
         </div>
 
         <!-- Column: Action -->
@@ -156,19 +148,11 @@ export default {
       searchTerm: '',
       columns: [
         {
-          label: 'English Name',
-          field: 'nameEn',
+          label: 'Province Name',
+          field: 'name',
           filterOptions: {
             enabled: true,
-            placeholder: 'Search Building Type',
-          },
-        },
-        {
-          label: 'Indonesia Name',
-          field: 'nameId',
-          filterOptions: {
-            enabled: true,
-            placeholder: 'Search Building Type',
+            placeholder: 'Search Province',
           },
         },
         {
@@ -201,21 +185,21 @@ export default {
     },
   },
   created() {
-    this.retrieveBuildingTypes()
+    this.retrieveProvinces()
   },
   methods: {
-    retrieveBuildingTypes() {
-      this.$http.get('engine-rest/master/building_types')
+    retrieveProvinces() {
+      this.$http.get('engine-rest/master/provinces')
         .then(res => { this.rows = res.data })
     },
     /* eslint-disable object-shorthand */
-    handleError: function (err) {
+    handleError(err) {
       console.error('failed to show diagram', err)
     },
-    handleShown: function () {
+    handleShown() {
       console.log('diagram shown')
     },
-    handleLoading: function () {
+    handleLoading() {
       console.log('diagram loading')
     },
     /* eslint-enable object-shorthand */

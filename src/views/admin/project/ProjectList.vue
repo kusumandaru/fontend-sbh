@@ -15,97 +15,123 @@
       </b-form-group>
       <b-modal
         id="modal-success"
+        v-model="variableShow"
         ok-only
         ok-variant="success"
         ok-title="Accept"
         modal-class="modal-success"
         centered
         title="Detail Project"
-        v-model="variableShow"
       >
         <b-card-text>
           <b-row>
             <b-col cols="12">
               <b-form-group label="Tipe Sertifikasi">
-                <div class="form-control">{{ taskVariables['certification_type'] }}</div>
+                <div class="form-control">
+                  {{ taskVariables['certification_type'] }}
+                </div>
               </b-form-group>
             </b-col>
 
             <b-col cols="12">
               <b-form-group label="Fungsi Gedung">
-                <div class="form-control">{{ taskVariables['building_type'] }}</div>
+                <div class="form-control">
+                  {{ taskVariables['building_type'] }}
+                </div>
               </b-form-group>
             </b-col>
 
             <b-col cols="12">
               <b-form-group label="Nama Gedung">
-                <div class="form-control">{{ taskVariables['building_name'] }}</div>
+                <div class="form-control">
+                  {{ taskVariables['building_name'] }}
+                </div>
               </b-form-group>
             </b-col>
 
             <b-col cols="12">
               <b-form-group label="Pemilik Gedung">
-                <div class="form-control">{{ taskVariables['owner'] }}</div>
+                <div class="form-control">
+                  {{ taskVariables['owner'] }}
+                </div>
               </b-form-group>
             </b-col>
 
             <b-col cols="12">
               <b-form-group label="Alamat Gedung">
-                <div class="form-control">{{ taskVariables['building_address'] }}</div>
+                <div class="form-control">
+                  {{ taskVariables['building_address'] }}
+                </div>
               </b-form-group>
             </b-col>
 
             <b-col cols="12">
               <b-form-group label="Provinsi">
-                <div class="form-control">{{ taskVariables['province_name'] }}</div>
+                <div class="form-control">
+                  {{ taskVariables['province_name'] }}
+                </div>
               </b-form-group>
             </b-col>
 
             <b-col cols="12">
               <b-form-group label="Kota/Kabupaten">
-                <div class="form-control">{{ taskVariables['city_name'] }}</div>
+                <div class="form-control">
+                  {{ taskVariables['city_name'] }}
+                </div>
               </b-form-group>
             </b-col>
 
             <b-col cols="12">
               <b-form-group label="Kode Pos">
-                <div class="form-control">{{ taskVariables['postal_code'] }}</div>
+                <div class="form-control">
+                  {{ taskVariables['postal_code'] }}
+                </div>
               </b-form-group>
             </b-col>
 
             <b-col cols="12">
               <b-form-group label="Telepon">
-                <div class="form-control">{{ taskVariables['telephone'] }}</div>
+                <div class="form-control">
+                  {{ taskVariables['telephone'] }}
+                </div>
               </b-form-group>
             </b-col>
 
             <b-col cols="12">
               <b-form-group label="Fax">
-                <div class="form-control">{{ taskVariables['faximile'] }}</div>
+                <div class="form-control">
+                  {{ taskVariables['faximile'] }}
+                </div>
               </b-form-group>
             </b-col>
 
-             <b-col cols="12">
+            <b-col cols="12">
               <b-form-group label="Gross Floor Area">
-                <div class="form-control">{{ taskVariables['gross_floor_area'] }}</div>
+                <div class="form-control">
+                  {{ taskVariables['gross_floor_area'] }}
+                </div>
               </b-form-group>
             </b-col>
 
           </b-row>
         </b-card-text>
         <template>
-          <b-img v-bind="paymentProps" fluid alt="Proof of Payment" />
+          <b-img
+            v-bind="paymentProps"
+            fluid
+            alt="Proof of Payment"
+          />
         </template>
       </b-modal>
       <b-modal
         id="modal-success"
+        v-model="diagramShow"
         ok-only
         ok-variant="success"
         ok-title="Accept"
         modal-class="modal-success"
         centered
         title="Diagram Modal"
-        v-model="diagramShow"
         size="lg"
       >
         <b-card-text>
@@ -113,10 +139,10 @@
             :xml="diagramXML"
             :activity="activityId"
             :options="options"
-            v-on:error="handleError"
-            v-on:shown="handleShown"
-            v-on:loading="handleLoading"
-          ></vue-bpmn>
+            @error="handleError"
+            @shown="handleShown"
+            @loading="handleLoading"
+          />
         </b-card-text>
       </b-modal>
     </div>
@@ -385,7 +411,7 @@ export default {
   },
   methods: {
     retrieveProjects() {
-      this.$http.get('engine-rest/new-building/tasks/admin')
+      this.$http.get('engine-rest/new-building/tasks')
         .then(res => { this.rows = res.data })
     },
     approveProject(taskId) {
@@ -423,13 +449,13 @@ export default {
       this.diagramShow = true
     },
     /* eslint-disable object-shorthand */
-    handleError: function (err) {
+    handleError(err) {
       console.error('failed to show diagram', err)
     },
-    handleShown: function () {
+    handleShown() {
       console.log('diagram shown')
     },
-    handleLoading: function () {
+    handleLoading() {
       console.log('diagram loading')
     },
     getImageUrl(imageUrl) {
