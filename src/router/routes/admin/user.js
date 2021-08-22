@@ -1,6 +1,6 @@
 export default [
   {
-    path: '/user-list',
+    path: '/admin/user',
     name: 'user-list',
     component: () => import('@/views/User.vue'),
     meta: {

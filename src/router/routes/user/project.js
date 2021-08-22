@@ -1,6 +1,6 @@
 export default [
   {
-    path: '/project/register',
+    path: '/client/project/register',
     name: 'project-register',
     component: () => import('@/views/client/project/Register.vue'),
     meta: {
@@ -16,9 +16,9 @@ export default [
     },
   },
   {
-    path: '/client-project-list',
+    path: '/client/project/list',
     name: 'client-project-list',
-    component: () => import('@/views/client/project/ClientProjectList.vue'),
+    component: () => import('@/views/client/project/List.vue'),
     meta: {
       pageTitle: 'List Client Project',
       breadcrumb: [
@@ -30,5 +30,20 @@ export default [
       action: 'read',
       resource: 'client-project',
     },
+  },
+  {
+    path: '/client/project/preview/:id',
+    name: 'client-project-preview',
+    component: () => import('@/views/client/project/Preview.vue'),
+  },
+  {
+    path: '/client/project/edit/:id',
+    name: 'client-project-edit',
+    component: () => import('@/views/client/project/EditProject.vue'),
+  },
+  {
+    path: '/client/project/upload/:id',
+    name: 'client-project-upload-document',
+    component: () => import('@/views/client/project/UploadDocument.vue'),
   },
 ]

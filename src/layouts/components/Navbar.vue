@@ -30,9 +30,9 @@
         <template #button-content>
           <div class="d-sm-flex d-none user-nav">
             <p class="user-name font-weight-bolder mb-0">
-              John Doe
+              {{ userData.fullName || userData.username }}
             </p>
-            <span class="user-status">Admin</span>
+            <span class="user-status">{{ userData.roles.join() }}</span>
           </div>
           <b-avatar
             size="40"
@@ -117,6 +117,11 @@ export default {
 
     // Navbar Components
     DarkToggler,
+  },
+  data() {
+    return {
+      userData: JSON.parse(localStorage.getItem('userData')),
+    }
   },
   props: {
     toggleVerticalMenuActive: {

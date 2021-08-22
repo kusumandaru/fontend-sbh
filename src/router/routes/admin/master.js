@@ -31,4 +31,20 @@ export default [
       resource: 'master',
     },
   },
+  {
+    path: '/admin/master/building-type',
+    name: 'building-type-list',
+    component: () => import('@/views/admin/master/BuildingTypeList.vue'),
+    meta: {
+      pageTitle: 'List Building Type',
+      breadcrumb: [
+        {
+          text: 'List Building Type',
+          active: true,
+        },
+      ],
+      action: 'manage',
+      resource: 'master',
+    },
+  },
 ]
