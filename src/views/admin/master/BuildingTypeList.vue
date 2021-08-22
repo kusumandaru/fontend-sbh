@@ -42,7 +42,7 @@
 
         <!-- Column: Name -->
         <div
-          v-if="props.column.field === 'nameId'"
+          v-if="props.column.field === 'name_id'"
           class="text-nowrap"
         >
           <!-- <span class="text-nowrap">{{ props.row.name }}</span> -->
@@ -50,7 +50,7 @@
 
         <!-- Column: Name -->
         <div
-          v-if="props.column.field === 'buildingTypeId'"
+          v-if="props.column.field === 'building_type_id'"
           class="text-nowrap"
         >
           <span class="text-nowrap">{{ props.row.buildingType.name }}</span>
@@ -157,7 +157,7 @@ export default {
       columns: [
         {
           label: 'English Name',
-          field: 'nameEn',
+          field: 'name_en',
           filterOptions: {
             enabled: true,
             placeholder: 'Search Building Type',
@@ -165,7 +165,7 @@ export default {
         },
         {
           label: 'Indonesia Name',
-          field: 'nameId',
+          field: 'name_id',
           filterOptions: {
             enabled: true,
             placeholder: 'Search Building Type',
@@ -173,7 +173,7 @@ export default {
         },
         {
           label: 'Created At',
-          field: 'createdAt',
+          field: 'created_at',
         },
         {
           label: 'Action',
@@ -211,12 +211,6 @@ export default {
     /* eslint-disable object-shorthand */
     handleError(err) {
       console.error('failed to show diagram', err)
-    },
-    handleShown() {
-      console.log('diagram shown')
-    },
-    handleLoading() {
-      console.log('diagram loading')
     },
     /* eslint-enable object-shorthand */
   },

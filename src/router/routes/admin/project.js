@@ -1,8 +1,8 @@
 export default [
   {
-    path: '/project/list',
+    path: '/admin/project/list',
     name: 'project-list',
-    component: () => import('@/views/admin/project/ProjectList.vue'),
+    component: () => import('@/views/admin/project/List.vue'),
     meta: {
       pageTitle: 'List Project',
       breadcrumb: [
@@ -16,24 +16,8 @@ export default [
     },
   },
   {
-    path: '/project/preview/:id',
+    path: '/admin/project/preview/:id',
     name: 'project-preview',
-    component: () => import('@/views/admin/project/ProjectPreview.vue'),
-  },
-  {
-    path: '/building-type-list',
-    name: 'building-type-list',
-    component: () => import('@/views/admin/master/BuildingTypeList.vue'),
-    meta: {
-      pageTitle: 'List Building Type',
-      breadcrumb: [
-        {
-          text: 'List Building Type',
-          active: true,
-        },
-      ],
-      action: 'manage',
-      resource: 'master',
-    },
+    component: () => import('@/views/admin/project/Preview.vue'),
   },
 ]

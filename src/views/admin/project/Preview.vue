@@ -61,12 +61,20 @@
                 </p>
                 <p class="card-text mb-0">
                   <feather-icon icon="PhoneIcon" />
-                  {{ projectData.telephone }}
+                  Telephone: {{ projectData.telephone }}
+                </p>
+                <p class="card-text mb-0">
+                  <feather-icon icon="PhoneIcon" />
+                  Handphone: {{ projectData.handphone }}
+                </p>
+                <p class="card-text mb-0">
+                  <feather-icon icon="MailIcon" />
+                  Email: {{ projectData.email }}
                 </p>
                 <p class="card-text mb-0">
                   <feather-icon icon="PrinterIcon" />
-                  {{ projectData.faximile }}
-                </p>
+                  Faximile: {{ projectData.faximile }}
+                 </p>
               </div>
 
               <!-- Header: Right Content -->
@@ -337,28 +345,6 @@
             Reject
           </b-button>
 
-          <!-- Button: Edit -->
-          <b-button
-            v-if="clientTasks.includes(projectData.definition_key)"
-            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-            variant="primary"
-            class="mb-75"
-            block
-          >
-            Edit
-          </b-button>
-
-          <!-- Button: Submit -->
-          <b-button
-            v-if="clientTasks.includes(projectData.definition_key)"
-            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-            variant="success"
-            class="mb-75"
-            block
-          >
-            Submit
-          </b-button>
-
           <!-- Button: Print -->
           <b-button
             v-ripple.400="'rgba(186, 191, 199, 0.15)'"
@@ -389,7 +375,7 @@ import {
 import Logo from '@core/layouts/components/Logo.vue'
 import Ripple from 'vue-ripple-directive'
 import projectStoreModule from '@/views/projectStoreModule'
-import ProjectSidebarReject from '@/views/admin/project/ProjectSidebarReject.vue'
+import ProjectSidebarReject from '@/views/admin/project/SidebarReject.vue'
 
 export default {
   directives: {
@@ -412,8 +398,6 @@ export default {
   setup() {
     const projectData = ref(null)
     const claim = ref(null)
-    // const download = ref(null)
-
     const PROJECT_APP_STORE_MODULE_NAME = 'app-project'
 
     const paymentProps = reactive({
@@ -440,6 +424,9 @@ export default {
       })
       .catch(error => {
         if (error.response.status === 404) {
+          projectData.value = undefined
+        }
+        if (error.response.status === 400) {
           projectData.value = undefined
         }
         if (error.response.status === 500) {
@@ -479,10 +466,10 @@ export default {
         })
         .catch(error => {
           if (error.response.status === 404) {
-            console.log(error)
+            console.error(error)
           }
           if (error.response.status === 500) {
-            console.log(error)
+            console.error(error)
           }
         })
     }
@@ -499,20 +486,18 @@ export default {
         })
         .catch(error => {
           if (error.response.status === 404) {
-            console.log(error)
+            console.error(error)
           }
           if (error.response.status === 500) {
-            console.log(error)
+            console.error(error)
           }
         })
     }
 
     const adminTasks = ['check-registration-project', 'check-document-building']
-    const clientTasks = ['fill-registration-project', 'fill-document-building']
     return {
       projectData,
       adminTasks,
-      clientTasks,
       printProject,
       paymentProps,
       approveProject,

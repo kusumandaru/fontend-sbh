@@ -165,7 +165,7 @@ export default {
         },
         {
           label: 'Created At',
-          field: 'createdAt',
+          field: 'created_at',
         },
         {
           label: 'Action',
@@ -203,12 +203,6 @@ export default {
     /* eslint-disable object-shorthand */
     handleError(err) {
       console.error('failed to show diagram', err)
-    },
-    handleShown() {
-      console.log('diagram shown')
-    },
-    handleLoading() {
-      console.log('diagram loading')
     },
     /* eslint-enable object-shorthand */
   },

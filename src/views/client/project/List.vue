@@ -15,116 +15,6 @@
       </b-form-group>
       <b-modal
         id="modal-success"
-        v-model="variableShow"
-        ok-only
-        ok-variant="success"
-        ok-title="Accept"
-        modal-class="modal-success"
-        centered
-        title="Detail Project"
-      >
-        <b-card-text>
-          <b-row>
-            <b-col cols="12">
-              <b-form-group label="Tipe Sertifikasi">
-                <div class="form-control">
-                  {{ taskVariables['certification_type'] }}
-                </div>
-              </b-form-group>
-            </b-col>
-
-            <b-col cols="12">
-              <b-form-group label="Fungsi Gedung">
-                <div class="form-control">
-                  {{ taskVariables['building_type'] }}
-                </div>
-              </b-form-group>
-            </b-col>
-
-            <b-col cols="12">
-              <b-form-group label="Nama Gedung">
-                <div class="form-control">
-                  {{ taskVariables['building_name'] }}
-                </div>
-              </b-form-group>
-            </b-col>
-
-            <b-col cols="12">
-              <b-form-group label="Pemilik Gedung">
-                <div class="form-control">
-                  {{ taskVariables['owner'] }}
-                </div>
-              </b-form-group>
-            </b-col>
-
-            <b-col cols="12">
-              <b-form-group label="Alamat Gedung">
-                <div class="form-control">
-                  {{ taskVariables['building_address'] }}
-                </div>
-              </b-form-group>
-            </b-col>
-
-            <b-col cols="12">
-              <b-form-group label="Provinsi">
-                <div class="form-control">
-                  {{ taskVariables['province_name'] }}
-                </div>
-              </b-form-group>
-            </b-col>
-
-            <b-col cols="12">
-              <b-form-group label="Kota/Kabupaten">
-                <div class="form-control">
-                  {{ taskVariables['city_name'] }}
-                </div>
-              </b-form-group>
-            </b-col>
-
-            <b-col cols="12">
-              <b-form-group label="Kode Pos">
-                <div class="form-control">
-                  {{ taskVariables['postal_code'] }}
-                </div>
-              </b-form-group>
-            </b-col>
-
-            <b-col cols="12">
-              <b-form-group label="Telepon">
-                <div class="form-control">
-                  {{ taskVariables['telephone'] }}
-                </div>
-              </b-form-group>
-            </b-col>
-
-            <b-col cols="12">
-              <b-form-group label="Fax">
-                <div class="form-control">
-                  {{ taskVariables['faximile'] }}
-                </div>
-              </b-form-group>
-            </b-col>
-
-            <b-col cols="12">
-              <b-form-group label="Gross Floor Area">
-                <div class="form-control">
-                  {{ taskVariables['gross_floor_area'] }}
-                </div>
-              </b-form-group>
-            </b-col>
-
-          </b-row>
-        </b-card-text>
-        <template>
-          <b-img
-            v-bind="paymentProps"
-            fluid
-            alt="Proof of Payment"
-          />
-        </template>
-      </b-modal>
-      <b-modal
-        id="modal-success"
         v-model="diagramShow"
         ok-only
         ok-variant="success"
@@ -140,8 +30,6 @@
             :activity="activityId"
             :options="options"
             @error="handleError"
-            @shown="handleShown"
-            @loading="handleLoading"
           />
         </b-card-text>
       </b-modal>
@@ -193,43 +81,32 @@
             >
               <template v-slot:button-content>
                 <feather-icon
-                  icon="MoreVerticalIcon"
+                  :id="`project-row-${props.row.id}-preview-icon`"
+                  icon="EyeIcon"
                   size="16"
-                  class="text-body align-middle mr-25"
+                  class="mx-1"
+                  @click="$router.push({ name: 'client-project-preview', params: { id: props.row.id }})"
+                />
+                <b-tooltip
+                  title="Preview Project"
+                  :target="`project-row-${props.row.id}-preview-icon`"
+                />
+
+                <feather-icon
+                  :id="`project-row-${props.row.id}-activity-icon`"
+                  icon="ActivityIcon"
+                  size="16"
+                  class="mx-1"
+                  @click="retrieveDiagrams(props.row.processDefinitionId, props.row.taskDefinitionKey)"
+                />
+                <b-tooltip
+                  title="Activity Process"
+                  :target="`project-row-${props.row.id}-activity-icon`"
                 />
               </template>
-              <b-dropdown-item @click="retrieveVariables(props.row.id)">
-                <feather-icon
-                  icon="Edit2Icon"
-                  class="mr-50"
-                />
-                <span>Detail</span>
-              </b-dropdown-item>
-              <b-dropdown-item @click="approveProject(props.row.id)">
-                <feather-icon
-                  icon="Edit2Icon"
-                  class="mr-50"
-                />
-                <span>Approve Create Project</span>
-              </b-dropdown-item>
-              <b-dropdown-item @click="rejectProject(props.row.id)">
-                <feather-icon
-                  icon="CheckIcon"
-                  class="mr-50"
-                />
-                <span>Reject Create Project</span>
-              </b-dropdown-item>
-              <b-dropdown-item @click="retrieveDiagrams(props.row.processDefinitionId, props.row.taskDefinitionKey)">
-                <feather-icon
-                  icon="ActivityIcon"
-                  class="mr-50"
-                />
-                <span>Diagram</span>
-              </b-dropdown-item>
             </b-dropdown>
           </span>
         </span>
-
         <!-- Column: Common -->
         <span v-else>
           {{ props.formattedRow[props.column.field] }}
@@ -289,7 +166,7 @@
 
 <script>
 import {
-  BAvatar, BBadge, BCardText, BCol, BPagination, BFormGroup, BFormInput, BFormSelect, BDropdown, BDropdownItem, BImg, BRow,
+  BAvatar, BBadge, BCardText, BPagination, BFormGroup, BFormInput, BFormSelect, BDropdown, BTooltip,
 } from 'bootstrap-vue'
 import { VueGoodTable } from 'vue-good-table'
 import store from '@/store/index'
@@ -302,16 +179,13 @@ export default {
     VueBpmn,
     BAvatar,
     BCardText,
-    BCol,
     BBadge,
     BPagination,
     BFormGroup,
     BFormInput,
     BFormSelect,
     BDropdown,
-    BDropdownItem,
-    BImg,
-    BRow,
+    BTooltip,
   },
   data() {
     return {
@@ -328,7 +202,7 @@ export default {
         },
         {
           label: 'Certification Type',
-          field: 'certificationType',
+          field: 'certification_type',
           filterOptions: {
             enabled: true,
             placeholder: 'Search Certification Type',
@@ -336,7 +210,7 @@ export default {
         },
         {
           label: 'Building Type',
-          field: 'buildingType',
+          field: 'building_type',
           filterOptions: {
             enabled: true,
             placeholder: 'Search Building Type',
@@ -344,7 +218,7 @@ export default {
         },
         {
           label: ' Building Name',
-          field: 'buildingName',
+          field: 'building_name',
           filterOptions: {
             enabled: true,
             placeholder: 'Search Building Name',
@@ -360,7 +234,11 @@ export default {
         },
         {
           label: 'Created At',
-          field: 'createTime',
+          field: 'created_at',
+        },
+        {
+          label: 'Status',
+          field: 'status',
         },
         {
           label: 'Action',
@@ -373,7 +251,6 @@ export default {
       activityInstances: {},
       claim: '',
       searchTerm: '',
-      variableShow: false,
       diagramShow: false,
       diagramXML: null,
       activityId: null,
@@ -396,11 +273,9 @@ export default {
     statusVariant() {
       const statusColor = {
         /* eslint-disable key-spacing */
-        Current      : 'light-primary',
-        Professional : 'light-success',
-        Rejected     : 'light-danger',
-        Resigned     : 'light-warning',
-        Applied      : 'light-info',
+        approved: 'light-success',
+        rejected: 'light-danger',
+        pending: 'light-warning',
         /* eslint-enable key-spacing */
       }
 
@@ -435,44 +310,18 @@ export default {
         .then(res => { this.claim = res.data })
       this.$router.go(this.$router.currentRoute)
     },
-    retrieveVariables(taskId) {
-      this.taskVariables = {}
-      this.paymentProps.blank = true
-      this.$http.get(`engine-rest/new-building/variables/${taskId}`)
-        .then(res => {
-          this.taskVariables = res.data
-          const results = { ...this.taskVariables }
-          if (Object.keys(results).length > 0) {
-            this.getImageUrl(results.proof_of_payment_url)
-            this.$delete(this.taskVariables, 'proof_of_payment_url')
-            this.$delete(this.taskVariables, 'proof_of_payment')
-          }
-        })
-      this.variableShow = true
-    },
     retrieveDiagrams(processDefinitionId, taskDefinitionKey) {
       this.$http.get(`engine-rest/process-definition/${processDefinitionId}/xml`)
         .then(res => {
           this.taskDiagrams = res.data
           this.diagramXML = this.taskDiagrams.bpmn20Xml
         })
-      // this.$http.get(`engine-rest/process-instance/${processInstanceId}/activity-instances`)
-      //   .then(res => {
-      //     this.activityInstances = res.data
-      //     this.activityId = this.activityInstances.childActivityInstances[0].activityId
-      //   })
       this.activityId = taskDefinitionKey
       this.diagramShow = true
     },
     /* eslint-disable object-shorthand */
     handleError(err) {
       console.error('failed to show diagram', err)
-    },
-    handleShown() {
-      console.log('diagram shown')
-    },
-    handleLoading() {
-      console.log('diagram loading')
     },
     getImageUrl(imageUrl) {
       if (imageUrl !== undefined) {

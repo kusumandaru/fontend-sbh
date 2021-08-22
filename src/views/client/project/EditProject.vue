@@ -1,5 +1,5 @@
 <template>
-  <validation-observer ref="registerRules">
+  <validation-observer ref="editRules">
     <b-form @submit.prevent>
       <b-row>
         <!-- Certification Type -->
@@ -12,7 +12,7 @@
               rules="required"
             >
               <v-select
-                id="certification_type"
+                id="certificationType"
                 v-model="selectedCertification"
                 :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
                 label="name"
@@ -63,7 +63,7 @@
                 </b-input-group-prepend>
                 <b-form-input
                   id="building_name"
-                  v-model.lazy="buildingName"
+                  v-model.lazy="projectData.building_name"
                   type="text"
                   placeholder="Enter Building Name"
                 />
@@ -90,7 +90,7 @@
                 </b-input-group-prepend>
                 <b-form-input
                   id="personInCharge"
-                  v-model.lazy="personInCharge"
+                  v-model.lazy="projectData.person_in_charge"
                   type="text"
                   placeholder="Enter PIC Name"
                 />
@@ -112,7 +112,7 @@
               </b-input-group-prepend>
               <b-form-input
                 id="owner"
-                v-model.lazy="owner"
+                v-model.lazy="projectData.owner"
                 type="text"
                 placeholder="Enter Owner"
               />
@@ -137,7 +137,7 @@
                 </b-input-group-prepend>
                 <b-form-textarea
                   id="building-address"
-                  v-model.lazy="buildingAddress"
+                  v-model.lazy="projectData.building_address"
                   :state="buildingAddress.length <= 400"
                   placeholder="Enter maximum 400 characters"
                   rows="3"
@@ -200,7 +200,7 @@
               name="PostalCode"
             >
               <b-form-input
-                v-model.lazy="postalCode"
+                v-model.lazy="projectData.postal_code"
                 :state="errors.length > 0 ? false:null"
                 placeholder="Enter Number Only"
               />
@@ -219,7 +219,7 @@
               name="Telephone"
             >
               <b-form-input
-                v-model.lazy="telephone"
+                v-model.lazy="projectData.telephone"
                 :state="errors.length > 0 ? false:null"
                 placeholder="Enter phone number"
                 :raw="false"
@@ -240,7 +240,7 @@
               name="Faximile"
             >
               <b-form-input
-                v-model.lazy="faximile"
+                v-model.lazy="projectData.faximile"
                 :state="errors.length > 0 ? false:null"
                 placeholder="Enter fax number"
                 :raw="false"
@@ -261,7 +261,7 @@
               name="Handphone"
             >
               <b-form-input
-                v-model.lazy="handphone"
+                v-model.lazy="projectData.handphone"
                 :state="errors.length > 0 ? false:null"
                 placeholder="Enter mobile phone number"
                 :raw="false"
@@ -282,7 +282,7 @@
               name="Email"
             >
               <b-form-input
-                v-model.lazy="email"
+                v-model.lazy="projectData.email"
                 :state="errors.length > 0 ? false:null"
                 placeholder="Enter email address"
                 :raw="false"
@@ -311,7 +311,7 @@
                 </b-input-group-prepend>
                 <b-form-input
                   id="grossFloorArea"
-                  v-model.lazy="grossFloorArea"
+                  v-model.lazy="projectData.gross_floor_area"
                   :raw="false"
                   :options="options.number"
                   placeholder="Fill gross floor area here"
@@ -326,21 +326,28 @@
         <b-col md="12">
           <b-form-group>
             <label>Bukti Pembayaran (Proof of Payment)</label>
-            <validation-provider
-              #default="{ errors }"
-              name="Bukti Pembayaran"
-              rules="required"
+            <b-form-file
+              v-model="proofOfPayment"
+              placeholder="Choose a file or drop it here..."
+              drop-placeholder="Drop file here..."
+            />
+            <b-card-text class="my-1">
+              Selected file: <strong>{{ proofOfPayment ? proofOfPayment.name : '' }}</strong>
+            </b-card-text>
+
+            <b-card-text
+              v-if="projectData.proof_of_payment"
+              class="mb-0"
             >
-              <b-form-file
-                v-model="proofOfPayment"
-                placeholder="Choose a file or drop it here..."
-                drop-placeholder="Drop file here..."
-              />
-              <small class="text-danger">{{ errors[0] }}</small>
-              <b-card-text class="my-1">
-                Selected file: <strong>{{ proofOfPayment ? proofOfPayment.name : '' }}</strong>
-              </b-card-text>
-            </validation-provider>
+              <b-button
+                v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+                variant="flat-primary"
+                @click="downloadFile('proof_of_payment')"
+              >
+                <feather-icon icon="ArchiveIcon" />
+                Download Bukti Pembayaran
+              </b-button>
+            </b-card-text>
           </b-form-group>
         </b-col>
 
@@ -408,7 +415,11 @@ import {
   BModal,
   BSpinner,
 } from 'bootstrap-vue'
+import {
+  ref, onUnmounted, reactive,
+} from '@vue/composition-api'
 import router from '@/router'
+import store from '@/store'
 import Ripple from 'vue-ripple-directive'
 import vSelect from 'vue-select'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
@@ -416,7 +427,7 @@ import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import {
   required, email, confirmed, url, between, alpha, integer, password, min, digits, alphaDash, length,
 } from '@validations'
-import useJwt from '@/auth/jwt/useJwt'
+import projectStoreModule from '@/views/projectStoreModule'
 
 export default {
   components: {
@@ -442,31 +453,16 @@ export default {
   },
   data() {
     return {
-      selectedCertification: '',
       certificationOption: [
         { id: 'new_building', name: 'New Building' },
       ],
-      selectedBuilding: '',
       buildingOption: [],
-      selectedProvince: '',
       provinceOption: [],
-      selectedCity: '',
       cityOption: [],
-      buildingAddress: '',
-      telephone: '',
-      faximile: '',
-      handphone: '',
-      email: '',
-      postalCode: '',
-      buildingName: '',
-      owner: '',
-      personInCharge: '',
-      grossFloorArea: 0,
       proofOfPayment: null,
       maxChar: 200,
       successShow: false,
       result: {},
-      provinces: {},
       resultId: null,
       isLoading: false,
       options: {
@@ -507,6 +503,95 @@ export default {
       },
     }
   },
+  setup() {
+    const projectData = ref({})
+    const PROJECT_APP_STORE_MODULE_NAME = 'app-project'
+
+    let buildingAddress = ref('')
+    const selectedCertification = reactive({
+      id: 'new_building',
+      name: 'New Building',
+    })
+    const selectedBuilding = reactive({
+      id: '',
+      name_id: '',
+    })
+    const selectedProvince = reactive({
+      id: '',
+      name: '',
+    })
+    const selectedCity = reactive({
+      id: '',
+      name: '',
+    })
+
+    const paymentProps = reactive({
+      center: true,
+      fluidGrow: true,
+      blank: true,
+      blankColor: '#bbb',
+      class: 'my-5',
+    })
+
+    // Register module
+    if (!store.hasModule(PROJECT_APP_STORE_MODULE_NAME)) store.registerModule(PROJECT_APP_STORE_MODULE_NAME, projectStoreModule)
+
+    // UnRegister on leave
+    onUnmounted(() => {
+      if (store.hasModule(PROJECT_APP_STORE_MODULE_NAME)) store.unregisterModule(PROJECT_APP_STORE_MODULE_NAME)
+    })
+
+    store.dispatch('app-project/fetchProject', { id: router.currentRoute.params.id })
+      .then(response => {
+        projectData.value = response.data
+        paymentProps.blank = false
+        paymentProps.src = response.data.proof_of_payment_url
+        selectedProvince.id = response.data.province
+        selectedProvince.name = response.data.province_name
+        selectedCity.id = response.data.city
+        selectedCity.name = response.data.city_name
+        selectedBuilding.id = response.data.building_type
+        buildingAddress = response.data.building_address
+        selectedBuilding.name_id = response.data.building_type_name
+      })
+      .catch(error => {
+        if (error.response.status === 404) {
+          projectData.value = undefined
+        }
+        if (error.response.status === 500) {
+          projectData.value = undefined
+        }
+      })
+
+    const downloadFile = fileName => {
+      store.dispatch('app-project/downloadLink', {
+        id: projectData.value.task_id,
+        filename: fileName,
+      })
+        .then(response => {
+          window.open(response.data.url)
+        })
+        .catch(error => {
+          if (error.response.status === 404) {
+            console.error(error)
+          }
+          if (error.response.status === 500) {
+            console.error(error)
+          }
+        })
+    }
+
+    return {
+      projectData,
+      selectedBuilding,
+      selectedCertification,
+      selectedProvince,
+      selectedCity,
+      paymentProps,
+      downloadFile,
+      buildingAddress,
+    }
+  },
   created() {
     this.getBuildingTypes()
     this.getProvinces()
@@ -521,16 +606,10 @@ export default {
   },
   methods: {
     reset() {
-      this.buildingAddress = ''
-      this.telephone = ''
-      this.faximile = ''
-      this.handphone = ''
-      this.email = ''
-      this.postalCode = ''
-      this.buildingName = ''
-      this.owner = ''
-      this.personInCharge = ''
-      this.grossFloorArea = 0
+      this.projectData = {}
+      this.selectedProvince = {}
+      this.selectedCity = {}
+      this.selectedBuilding = {}
     },
     getProvinces() {
       this.$http.get('/engine-rest/master/provinces').then(res => {
@@ -542,6 +621,7 @@ export default {
     getCities(value) {
       this.$http.get(`/engine-rest/master/provinces/${value.id}/cities`).then(res => {
         this.cityOption = JSON.parse(JSON.stringify(res.data))
+        this.selectedCity = {}
       }).catch(error => {
         console.error(error)
       })
@@ -565,36 +645,38 @@ export default {
       })
     },
     submitProject() {
-      this.$refs.registerRules.validate().then(success => {
+      this.$refs.editRules.validate().then(success => {
         if (success) {
           this.isLoading = true
           const request = new FormData()
           request.append('certification_type', this.selectedCertification.id)
           request.append('building_type', this.selectedBuilding.id)
-          request.append('building_name', this.buildingName)
-          request.append('owner', this.owner)
-          request.append('person_in_charge', this.personInCharge)
+          request.append('building_name', this.projectData.building_name)
+          request.append('owner', this.projectData.owner)
+          request.append('person_in_charge', this.projectData.person_in_charge)
           request.append('province', this.selectedProvince.id)
           request.append('city', this.selectedCity.id)
-          request.append('building_address', this.buildingAddress)
-          request.append('telephone', this.telephone)
-          request.append('faximile', this.faximile)
-          request.append('postal_code', this.postalCode)
+          request.append('building_address', this.projectData.building_address)
+          request.append('telephone', this.projectData.telephone)
+          request.append('handphone', this.projectData.handphone)
+          request.append('email', this.projectData.email)
+          request.append('faximile', this.projectData.faximile)
+          request.append('postal_code', this.projectData.postal_code)
           request.append('file', this.proofOfPayment)
-          request.append('gross_floor_area', this.grossFloorArea)
+          request.append('gross_floor_area', this.projectData.gross_floor_area)
           const config = {
             header: {
               'Content-Type': 'multipart/form-data',
-              Authorization: useJwt.GetToken(),
             },
           }
-          this.$http.post('/engine-rest/new-building/create-project', request, config).then(res => {
+          this.$http.patch(`/engine-rest/new-building/edit-project/${router.currentRoute.params.id}`, request, config).then(res => {
             this.result = JSON.parse(JSON.stringify(res.data))
+            console.log(this.result)
             this.successShow = true
             this.isLoading = false
           }).catch(function (error) {
-            console.error(error)
             this.isLoading = false
+            console.error(error)
             this.showToast('danger', 'Cannot Save', 'There is error when submit data, contact administrator')
           })
         } else {
@@ -603,7 +685,7 @@ export default {
       })
     },
     gotoIndex() {
-      router.push({ name: 'project-list' })
+      router.push({ name: 'client-project-list' })
     },
   },
 }
