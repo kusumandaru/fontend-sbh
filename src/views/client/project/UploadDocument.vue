@@ -84,7 +84,7 @@
             <validation-provider
               #default="{ errors }"
               name="Gambar Denah Bangunan"
-              rules="required"
+              :rules="validationBuildingPlan ? '' : 'required'"
             >
               <b-form-file
                 v-model.lazy="buildingPlan"
@@ -119,7 +119,7 @@
             <validation-provider
               #default="{ errors }"
               name="Peta RT/RW"
-              rules="required"
+              :rules="validationRtRw ? '' : 'required'"
             >
               <b-form-file
                 v-model.lazy="rtRw"
@@ -154,7 +154,7 @@
             <validation-provider
               #default="{ errors }"
               name="Salinan UPL/UKL"
-              rules="required"
+              :rules="validationUplUkl ? '' : 'required'"
             >
               <b-form-file
                 v-model.lazy="uplUkl"
@@ -189,7 +189,7 @@
             <validation-provider
               #default="{ errors }"
               name="Syarat tahan gempa"
-              rules="required"
+              :rules="validationEarthquakeResistance ? '' : 'required'"
             >
               <b-form-file
                 v-model.lazy="earthquakeResistance"
@@ -224,7 +224,7 @@
             <validation-provider
               #default="{ errors }"
               name="Syarat penyandang cacat"
-              rules="required"
+              :rules="validationDisabilityFriendly ? '' : 'required'"
             >
               <b-form-file
                 v-model.lazy="disabilityFriendly"
@@ -259,7 +259,7 @@
             <validation-provider
               #default="{ errors }"
               name="Syarat Keselamatan dan kebakaran"
-              rules="required"
+              :rules="validationSafetyAndFireRequirement ? '' : 'required'"
             >
               <b-form-file
                 v-model.lazy="safetyAndFireRequirement"
@@ -294,7 +294,7 @@
             <validation-provider
               #default="{ errors }"
               name="Pernyataan bersedia studi kasus"
-              rules="required"
+              :rules="validationStudyCaseReadiness ? '' : 'required'"
             >
               <b-form-file
                 v-model.lazy="studyCaseReadiness"
@@ -527,11 +527,26 @@ export default {
     }
   },
   computed: {
-    validation() {
-      return this.userId.length > 4 && this.userId.length < 13
+    validationBuildingPlan() {
+      return this.projectData.building_plan !== undefined
     },
-    validationOccupation() {
-      return this.occupationID.length > 1
+    validationRtRw() {
+      return this.projectData.rt_rw !== undefined
+    },
+    validationUplUkl() {
+      return this.projectData.upl_ukl !== undefined
+    },
+    validationEarthquakeResistance() {
+      return this.projectData.earthquake_resistance !== undefined
+    },
+    validationDisabilityFriendly() {
+      return this.projectData.disability_friendly !== undefined
+    },
+    validationSafetyAndFireRequirement() {
+      return this.projectData.safety_and_fire_requirement !== undefined
+    },
+    validationStudyCaseReadiness() {
+      return this.projectData.study_case_readiness !== undefined
     },
   },
   methods: {
