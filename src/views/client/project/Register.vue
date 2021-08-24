@@ -585,7 +585,7 @@ export default {
           const config = {
             header: {
               'Content-Type': 'multipart/form-data',
-              Authorization: useJwt.GetToken(),
+              Authorization: useJwt.getToken,
             },
           }
           this.$http.post('/engine-rest/new-building/create-project', request, config).then(res => {
@@ -603,7 +603,7 @@ export default {
       })
     },
     gotoIndex() {
-      router.push({ name: 'project-list' })
+      router.push({ name: 'client-project-list' })
     },
   },
 }
