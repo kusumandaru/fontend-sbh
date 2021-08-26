@@ -62,6 +62,16 @@ export default {
           .catch(error => reject(error))
       })
     },
+    downloadEligibleStatement(ctx, { id }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/engine-rest/new-building/eligibility_statement/${id}`, {
+            responseType: 'blob',
+          })
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
     downloadAllFiles(ctx, { id }) {
       return new Promise((resolve, reject) => {
         axios({
