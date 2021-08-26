@@ -353,6 +353,17 @@
             Update Project
           </b-button>
 
+          <b-button
+            v-if="projectData.definition_key == 'agreement-and-first-payment'"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="success"
+            class="mb-75"
+            block
+            @click="eligibleStatement"
+          >
+            Eligibility Statement
+          </b-button>
+
           <!-- Button: Upload Document Building-->
           <b-button
             v-if="projectData.definition_key == 'fill-document-building'"
@@ -392,6 +403,7 @@ import {
 } from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
 import projectStoreModule from '@/views/projectStoreModule'
+import fileDownload from 'js-file-download'
 
 export default {
   directives: {
@@ -476,6 +488,28 @@ export default {
         })
     }
 
+    const eligibleStatement = () => {
+      store.dispatch('app-project/downloadEligibleStatement', {
+        id: projectData.value.task_id,
+      })
+        .then(response => {
+          // const blob = new Blob([response.data], { type: 'application/pdf' })
+          // const url = window.URL.createObjectURL(blob)
+
+          // window.open(url)
+          // window.open(response.data)
+          fileDownload(response.data, 'eligible.pdf')
+        })
+        .catch(error => {
+          if (error.response.status === 404) {
+            console.error(error)
+          }
+          if (error.response.status === 500) {
+            console.error(error)
+          }
+        })
+    }
+
     const downloadAllFiles = () => {
       store.dispatch('app-project/downloadAllFiles', {
         id: projectData.value.task_id,
@@ -504,6 +538,7 @@ export default {
       uploadDocument,
       downloadFile,
       downloadAllFiles,
+      eligibleStatement,
     }
   },
 }
