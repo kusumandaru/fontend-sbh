@@ -47,6 +47,11 @@ export default [
             route: 'building-type-list',
             icon: 'MapIcon',
           },
+          {
+            title: 'Admin Data',
+            route: 'admin-data',
+            icon: 'MapIcon',
+          },
         ],
       },
     ],

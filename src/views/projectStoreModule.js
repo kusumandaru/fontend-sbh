@@ -62,6 +62,14 @@ export default {
           .catch(error => reject(error))
       })
     },
+    downloadMasterLink(ctx, { filename }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/engine-rest/master/url_file/${filename}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
     downloadEligibleStatement(ctx, { id }) {
       return new Promise((resolve, reject) => {
         axios
@@ -90,13 +98,13 @@ export default {
           .catch(error => reject(error))
       })
     },
-    // addUser(ctx, userData) {
-    //   return new Promise((resolve, reject) => {
-    //     axios
-    //       .post('/apps/user/users', { user: userData })
-    //       .then(response => resolve(response))
-    //       .catch(error => reject(error))
-    //   })
-    // },
+    fetchAdminData() {
+      return new Promise((resolve, reject) => {
+        axios
+          .get('engine-rest/master/master_admins')
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
   },
 }

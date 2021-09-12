@@ -323,7 +323,7 @@
 
           <!-- Button: Approve -->
           <b-button
-            v-if="adminTasks.includes(projectData.definition_key)"
+            v-if="approveShow"
             v-ripple.400="'rgba(186, 191, 199, 0.15)'"
             variant="success"
             class="mb-75"
@@ -335,7 +335,7 @@
 
           <!-- Button: Reject -->
           <b-button
-            v-if="adminTasks.includes(projectData.definition_key)"
+            v-if="rejectShow"
             v-b-toggle.sidebar-project-reject
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             variant="danger"
@@ -394,6 +394,14 @@ export default {
 
     Logo,
     ProjectSidebarReject,
+  },
+  computed: {
+    approveShow() {
+      return this.adminTasks.includes(this.projectData.definition_key)
+    },
+    rejectShow() {
+      return this.adminTasks.includes(this.projectData.definition_key)
+    },
   },
   setup() {
     const projectData = ref(null)
