@@ -61,6 +61,13 @@ export default [
         resource: 'master',
         action: 'manage',
       },
+      {
+        title: 'Admin Data',
+        route: 'admin-data',
+        icon: 'MapIcon',
+        resource: 'master',
+        action: 'manage',
+      },
     ],
   },
 ]

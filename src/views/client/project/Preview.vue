@@ -343,7 +343,7 @@
         <b-card>
           <!-- Button: Edit Project-->
           <b-button
-            v-if="projectData.definition_key == 'fill-registration-project'"
+            v-if="editProjectShow"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             variant="success"
             class="mb-75"
@@ -353,8 +353,9 @@
             Update Project
           </b-button>
 
+          <!-- Button: Eligibility Statement-->
           <b-button
-            v-if="projectData.definition_key == 'agreement-and-first-payment'"
+            v-if="eligibilityStatementShow"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             variant="success"
             class="mb-75"
@@ -364,9 +365,21 @@
             Eligibility Statement
           </b-button>
 
+          <!-- Button: Registration Letter-->
+          <b-button
+            v-if="registrationLetterShow"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="success"
+            class="mb-75"
+            block
+            @click="registrationLetter"
+          >
+            Registration Letter
+          </b-button>
+
           <!-- Button: Upload Document Building-->
           <b-button
-            v-if="projectData.definition_key == 'fill-document-building'"
+            v-if="uploadDocumentShow"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             variant="success"
             class="mb-75"
@@ -419,6 +432,20 @@ export default {
     BButton,
     BAlert,
     BLink,
+  },
+  computed: {
+    editProjectShow() {
+      return ['fill-registration-project'].includes(this.projectData.definition_key)
+    },
+    uploadDocumentShow() {
+      return ['fill-document-building'].includes(this.projectData.definition_key)
+    },
+    eligibilityStatementShow() {
+      return !(this.registerAndUploadTasks.includes(this.projectData.definition_key))
+    },
+    registrationLetterShow() {
+      return !(this.registerAndUploadTasks.includes(this.projectData.definition_key))
+    },
   },
   setup() {
     const projectData = ref(null)
@@ -493,12 +520,24 @@ export default {
         id: projectData.value.task_id,
       })
         .then(response => {
-          // const blob = new Blob([response.data], { type: 'application/pdf' })
-          // const url = window.URL.createObjectURL(blob)
-
-          // window.open(url)
-          // window.open(response.data)
           fileDownload(response.data, 'eligible.pdf')
+        })
+        .catch(error => {
+          if (error.response.status === 404) {
+            console.error(error)
+          }
+          if (error.response.status === 500) {
+            console.error(error)
+          }
+        })
+    }
+
+    const registrationLetter = () => {
+      store.dispatch('app-project/downloadMasterLink', {
+        filename: 'registration_letter',
+      })
+        .then(response => {
+          window.open(response.data.url)
         })
         .catch(error => {
           if (error.response.status === 404) {
@@ -530,6 +569,8 @@ export default {
         })
     }
 
+    const registerAndUploadTasks = ['check-registration-project', 'fill-registration-project', 'fill-document-building', 'check-document-building']
+
     return {
       projectData,
       printProject,
@@ -539,6 +580,8 @@ export default {
       downloadFile,
       downloadAllFiles,
       eligibleStatement,
+      registrationLetter,
+      registerAndUploadTasks,
     }
   },
 }

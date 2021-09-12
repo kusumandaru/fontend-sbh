@@ -97,7 +97,7 @@
                   icon="ActivityIcon"
                   size="16"
                   class="mx-1"
-                  @click="retrieveDiagrams(props.row.processDefinitionId, props.row.taskDefinitionKey)"
+                  @click="retrieveDiagrams(props.row.process_definition_id, props.row.task_definition_key)"
                 />
                 <b-tooltip
                   title="Activity Process"

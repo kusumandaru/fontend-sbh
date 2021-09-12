@@ -47,4 +47,36 @@ export default [
       resource: 'master',
     },
   },
+  {
+    path: '/admin/master/admin-data',
+    name: 'admin-data',
+    component: () => import('@/views/admin/master/AdminData.vue'),
+    meta: {
+      pageTitle: 'Admin Data',
+      breadcrumb: [
+        {
+          text: 'Admin Data',
+          active: true,
+        },
+      ],
+      action: 'manage',
+      resource: 'master',
+    },
+  },
+  {
+    path: '/admin/master/admin-data/edit',
+    name: 'admin-data-edit',
+    component: () => import('@/views/admin/master/AdminDataEdit.vue'),
+    meta: {
+      pageTitle: 'Admin Data Edit',
+      breadcrumb: [
+        {
+          text: 'Admin Data Edit',
+          active: true,
+        },
+      ],
+      action: 'manage',
+      resource: 'master',
+    },
+  },
 ]
