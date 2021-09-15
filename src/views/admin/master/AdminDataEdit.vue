@@ -57,6 +57,34 @@
           </b-form-group>
         </b-col>
 
+        <!--Registration letter -->
+        <b-col md="12">
+          <b-form-group>
+            <label>Perjanjian Kerjasama</label>
+            <b-form-file
+              v-model="registrationLetter"
+              placeholder="Choose a file or drop it here..."
+              drop-placeholder="Drop file here..."
+            />
+            <b-card-text
+              v-if="adminData.registration_letter"
+              class="mb-0"
+            >
+              <b-button
+                v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+                variant="flat-primary"
+                @click="downloadFile('registration_letter')"
+              >
+                <feather-icon icon="ArchiveIcon" />
+                old file : {{ adminData.registration_letter }}
+              </b-button>
+            </b-card-text>
+            <b-card-text class="my-1">
+              Selected file: <strong>{{ registrationLetter ? registrationLetter.name : '' }}</strong>
+            </b-card-text>
+          </b-form-group>
+        </b-col>
+
         <!--First Attachment -->
         <b-col md="12">
           <b-form-group>
@@ -242,6 +270,7 @@ export default {
       pageLength: 20,
       dir: false,
       managerSignature: null,
+      registrationLetter: null,
       firstAttachment: null,
       secondAttachment: null,
       thirdAttachment: null,
@@ -347,6 +376,7 @@ export default {
           const request = new FormData()
           request.append('manager_name', this.adminData.manager_name)
           request.append('manager_signature', this.managerSignature)
+          request.append('registration_letter', this.registrationLetter)
           request.append('first_attachment', this.firstAttachment)
           request.append('second_attachment', this.secondAttachment)
           request.append('third_attachment', this.thirdAttachment)
