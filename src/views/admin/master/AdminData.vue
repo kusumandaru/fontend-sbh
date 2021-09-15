@@ -56,6 +56,30 @@
                     icon="FileTextIcon"
                     class="mr-75"
                   />
+                  <span class="font-weight-bold">Registration Letter</span>
+                </th>
+                <td class="pb-50">
+                  <b-button
+                    v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+                    variant="flat-primary"
+                    @click="downloadFile('registration_letter')"
+                    :disabled="isLoading"
+                  >
+                    <b-spinner
+                      small
+                      v-show="isLoading"
+                    />
+                    <feather-icon icon="ArchiveIcon" />
+                    Download
+                  </b-button>
+                </td>
+              </tr>
+              <tr>
+                <th class="pb-50">
+                  <feather-icon
+                    icon="FileTextIcon"
+                    class="mr-75"
+                  />
                   <span class="font-weight-bold">Lampiran 1</span>
                 </th>
                 <td class="pb-50">
