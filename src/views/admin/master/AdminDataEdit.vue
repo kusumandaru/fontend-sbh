@@ -2,7 +2,7 @@
   <validation-observer ref="editAdminData">
     <b-form @submit.prevent>
       <b-row>
-        <!-- owner -->
+        <!-- manager namee -->
         <b-col cols="12">
           <b-form-group
             label="Manager Name"
@@ -18,10 +18,10 @@
                   <feather-icon icon="UserIcon" />
                 </b-input-group-prepend>
                 <b-form-input
-                  id="owner"
+                  id="manager_name"
                   v-model.lazy="adminData.manager_name"
                   type="text"
-                  placeholder="Enter Owner"
+                  placeholder="Enter Manager Name"
                 />
               </b-input-group>
               <small class="text-danger">{{ errors[0] }}</small>

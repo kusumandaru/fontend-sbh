@@ -179,6 +179,10 @@
                   <span class="ml-75">{{ projectData.owner }}</span>
                 </b-card-text>
                 <b-card-text class="mb-0">
+                  <span class="font-weight-bold">Design Recognition:</span>
+                  <span class="ml-75">{{ projectData.design_recognition }}</span>
+                </b-card-text>
+                <b-card-text class="mb-0">
                   <span class="font-weight-bold">Gross Floor Area:</span>
                   <span class="ml-75">{{ projectData.gross_floor_area }}</span>
                 </b-card-text>
@@ -365,6 +369,18 @@
             Eligibility Statement
           </b-button>
 
+          <!-- Button: Draft Registration Letter-->
+          <b-button
+            v-if="draftRegistrationLetterShow"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="success"
+            class="mb-75"
+            block
+            @click="draftRegistrationLetter"
+          >
+            Draft Registration Letter
+          </b-button>
+
           <!-- Button: Registration Letter-->
           <b-button
             v-if="registrationLetterShow"
@@ -372,7 +388,7 @@
             variant="success"
             class="mb-75"
             block
-            @click="registrationLetter"
+            @click="registeredProject"
           >
             Registration Letter
           </b-button>
@@ -384,7 +400,7 @@
             variant="success"
             class="mb-75"
             block
-            @click="uploadDocument"
+            @click="uploadDocumentPage"
           >
             Upload Document Building
           </b-button>
@@ -441,10 +457,13 @@ export default {
       return ['fill-document-building'].includes(this.projectData.definition_key)
     },
     eligibilityStatementShow() {
-      return !(this.registerAndUploadTasks.includes(this.projectData.definition_key))
+      return !(this.aboveCheckBuildingTasks.includes(this.projectData.definition_key))
+    },
+    draftRegistrationLetterShow() {
+      return ['agreement-and-first-payment'].includes(this.projectData.definition_key)
     },
     registrationLetterShow() {
-      return !(this.registerAndUploadTasks.includes(this.projectData.definition_key))
+      return !(this.aboveFirstPaymentTasks.includes(this.projectData.definition_key))
     },
   },
   setup() {
@@ -493,7 +512,7 @@ export default {
       router.push({ name: 'client-project-edit', params: { id: router.currentRoute.params.id } })
     }
 
-    const uploadDocument = () => {
+    const uploadDocumentPage = () => {
       router.push({ name: 'client-project-upload-document', params: { id: router.currentRoute.params.id } })
     }
 
@@ -532,7 +551,24 @@ export default {
         })
     }
 
-    const registrationLetter = () => {
+    const registeredProject = () => {
+      store.dispatch('app-project/downloadRegisteredProject', {
+        id: projectData.value.task_id,
+      })
+        .then(response => {
+          fileDownload(response.data, 'registered-project.pdf')
+        })
+        .catch(error => {
+          if (error.response.status === 404) {
+            console.error(error)
+          }
+          if (error.response.status === 500) {
+            console.error(error)
+          }
+        })
+    }
+
+    const draftRegistrationLetter = () => {
       store.dispatch('app-project/downloadMasterLink', {
         filename: 'registration_letter',
       })
@@ -569,19 +605,22 @@ export default {
         })
     }
 
-    const registerAndUploadTasks = ['check-registration-project', 'fill-registration-project', 'fill-document-building', 'check-document-building']
+    const aboveCheckBuildingTasks = ['check-registration-project', 'fill-registration-project', 'fill-document-building', 'check-document-building']
+    const aboveFirstPaymentTasks = ['check-registration-project', 'fill-registration-project', 'fill-document-building', 'check-document-building', 'agreement-and-first-payment']
 
     return {
       projectData,
       printProject,
       paymentProps,
       editProject,
-      uploadDocument,
+      uploadDocumentPage,
       downloadFile,
       downloadAllFiles,
       eligibleStatement,
-      registrationLetter,
-      registerAndUploadTasks,
+      registeredProject,
+      draftRegistrationLetter,
+      aboveCheckBuildingTasks,
+      aboveFirstPaymentTasks,
     }
   },
 }

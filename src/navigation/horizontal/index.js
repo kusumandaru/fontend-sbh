@@ -20,7 +20,7 @@ export default [
       },
       {
         title: 'List Project',
-        route: 'project-list',
+        route: 'admin-project-list',
         icon: 'BookIcon',
       },
       {

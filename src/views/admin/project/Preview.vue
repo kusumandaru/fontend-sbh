@@ -158,6 +158,10 @@
                   <span class="ml-75">{{ projectData.owner }}</span>
                 </b-card-text>
                 <b-card-text class="mb-0">
+                  <span class="font-weight-bold">Design Recognition:</span>
+                  <span class="ml-75">{{ projectData.design_recognition }}</span>
+                </b-card-text>
+                <b-card-text class="mb-0">
                   <span class="font-weight-bold">Gross Floor Area:</span>
                   <span class="ml-75">{{ projectData.gross_floor_area }}</span>
                 </b-card-text>
@@ -345,6 +349,18 @@
             Reject
           </b-button>
 
+          <!-- Button: Agreement First Payment -->
+          <b-button
+            v-if="firstPaymentShow"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="success"
+            class="mb-75"
+            block
+            @click="firstPaymentPage"
+          >
+            First Payment and Agreement Confirmation
+          </b-button>
+
           <!-- Button: Print -->
           <b-button
             v-ripple.400="'rgba(186, 191, 199, 0.15)'"
@@ -401,6 +417,9 @@ export default {
     },
     rejectShow() {
       return this.adminTasks.includes(this.projectData.definition_key)
+    },
+    firstPaymentShow() {
+      return this.firstPaymentTasks.includes(this.projectData.definition_key)
     },
   },
   setup() {
@@ -502,10 +521,18 @@ export default {
         })
     }
 
+    const firstPaymentPage = () => {
+      router.push({ name: 'admin-project-first-payment', params: { id: router.currentRoute.params.id } })
+    }
+
     const adminTasks = ['check-registration-project', 'check-document-building']
+    const firstPaymentTasks = ['agreement-and-first-payment']
+
     return {
       projectData,
       adminTasks,
+      firstPaymentTasks,
+      firstPaymentPage,
       printProject,
       paymentProps,
       approveProject,

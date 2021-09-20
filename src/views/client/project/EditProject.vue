@@ -191,6 +191,7 @@
           </b-form-group>
         </b-col>
 
+        <!-- Kode Pos -->
         <b-col md="12">
           <b-form-group>
             <label>Kode Pos</label>
@@ -322,6 +323,32 @@
           </b-form-group>
         </b-col>
 
+        <!--Design Recognition-->
+        <b-col cols="12">
+          <b-form-group
+            label="Use Design Recognition Phase ?"
+            label-for="designRecognition"
+            description="Design Recognition adalah proses untuk memasukkan data design bangunan dan dilakukan penilaian sebelum final assesment"
+          >
+            <validation-provider
+              #default="{ errors }"
+              rules=""
+              name="Design Recogntion"
+            >
+              <b-input-group class="input-group-merge">
+                <b-form-checkbox
+                  v-model.lazy="projectData.design_recognition"
+                  name="design-recognition"
+                >
+                &nbsp;
+                Design Recognition Scoring
+                </b-form-checkbox>
+              </b-input-group>
+              <small class="text-danger">{{ errors[0] }}</small>
+            </validation-provider>
+          </b-form-group>
+        </b-col>
+
         <!--Proof of payment -->
         <b-col md="12">
           <b-form-group>
@@ -404,6 +431,7 @@ import {
   BCardText,
   BRow,
   BCol,
+  BFormCheckbox,
   BFormFile,
   BFormGroup,
   BFormInput,
@@ -434,6 +462,7 @@ export default {
     BCardText,
     BRow,
     BCol,
+    BFormCheckbox,
     BFormFile,
     BFormGroup,
     BInputGroup,
@@ -664,6 +693,7 @@ export default {
           request.append('postal_code', this.projectData.postal_code)
           request.append('file', this.proofOfPayment)
           request.append('gross_floor_area', this.projectData.gross_floor_area)
+          request.append('design_recogntion', this.projectData.design_recognition)
           const config = {
             header: {
               'Content-Type': 'multipart/form-data',
