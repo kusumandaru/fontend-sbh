@@ -85,7 +85,7 @@
                   icon="EyeIcon"
                   size="16"
                   class="mx-1"
-                  @click="$router.push({ name: 'project-preview', params: { id: props.row.id }})"
+                  @click="$router.push({ name: 'admin-project-preview', params: { id: props.row.id }})"
                 />
                 <b-tooltip
                   title="Preview Project"

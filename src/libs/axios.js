@@ -6,7 +6,6 @@ import axios from 'axios'
 const axiosIns = axios.create({
   headers: {
     'Content-type': 'application/json',
-    // "Access-Control-Allow-Origin": "*"
   },
   // You can add your headers here
   // ================================

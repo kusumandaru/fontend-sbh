@@ -322,6 +322,32 @@
           </b-form-group>
         </b-col>
 
+        <!--Design Recognition-->
+        <b-col cols="12">
+          <b-form-group
+            label="Use Design Recognition Phase ?"
+            label-for="designRecognition"
+            description="Design Recognition adalah proses untuk memasukkan data design bangunan dan dilakukan penilaian sebelum final assesment"
+          >
+            <validation-provider
+              #default="{ errors }"
+              rules=""
+              name="Design Recogntion"
+            >
+              <b-input-group class="input-group-merge">
+                <b-form-checkbox
+                  v-model="designRecognition"
+                  name="design-recognition"
+                >
+                &nbsp;
+                Design Recognition Scoring
+                </b-form-checkbox>
+              </b-input-group>
+              <small class="text-danger">{{ errors[0] }}</small>
+            </validation-provider>
+          </b-form-group>
+        </b-col>
+
         <!--Proof of payment -->
         <b-col md="12">
           <b-form-group>
@@ -403,6 +429,7 @@ import {
   BForm,
   BButton,
   BFormTextarea,
+  BFormCheckbox,
   BInputGroup,
   BInputGroupPrepend,
   BModal,
@@ -429,6 +456,7 @@ export default {
     BInputGroupPrepend,
     BFormInput,
     BForm,
+    BFormCheckbox,
     BFormTextarea,
     BButton,
     BModal,
@@ -469,6 +497,7 @@ export default {
       provinces: {},
       resultId: null,
       isLoading: false,
+      designRecognition: [],
       options: {
         number: {
           numeral: true,
@@ -582,6 +611,7 @@ export default {
           request.append('postal_code', this.postalCode)
           request.append('file', this.proofOfPayment)
           request.append('gross_floor_area', this.grossFloorArea)
+          request.append('design_recogntion', this.designRecogntion)
           const config = {
             header: {
               'Content-Type': 'multipart/form-data',
