@@ -393,6 +393,18 @@
             Registration Letter
           </b-button>
 
+          <!-- Button: Registration Letter Attachment-->
+          <b-button
+            v-if="registrationLetterAttachmentShow"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="success"
+            class="mb-75"
+            block
+            @click="registeredProjectAttachment"
+          >
+            Panduan Registered Project Declaration
+          </b-button>
+
           <!-- Button: Upload Document Building-->
           <b-button
             v-if="uploadDocumentShow"
@@ -463,6 +475,9 @@ export default {
       return ['agreement-and-first-payment'].includes(this.projectData.definition_key)
     },
     registrationLetterShow() {
+      return !(this.aboveFirstPaymentTasks.includes(this.projectData.definition_key))
+    },
+    registrationLetterAttachmentShow() {
       return !(this.aboveFirstPaymentTasks.includes(this.projectData.definition_key))
     },
   },
@@ -568,6 +583,26 @@ export default {
         })
     }
 
+    const registeredProjectAttachment = () => {
+      store.dispatch('app-project/downloadRegisteredProjectAttachment', {
+        id: projectData.value.task_id,
+      })
+        .then(response => {
+          const blob = new Blob([response.data], { type: 'application/zip' })
+          const url = window.URL.createObjectURL(blob)
+
+          window.open(url)
+        })
+        .catch(error => {
+          if (error.response.status === 404) {
+            console.error(error)
+          }
+          if (error.response.status === 500) {
+            console.error(error)
+          }
+        })
+    }
+
     const draftRegistrationLetter = () => {
       store.dispatch('app-project/downloadMasterLink', {
         filename: 'registration_letter',
@@ -618,6 +653,7 @@ export default {
       downloadAllFiles,
       eligibleStatement,
       registeredProject,
+      registeredProjectAttachment,
       draftRegistrationLetter,
       aboveCheckBuildingTasks,
       aboveFirstPaymentTasks,
