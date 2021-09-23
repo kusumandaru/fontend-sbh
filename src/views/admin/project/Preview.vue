@@ -12,7 +12,7 @@
         No project found with this project id. Check
         <b-link
           class="alert-link"
-          :to="{ name: 'project-list'}"
+          :to="{ name: 'admin-project-list'}"
         >
           project List
         </b-link>
@@ -479,7 +479,7 @@ export default {
           }
         })
         .finally(() => {
-          router.push({ name: 'project-list' })
+          router.push({ name: 'admin-project-list' })
         })
     }
 

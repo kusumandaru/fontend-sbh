@@ -108,7 +108,7 @@ export default {
           }
         })
         .finally(() => {
-          router.push({ name: 'project-list' })
+          router.push({ name: 'admin-project-list' })
         })
     }
 
