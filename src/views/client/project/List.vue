@@ -210,7 +210,7 @@ export default {
         },
         {
           label: 'Building Type',
-          field: 'building_type',
+          field: 'building_type_name',
           filterOptions: {
             enabled: true,
             placeholder: 'Search Building Type',

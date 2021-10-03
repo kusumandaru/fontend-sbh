@@ -335,15 +335,13 @@
               rules=""
               name="Design Recogntion"
             >
-              <b-input-group class="input-group-merge">
-                <b-form-checkbox
-                  v-model.lazy="projectData.design_recognition"
-                  name="design-recognition"
-                >
-                &nbsp;
-                Design Recognition Scoring
-                </b-form-checkbox>
-              </b-input-group>
+              <v-select
+                id="certification_type"
+                v-model="selectedDesignRecognition"
+                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                label="name"
+                :options="designRecognitionOption"
+              />
               <small class="text-danger">{{ errors[0] }}</small>
             </validation-provider>
           </b-form-group>
@@ -397,11 +395,11 @@
           </b-button>
           <b-button
             v-ripple.400="'rgba(186, 191, 199, 0.15)'"
-            type="reset"
+            type="cancel"
             variant="outline-secondary"
-            @click="reset"
+            @click="goToPreview"
           >
-            Reset
+            Cancel
           </b-button>
         </b-col>
       </b-row>
@@ -431,7 +429,6 @@ import {
   BCardText,
   BRow,
   BCol,
-  BFormCheckbox,
   BFormFile,
   BFormGroup,
   BFormInput,
@@ -462,7 +459,6 @@ export default {
     BCardText,
     BRow,
     BCol,
-    BFormCheckbox,
     BFormFile,
     BFormGroup,
     BInputGroup,
@@ -488,6 +484,10 @@ export default {
       buildingOption: [],
       provinceOption: [],
       cityOption: [],
+      // designRecognitionOption: [
+      //   { id: 'true', name: 'Need Design Recognition' },
+      //   { id: 'false', name: 'Skip Design Recognition' },
+      // ],
       proofOfPayment: null,
       maxChar: 200,
       successShow: false,
@@ -553,6 +553,14 @@ export default {
       id: '',
       name: '',
     })
+    const selectedDesignRecognition = reactive({
+      id: '',
+      name: '',
+    })
+    const designRecognitionOption = reactive([
+      { id: 'true', name: 'Need Design Recognition' },
+      { id: 'false', name: 'Skip Design Recognition' },
+    ])
 
     const paymentProps = reactive({
       center: true,
@@ -580,8 +588,10 @@ export default {
         selectedCity.id = response.data.city
         selectedCity.name = response.data.city_name
         selectedBuilding.id = response.data.building_type
-        buildingAddress = response.data.building_address
         selectedBuilding.name_id = response.data.building_type_name
+        buildingAddress = response.data.building_address
+        selectedDesignRecognition.id = response.data.design_recognition.toString()
+        selectedDesignRecognition.name = response.data.design_recognition ? 'Need Design Recognition' : 'Skip Design Recognition'
       })
       .catch(error => {
         if (error.response.status === 404) {
@@ -616,6 +626,8 @@ export default {
       selectedCertification,
       selectedProvince,
       selectedCity,
+      selectedDesignRecognition,
+      designRecognitionOption,
       paymentProps,
       downloadFile,
       buildingAddress,
@@ -639,6 +651,7 @@ export default {
       this.selectedProvince = {}
       this.selectedCity = {}
       this.selectedBuilding = {}
+      this.selectedDesignRecognition = {}
     },
     getProvinces() {
       this.$http.get('/engine-rest/master/provinces').then(res => {
@@ -692,8 +705,8 @@ export default {
           request.append('faximile', this.projectData.faximile)
           request.append('postal_code', this.projectData.postal_code)
           request.append('file', this.proofOfPayment)
+          request.append('design_recognition', this.stringToBoolean(this.selectedDesignRecognition.id))
           request.append('gross_floor_area', this.projectData.gross_floor_area)
-          request.append('design_recogntion', this.projectData.design_recognition)
           const config = {
             header: {
               'Content-Type': 'multipart/form-data',
@@ -716,6 +729,16 @@ export default {
     },
     gotoIndex() {
       router.push({ name: 'client-project-list' })
+    },
+    goToPreview() {
+      router.push({ name: 'client-project-preview', params: { id: router.currentRoute.params.id } })
+    },
+    stringToBoolean(value) {
+      switch (value.toLowerCase().trim()) {
+        case 'true': case 'yes': case '1': return true
+        case 'false': case 'no': case '0': case null: return false
+        default: return Boolean(value)
+      }
     },
   },
 }

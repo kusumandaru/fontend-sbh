@@ -334,15 +334,13 @@
               rules=""
               name="Design Recogntion"
             >
-              <b-input-group class="input-group-merge">
-                <b-form-checkbox
-                  v-model="designRecognition"
-                  name="design-recognition"
-                >
-                &nbsp;
-                Design Recognition Scoring
-                </b-form-checkbox>
-              </b-input-group>
+              <v-select
+                id="certification_type"
+                v-model="selectedDesignRecognition"
+                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                label="name"
+                :options="designRecognitionOption"
+              />
               <small class="text-danger">{{ errors[0] }}</small>
             </validation-provider>
           </b-form-group>
@@ -429,7 +427,6 @@ import {
   BForm,
   BButton,
   BFormTextarea,
-  BFormCheckbox,
   BInputGroup,
   BInputGroupPrepend,
   BModal,
@@ -456,7 +453,6 @@ export default {
     BInputGroupPrepend,
     BFormInput,
     BForm,
-    BFormCheckbox,
     BFormTextarea,
     BButton,
     BModal,
@@ -480,6 +476,11 @@ export default {
       provinceOption: [],
       selectedCity: '',
       cityOption: [],
+      selectedDesignRecognition: '',
+      designRecognitionOption: [
+        { id: 'true', name: 'Need Design Recognition' },
+        { id: 'false', name: 'Skip Design Recognition' },
+      ],
       buildingAddress: '',
       telephone: '',
       faximile: '',
@@ -497,7 +498,6 @@ export default {
       provinces: {},
       resultId: null,
       isLoading: false,
-      designRecognition: [],
       options: {
         number: {
           numeral: true,
@@ -593,6 +593,13 @@ export default {
         },
       })
     },
+    stringToBoolean(value) {
+      switch (value.toLowerCase().trim()) {
+        case 'true': case 'yes': case '1': return true
+        case 'false': case 'no': case '0': case null: return false
+        default: return Boolean(value)
+      }
+    },
     submitProject() {
       this.$refs.registerRules.validate().then(success => {
         if (success) {
@@ -611,7 +618,7 @@ export default {
           request.append('postal_code', this.postalCode)
           request.append('file', this.proofOfPayment)
           request.append('gross_floor_area', this.grossFloorArea)
-          request.append('design_recogntion', this.designRecogntion)
+          request.append('design_recognition', this.stringToBoolean(this.selectedDesignRecognition.id))
           const config = {
             header: {
               'Content-Type': 'multipart/form-data',
