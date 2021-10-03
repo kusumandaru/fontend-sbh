@@ -135,15 +135,13 @@
               rules=""
               name="Design Recogntion"
             >
-              <b-input-group class="input-group-merge">
-                <b-form-checkbox
-                  v-model.lazy="projectData.design_recognition"
-                  name="design-recognition"
-                >
-                &nbsp;
-                Design Recognition Scoring
-                </b-form-checkbox>
-              </b-input-group>
+              <v-select
+                id="certification_type"
+                v-model="selectedDesignRecognition"
+                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                label="name"
+                :options="designRecognitionOption"
+              />
               <small class="text-danger">{{ errors[0] }}</small>
             </validation-provider>
           </b-form-group>
@@ -283,11 +281,12 @@ import {
   BSpinner,
 } from 'bootstrap-vue'
 import {
-  ref, onUnmounted,
+  ref, onUnmounted, reactive,
 } from '@vue/composition-api'
 import router from '@/router'
 import store from '@/store'
 import Ripple from 'vue-ripple-directive'
+import vSelect from 'vue-select'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import {
@@ -313,6 +312,7 @@ export default {
     BSpinner,
     ValidationObserver,
     ValidationProvider,
+    vSelect,
   },
   directives: {
     Ripple,
@@ -367,6 +367,14 @@ export default {
   setup() {
     const projectData = ref({})
     const PROJECT_APP_STORE_MODULE_NAME = 'app-project'
+    const selectedDesignRecognition = reactive({
+      id: '',
+      name: '',
+    })
+    const designRecognitionOption = reactive([
+      { id: 'true', name: 'Need Design Recognition' },
+      { id: 'false', name: 'Skip Design Recognition' },
+    ])
 
     // Register module
     if (!store.hasModule(PROJECT_APP_STORE_MODULE_NAME)) store.registerModule(PROJECT_APP_STORE_MODULE_NAME, projectStoreModule)
@@ -379,6 +387,8 @@ export default {
     store.dispatch('app-project/fetchProject', { id: router.currentRoute.params.id })
       .then(response => {
         projectData.value = response.data
+        selectedDesignRecognition.id = response.data.design_recognition.toString()
+        selectedDesignRecognition.name = response.data.design_recognition ? 'Need Design Recognition' : 'Skip Design Recognition'
       })
       .catch(error => {
         if (error.response.status === 404) {
@@ -410,6 +420,8 @@ export default {
     return {
       projectData,
       downloadFile,
+      selectedDesignRecognition,
+      designRecognitionOption,
     }
   },
   computed: {
@@ -441,8 +453,9 @@ export default {
           request.append('agreement_letter_document', this.agreementLetterDocument)
           request.append('first_payment_document', this.firstPaymentDocument)
           request.append('first_payment', this.projectData.first_payment)
-          request.append('design_recognition', this.projectData.design_recognition)
           request.append('agreement_number', this.projectData.agreement_number)
+          request.append('design_recognition', this.stringToBoolean(this.selectedDesignRecognition.id))
+          request.append('gross_floor_area', this.projectData.gross_floor_area)
 
           const config = {
             header: {
@@ -467,6 +480,13 @@ export default {
     gotoIndex() {
       router.push({ name: 'admin-project-list' })
     },
+    stringToBoolean(value) {
+      switch (value.toLowerCase().trim()) {
+        case 'true': case 'yes': case '1': return true
+        case 'false': case 'no': case '0': case null: return false
+        default: return Boolean(value)
+      }
+    },
   },
 }
 </script>
@@ -477,6 +497,7 @@ export default {
 </style>
 
 <style lang="scss">
+@import '@core/scss/vue/libs/vue-select.scss';
 @media print {
 
   // Global Styles

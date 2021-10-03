@@ -142,7 +142,7 @@
                   {{ projectData.building_name }}
                 </p>
                 <p class="card-text mb-25">
-                  {{ projectData.building_address }}, {{ projectData.building_type }}
+                  {{ projectData.building_address }}, {{ projectData.postal_code }}
                 </p>
                 <p class="card-text mb-25">
                   {{ projectData.phone }}
@@ -172,7 +172,7 @@
                 </b-card-text>
                 <b-card-text class="mb-0">
                   <span class="font-weight-bold">Building Type:</span>
-                  <span class="ml-75">{{ projectData.building_type }}</span>
+                  <span class="ml-75">{{ projectData.building_type_name }}</span>
                 </b-card-text>
                 <b-card-text class="mb-0">
                   <span class="font-weight-bold">Owner:</span>
