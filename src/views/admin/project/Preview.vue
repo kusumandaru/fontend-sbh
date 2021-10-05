@@ -111,9 +111,7 @@
                 xl="6"
                 class="p-0"
               >
-                <h6 class="mb-2">
-                  project To:
-                </h6>
+                <b-card-title>Project To:</b-card-title>
                 <h6 class="mb-25">
                   {{ projectData.owner }}
                 </h6>
@@ -135,6 +133,8 @@
 
           <!-- project Description -->
           <b-card-body class="project-padding pb-0">
+            <b-card-title>Project Detail:</b-card-title>
+
             <b-row>
 
               <!-- Col: Certification Type -->
@@ -172,7 +172,11 @@
           <!-- Spacer -->
           <hr class="project-spacing">
 
+          <!-- Eligibility Document -->
           <b-card-body class="project-padding pb-0">
+            <b-card-title>Eligibility Document</b-card-title>
+            <b-card-sub-title>Eligibility Document for Project Registration</b-card-sub-title>
+            <p></p>
             <b-row>
 
               <!-- Col: Certification Type -->
@@ -301,15 +305,50 @@
                 <b-card-text
                   class="mb-0"
                 >
-                  <span class="font-weight-bold">Semua berkas : </span>
+                  <span class="font-weight-bold">Berkas : </span>
                   <b-button
                     variant="gradient-primary"
                     @click="downloadAllFiles"
                   >
                     <feather-icon icon="ArchiveIcon" />
-                    Download
+                    Download Eligibility Document Archived
                   </b-button>
                 </b-card-text>
+              </b-col>
+            </b-row>
+          </b-card-body>
+
+          <!-- Spacer -->
+          <hr class="project-spacing">
+
+          <!-- Registered Project Document -->
+          <b-card-body class="project-padding pb-0">
+            <b-card-title>Registered Project Document</b-card-title>
+            <p></p>
+            <b-row>
+
+              <!-- Col: Certification Type -->
+              <b-col
+                cols="12"
+                md="12"
+                class="mt-md-0 mt-3"
+                order="2"
+                order-md="1"
+              >
+                <b-card-text
+                  v-if="projectData.registered_project"
+                  class="mb-0"
+                >
+                  <b-button
+                    v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+                    variant="flat-primary"
+                    @click="registeredProject"
+                  >
+                    <feather-icon icon="ArchiveIcon" />
+                    Download Registered Project
+                  </b-button>
+                </b-card-text>
+
               </b-col>
             </b-row>
           </b-card-body>
@@ -361,6 +400,30 @@
             First Payment and Agreement Confirmation
           </b-button>
 
+          <!-- Button: Second Payment -->
+          <b-button
+            v-if="secondPaymentShow"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="success"
+            class="mb-75"
+            block
+            @click="secondPaymentPage"
+          >
+            Second Payment Confirmation
+          </b-button>
+
+          <!-- Button: Workshop -->
+          <b-button
+            v-if="workshopShow"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="success"
+            class="mb-75"
+            block
+            @click="workshopPage"
+          >
+            Workshop and Consultation Submission
+          </b-button>
+
           <!-- Button: Print -->
           <b-button
             v-ripple.400="'rgba(186, 191, 199, 0.15)'"
@@ -386,12 +449,13 @@ import {
 import store from '@/store'
 import router from '@/router'
 import {
-  BRow, BCol, BCard, BCardBody, BCardText, BButton, BAlert, BLink, VBToggle,
+  BRow, BCol, BCard, BCardBody, BCardText, BButton, BAlert, BLink, VBToggle, BCardTitle, BCardSubTitle,
 } from 'bootstrap-vue'
 import Logo from '@core/layouts/components/Logo.vue'
 import Ripple from 'vue-ripple-directive'
 import projectStoreModule from '@/views/projectStoreModule'
 import ProjectSidebarReject from '@/views/admin/project/SidebarReject.vue'
+import fileDownload from 'js-file-download'
 
 export default {
   directives: {
@@ -403,6 +467,8 @@ export default {
     BCol,
     BCard,
     BCardBody,
+    BCardTitle,
+    BCardSubTitle,
     BCardText,
     BButton,
     BAlert,
@@ -420,6 +486,12 @@ export default {
     },
     firstPaymentShow() {
       return this.firstPaymentTasks.includes(this.projectData.definition_key)
+    },
+    secondPaymentShow() {
+      return this.secondPaymentTasks.includes(this.projectData.definition_key)
+    },
+    workshopShow() {
+      return this.workshopTasks.includes(this.projectData.definition_key)
     },
   },
   setup() {
@@ -521,24 +593,53 @@ export default {
         })
     }
 
+    const registeredProject = () => {
+      store.dispatch('app-project/downloadRegisteredProject', {
+        id: projectData.value.task_id,
+      })
+        .then(response => {
+          fileDownload(response.data, 'registered-project.pdf')
+        })
+        .catch(error => {
+          if (error.response.status === 404) {
+            console.error(error)
+          }
+          if (error.response.status === 500) {
+            console.error(error)
+          }
+        })
+    }
+
     const firstPaymentPage = () => {
       router.push({ name: 'admin-project-first-payment', params: { id: router.currentRoute.params.id } })
+    }
+    const secondPaymentPage = () => {
+      router.push({ name: 'admin-project-second-payment', params: { id: router.currentRoute.params.id } })
+    }
+    const workshopPage = () => {
+      router.push({ name: 'admin-project-workshop', params: { id: router.currentRoute.params.id } })
     }
 
     const adminTasks = ['check-registration-project', 'check-document-building']
     const firstPaymentTasks = ['agreement-and-first-payment']
+    const secondPaymentTasks = ['second-payment']
+    const workshopTasks = ['workshop']
 
     return {
       projectData,
       adminTasks,
       firstPaymentTasks,
+      secondPaymentTasks,
+      workshopTasks,
       firstPaymentPage,
+      secondPaymentPage,
+      workshopPage,
       printProject,
       paymentProps,
       approveProject,
       downloadFile,
       downloadAllFiles,
-
+      registeredProject,
     }
   },
 }
