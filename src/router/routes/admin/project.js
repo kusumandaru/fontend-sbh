@@ -35,4 +35,9 @@ export default [
     name: 'admin-project-workshop',
     component: () => import('@/views/admin/project/Workshop.vue'),
   },
+  {
+    path: '/admin/project/dr/assesment/:id',
+    name: 'admin-project-dr-assesment',
+    component: () => import('@/views/admin/dr/Faq.vue'),
+  },
 ]
