@@ -11,6 +11,7 @@
       :aria-expanded="visible ? 'true' : 'false'"
       :aria-controls="collapseItemID"
       :header-bg-variant="headerBgVariant"
+      :header-text-variant="headerTextVariant"
       role="tab"
       data-toggle="collapse"
       @click="updateVisible(!visible)"
@@ -62,6 +63,10 @@ export default {
     headerBgVariant: {
       type: String,
       default: 'primary',
+    },
+    headerTextVariant: {
+      type: String,
+      default: 'white',
     },
   },
   data() {

@@ -35,7 +35,7 @@
 
     <!-- collapse -->
     <app-collapse
-      id="faq-payment-qna"
+      id="d-r-detail"
       accordion
       type="margin"
       class="mt-2"
@@ -46,7 +46,7 @@
         :key="index"
         :title="data.question"
         :subtitle="data.status"
-        :headerBgVariant="data.selected ? 'primary' : 'dark'"
+        :headerBgVariant="data.selected ? 'primary' : 'warning'"
       >
       <p v-html="data.ans"></p>
 

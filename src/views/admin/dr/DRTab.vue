@@ -1,182 +1,103 @@
 <template>
-  <div>
-    <!-- faq search section -->
-    <section id="faq-search-filter">
-      <b-card
-        no-body
-        class="faq-search"
-        :style="{backgroundImage:`url(${require('@/assets/images/banner/banner.png')})`}"
+  <b-tabs
+    content-class="mt-1"
+    id="d-r-tab">
+
+    <!-- This tabs content will not be mounted until the tab is shown -->
+    <!-- and will be un-mounted when hidden -->
+    <b-tab
+      v-for="(data,index) in evaluationData"
+      :key="index"
+      :title="data.name"
+      lazy
+    >
+      <b-alert
+        variant="primary"
+        show
+        class="mb-0"
       >
+        <div class="alert-body">
+          <span><strong>{{ data.code }} - {{ data.name }}</strong></span>
+        </div>
+      </b-alert>
 
-        <!-- Header -->
-        <b-card
-          no-body
-          class="project-preview-card"
-        >
-          <b-card-body class="project-padding pb-0">
-            <div class="d-flex justify-content-between flex-md-row flex-column project-spacing mt-0">
-              <!-- Header: Left Content -->
-              <div>
-                <div class="logo-wrapper">
-                  <h3 class="text-primary project-logo">
-                    {{ projectData.building_name }}
-                  </h3>
-                </div>
-                <p class="card-text mb-25">
-                  {{ projectData.building_address }}
-                </p>
-                <p class="card-text mb-25">
-                  {{ projectData.city_name }}
-                </p>
-                <p class="card-text mb-25">
-                  {{ projectData.province_name }}
-                </p>
-                <p class="card-text mb-25">
-                  {{ projectData.postal_code }}
-                </p>
-                <p class="card-text mb-0">
-                  <feather-icon icon="PhoneIcon" />
-                  Telephone: {{ projectData.telephone }}
-                </p>
-                <p class="card-text mb-0">
-                  <feather-icon icon="PhoneIcon" />
-                  Handphone: {{ projectData.handphone }}
-                </p>
-                <p class="card-text mb-0">
-                  <feather-icon icon="MailIcon" />
-                  Email: {{ projectData.email }}
-                </p>
-                <p class="card-text mb-0">
-                  <feather-icon icon="PrinterIcon" />
-                  Faximile: {{ projectData.faximile }}
-                  </p>
-              </div>
-
-              <!-- Header: Right Content -->
-              <div class="mt-md-0 mt-2">
-                <h4 class="project-title">
-                  Project ID
-                  <span class="project-number">#{{ projectData.task_id }}</span>
-                </h4>
-                <div class="project-date-wrapper">
-                  <p class="project-date-title">
-                    Date Created:
-                  </p>
-                  <p class="project-date">
-                    {{ projectData.created_at | moment("dddd, MMMM Do YYYY") }}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </b-card-body>
-        </b-card>
-
-        <b-card-body class="text-center">
-          <h1 class="text-primary">
-            Design Recognition
-          </h1>
-          <b-card-text class="mb-2">
-            <h2 class="text-primary">
-              Appropriate Site Development
-            </h2>
-          </b-card-text>
-        </b-card-body>
-      </b-card>
-    </section>
-    <!--/ faq search section -->
-
-    <!-- frequently asked questions tabs pills -->
-    <section id="faq-tabs">
-      <b-tabs
-        vertical
-        content-class="col-12 col-md-8 col-lg-9"
-        pills
-        nav-wrapper-class="faq-navigation col-md-4 col-lg-3 col-12"
-        nav-class="nav-left"
-      >
-
-        <!-- payment tab -->
-        <b-tab
-          v-for="(categoryObj, categoryName, index) in faqData"
-          :key="categoryName"
-          :active="!index"
-          :disabled="!categoryObj.selected"
+      <!-- evaluation tabs pills -->
+      <section id="faq-tabs">
+        <b-tabs
+          vertical
+          content-class="col-12 col-md-8 col-lg-9"
+          pills
+          nav-wrapper-class="faq-navigation col-md-4 col-lg-3 col-12"
+          nav-class="nav-left"
         >
 
-          <!-- title -->
-          <template #title>
-            <feather-icon
-              :icon="categoryObj.icon"
-              size="18"
-              class="mr-1"
+          <!-- payment tab -->
+          <b-tab
+            v-for="(categoryObj, categoryName, index) in drData"
+            :key="categoryName"
+            :active="!index"
+            :disabled="!categoryObj.selected"
+          >
+
+            <!-- title -->
+            <template #title>
+              <feather-icon
+                :icon="categoryObj.icon"
+                size="18"
+                class="mr-1"
+              />
+              <span class="font-weight-bold">{{ categoryObj.title }}</span>
+            </template>
+
+            <d-r-detail :options="categoryObj" />
+          </b-tab>
+          <!--/ payment tab -->
+
+          <!-- sitting lady image -->
+          <template #tabs-end>
+            <b-img
+              fluid
+              :src="require('@/assets/images/illustration/faq-illustrations.svg')"
+              class="d-none d-md-block mt-auto"
             />
-            <span class="font-weight-bold">{{ categoryObj.title }}</span>
           </template>
-
-          <faq-question-answer :options="categoryObj" />
-        </b-tab>
-        <!--/ payment tab -->
-
-        <!-- sitting lady image -->
-        <template #tabs-end>
-          <b-img
-            fluid
-            :src="require('@/assets/images/illustration/faq-illustrations.svg')"
-            class="d-none d-md-block mt-auto"
-          />
-        </template>
-        <!--/ sitting lady image -->
-      </b-tabs>
-    </section>
-    <!--/ frequently asked questions tabs pills -->
-
-  </div>
+          <!--/ sitting lady image -->
+        </b-tabs>
+      </section>
+      <!--/ evaluations tabs pills -->
+    </b-tab>
+  </b-tabs>
 </template>
 
 <script>
 import {
-  BCard, BCardBody, BCardText, BTabs, BTab, BImg,
+  BTabs,
+  BTab,
+  BAlert,
+  BImg,
 } from 'bootstrap-vue'
-import {
-  ref, onUnmounted,
-} from '@vue/composition-api'
-import router from '@/router'
-import store from '@/store'
-import Ripple from 'vue-ripple-directive'
-import projectStoreModule from '@/views/projectStoreModule'
-import FaqQuestionAnswer from './FaqQuestionAnswer.vue'
+import DRDetail from './DRDetail.vue'
 
 export default {
   components: {
-    BCard,
-    BCardBody,
-    BCardText,
     BTabs,
     BTab,
+    BAlert,
     BImg,
-    FaqQuestionAnswer,
-  },
-  directives: {
-    Ripple,
+    DRDetail,
   },
   data() {
     return {
-      faqSearchQuery: '',
-      faqData: {},
+      drData: {},
+      evaluationData: [
+        { code: 'ASD', name: 'Appropiate Site Development' },
+        { code: 'ECC', name: 'Energy Effeciency and Conservation' },
+        { code: 'WAC', name: 'Water Conservation' },
+        { code: 'MRC', name: 'Material Resource and Cycle' },
+        { code: 'IHC', name: 'Indoor Health and Comfort' },
+        { code: 'BEM', name: 'Building Environment Management' },
+      ],
     }
-  },
-  computed: {
-    statusVariant() {
-      const statusColor = {
-        /* eslint-disable key-spacing */
-        1 : 'light-primary',
-        2 : 'light-success',
-        3 : 'light-danger',
-        /* eslint-enable key-spacing */
-      }
-
-      return status => statusColor[status]
-    },
   },
   watch: {
     faqSearchQuery: {
@@ -186,59 +107,11 @@ export default {
       },
     },
   },
-  setup() {
-    const projectData = ref({})
-    const PROJECT_APP_STORE_MODULE_NAME = 'app-project'
-
-    // Register module
-    if (!store.hasModule(PROJECT_APP_STORE_MODULE_NAME)) store.registerModule(PROJECT_APP_STORE_MODULE_NAME, projectStoreModule)
-
-    // UnRegister on leave
-    onUnmounted(() => {
-      if (store.hasModule(PROJECT_APP_STORE_MODULE_NAME)) store.unregisterModule(PROJECT_APP_STORE_MODULE_NAME)
-    })
-
-    store.dispatch('app-project/fetchProject', { id: router.currentRoute.params.id })
-      .then(response => {
-        projectData.value = response.data
-      })
-      .catch(error => {
-        if (error.response.status === 404) {
-          projectData.value = undefined
-        }
-        if (error.response.status === 500) {
-          projectData.value = undefined
-        }
-      })
-
-    const downloadFile = fileName => {
-      store.dispatch('app-project/downloadLink', {
-        id: projectData.value.task_id,
-        filename: fileName,
-      })
-        .then(response => {
-          window.open(response.data.url)
-        })
-        .catch(error => {
-          if (error.response.status === 404) {
-            console.error(error)
-          }
-          if (error.response.status === 500) {
-            console.error(error)
-          }
-        })
-    }
-
-    return {
-      projectData,
-      downloadFile,
-    }
-  },
   methods: {
     fetchData() {
-      // this.$http.get('/faq/data', { params: { q: this.faqSearchQuery } }).then(res => { this.faqData = res.data })
+      // this.$http.get('/faq/data', { params: { q: this.faqSearchQuery } }).then(res => { this.drData = res.data })
       const data = {
-        faqData: {
+        drData: {
           // payment
           asdp: {
             icon: 'CreditCardIcon',
@@ -562,7 +435,7 @@ export default {
       const queryLowered = ''
       const filteredData = {}
 
-      Object.entries(data.faqData).forEach(entry => {
+      Object.entries(data.drData).forEach(entry => {
         const [categoryName, categoryObj] = entry
         // eslint-disable-next-line arrow-body-style
         const filteredQAndAOfCategory = categoryObj.qandA.filter(qAndAObj => {
@@ -572,12 +445,9 @@ export default {
           filteredData[categoryName] = { ...categoryObj, qandA: filteredQAndAOfCategory }
         }
       })
-      this.faqData = filteredData
+
+      this.drData = filteredData
     },
   },
 }
 </script>
-
-<style lang="scss">
-@import '@core/scss/vue/pages/page-faq.scss';
-</style>
