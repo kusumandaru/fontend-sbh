@@ -19,7 +19,7 @@ export default [
         icon: 'BookIcon',
       },
       {
-        title: 'List Project',
+        title: 'List Vendor',
         route: 'admin-project-list',
         icon: 'BookIcon',
       },
@@ -32,6 +32,11 @@ export default [
         title: 'Master Data',
         icon: 'SettingsIcon',
         children: [
+          {
+            title: 'Master Vendor',
+            route: 'admin-vendor-list',
+            icon: 'MapIcon',
+          },
           {
             title: 'Master City',
             route: 'city-list',

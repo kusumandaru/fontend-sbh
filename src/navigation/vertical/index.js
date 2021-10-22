@@ -41,6 +41,13 @@ export default [
     action: 'manage',
     children: [
       {
+        title: 'Master Vendor',
+        route: 'admin-vendor-list',
+        icon: 'MapIcon',
+        resource: 'master',
+        action: 'manage',
+      },
+      {
         title: 'Master City',
         route: 'city-list',
         icon: 'MapIcon',
