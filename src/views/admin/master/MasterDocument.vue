@@ -82,7 +82,7 @@
           v-if="props.column.field === 'name'"
           class="text-nowrap"
         >
-          <span :v-html="props.row.name"></span>
+          <span :v-html="props.row.name" />
         </div>
 
         <!-- Column: Action -->
@@ -215,10 +215,10 @@
       >
         <!-- Column: Blocker ID -->
         <div
-          v-if="props.column.field === 'blocker_id'"
+          v-if="props.column.field === 'blocker_code'"
           class="text-nowrap"
         >
-          <span>{{ props.row.criteria.code }} </span>
+          <span class="text-nowrap">{{ props.row.blocker.code }}</span>
         </div>
 
         <!-- Column: Action -->
@@ -407,8 +407,8 @@ export default {
       blockers: [],
       columnBlockers: [
         {
-          label: 'Blocker ID',
-          field: 'blocker_id',
+          label: 'Blocker Code',
+          field: 'blocker_code',
         },
         {
           label: 'Created At',
