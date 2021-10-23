@@ -1,5 +1,8 @@
 <template>
-  <div ref="container" class="vue-bpmn-diagram-container"></div>
+  <div
+    ref="container"
+    class="vue-bpmn-diagram-container"
+  />
 </template>
 
 <script>

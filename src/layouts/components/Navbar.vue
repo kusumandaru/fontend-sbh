@@ -118,16 +118,16 @@ export default {
     // Navbar Components
     DarkToggler,
   },
-  data() {
-    return {
-      userData: JSON.parse(localStorage.getItem('userData')),
-    }
-  },
   props: {
     toggleVerticalMenuActive: {
       type: Function,
       default: () => {},
     },
+  },
+  data() {
+    return {
+      userData: JSON.parse(localStorage.getItem('userData')),
+    }
   },
   methods: {
     logout() {

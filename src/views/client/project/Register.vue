@@ -186,7 +186,7 @@
                 label="name"
                 :options="cityOption"
               />
-               <small class="text-danger">{{ errors[0] }}</small>
+              <small class="text-danger">{{ errors[0] }}</small>
             </validation-provider>
           </b-form-group>
         </b-col>
@@ -375,13 +375,13 @@
             type="submit"
             variant="secondary"
             class="mr-1"
-            @click="submitProject"
             :disabled="isLoading"
+            @click="submitProject"
           >
             <b-spinner
+              v-if="isLoading"
               small
               type="grow"
-              v-if="isLoading"
             />
             Submit
           </b-button>
@@ -398,18 +398,18 @@
 
       <b-modal
         id="modal-success"
+        v-model="successShow"
         ok-only
         ok-variant="success"
         ok-title="Accept"
-        @ok="gotoIndex"
         modal-class="modal-success"
         centered
         title="Success Modal"
-        v-model="successShow"
+        @ok="gotoIndex"
       >
         <b-card-text>
           <h5>Data success to submit</h5>
-          <p v-html="resultId"></p>
+          <p v-html="resultId" />
         </b-card-text>
       </b-modal>
     </b-form>
@@ -536,10 +536,6 @@ export default {
       },
     }
   },
-  created() {
-    this.getBuildingTypes()
-    this.getProvinces()
-  },
   computed: {
     validation() {
       return this.userId.length > 4 && this.userId.length < 13
@@ -547,6 +543,10 @@ export default {
     validationOccupation() {
       return this.occupationID.length > 1
     },
+  },
+  created() {
+    this.getBuildingTypes()
+    this.getProvinces()
   },
   methods: {
     reset() {
@@ -629,7 +629,7 @@ export default {
             this.result = JSON.parse(JSON.stringify(res.data))
             this.successShow = true
             this.isLoading = false
-          }).catch(function (error) {
+          }).catch(error => {
             console.error(error)
             this.isLoading = false
             this.showToast('danger', 'Cannot Save', 'There is error when submit data, contact administrator')

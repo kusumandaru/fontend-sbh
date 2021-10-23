@@ -49,7 +49,7 @@
                 <p class="card-text mb-0">
                   <feather-icon icon="PrinterIcon" />
                   Faximile: {{ projectData.faximile }}
-                  </p>
+                </p>
               </div>
 
               <!-- Header: Right Content -->

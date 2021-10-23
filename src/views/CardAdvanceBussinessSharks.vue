@@ -14,8 +14,7 @@
 
     <b-card-body>
       <b-card-text>List of current process</b-card-text>
-      <h6 class="mb-75">
-      </h6>
+      <h6 class="mb-75" />
       <div class="business-items">
         <div
           v-for="businessItem in businessItems"

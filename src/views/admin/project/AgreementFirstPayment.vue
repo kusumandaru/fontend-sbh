@@ -52,7 +52,7 @@
                   <p class="card-text mb-0">
                     <feather-icon icon="PrinterIcon" />
                     Faximile: {{ projectData.faximile }}
-                    </p>
+                  </p>
                 </div>
 
                 <!-- Header: Right Content -->
@@ -89,14 +89,14 @@
             >
               <b-input-group class="input-group-merge">
                 <b-input-group class="input-group-merge">
-                <b-form-checkbox
-                  v-model.lazy="projectData.first_payment"
-                  name="first-payment"
-                >
-                &nbsp;
-                is paid
-                </b-form-checkbox>
-              </b-input-group>
+                  <b-form-checkbox
+                    v-model.lazy="projectData.first_payment"
+                    name="first-payment"
+                  >
+                    &nbsp;
+                    is paid
+                  </b-form-checkbox>
+                </b-input-group>
               </b-input-group>
               <small class="text-danger">{{ errors[0] }}</small>
             </validation-provider>
@@ -222,13 +222,13 @@
             type="submit"
             variant="secondary"
             class="mr-1"
-            @click="submitProject"
             :disabled="isLoading"
+            @click="submitProject"
           >
             <b-spinner
+              v-if="isLoading"
               small
               type="grow"
-              v-if="isLoading"
             />
             Submit
           </b-button>
@@ -245,18 +245,18 @@
 
       <b-modal
         id="modal-success"
+        v-model.lazy="successShow"
         ok-only
         ok-variant="success"
         ok-title="Accept"
-        @ok="gotoIndex"
         modal-class="modal-success"
         centered
         title="Success Modal"
-        v-model.lazy="successShow"
+        @ok="gotoIndex"
       >
         <b-card-text>
           <h5>Data success to submit</h5>
-          <p v-html="resultId"></p>
+          <p v-html="resultId" />
         </b-card-text>
       </b-modal>
     </b-form>
@@ -464,10 +464,9 @@ export default {
           }
           this.$http.post('/engine-rest/new-building/first_payment', request, config).then(res => {
             this.result = JSON.parse(JSON.stringify(res.data))
-            console.log(this.result)
             this.successShow = true
             this.isLoading = false
-          }).catch(function (error) {
+          }).catch(error => {
             this.isLoading = false
             console.error(error)
             this.showToast('danger', 'Cannot Save', 'There is error when submit data, contact administrator')
