@@ -77,7 +77,7 @@
           v-if="props.column.field === 'description'"
           class="text-nowrap"
         >
-          <span :v-html="props.row.description"></span>
+          <span :v-html="props.row.description" />
         </div>
 
         <!-- Column: Additional Notes -->
@@ -85,7 +85,7 @@
           v-if="props.column.field === 'additional_notes'"
           class="text-nowrap"
         >
-          <span :v-html="props.row.additional_notes"></span>
+          <span :v-html="props.row.additional_notes" />
         </div>
 
         <!-- Column: Action -->
@@ -272,8 +272,8 @@ export default {
           field: 'additional_notes',
         },
         {
-          label: 'Without Document',
-          field: 'without_document',
+          label: 'Not Available',
+          field: 'not_available',
         },
         {
           label: 'Created At',
