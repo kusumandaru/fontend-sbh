@@ -176,13 +176,13 @@
             type="submit"
             variant="secondary"
             class="mr-1"
-            @click="submitAdminData"
             :disabled="isLoading"
+            @click="submitAdminData"
           >
             <b-spinner
+              v-if="isLoading"
               small
               type="grow"
-              v-if="isLoading"
             />
             Submit
           </b-button>
@@ -199,18 +199,18 @@
 
       <b-modal
         id="modal-success"
+        v-model="successShow"
         ok-only
         ok-variant="success"
         ok-title="Accept"
-        @ok="showAdminData"
         modal-class="modal-success"
         centered
         title="Success Modal"
-        v-model="successShow"
+        @ok="showAdminData"
       >
         <b-card-text>
           <h5>Data success to submit</h5>
-          <p v-html="resultId"></p>
+          <p v-html="resultId" />
         </b-card-text>
       </b-modal>
     </b-form>
@@ -388,10 +388,9 @@ export default {
           }
           this.$http.post('/engine-rest/master/master_admins', request, config).then(res => {
             this.result = JSON.parse(JSON.stringify(res.data))
-            console.log(this.result)
             this.successShow = true
             this.isLoading = false
-          }).catch(function (error) {
+          }).catch(error => {
             this.isLoading = false
             console.error(error)
             this.showToast('danger', 'Cannot Save', 'There is error when submit data, contact administrator')

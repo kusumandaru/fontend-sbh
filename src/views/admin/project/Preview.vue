@@ -74,7 +74,7 @@
                 <p class="card-text mb-0">
                   <feather-icon icon="PrinterIcon" />
                   Faximile: {{ projectData.faximile }}
-                 </p>
+                </p>
               </div>
 
               <!-- Header: Right Content -->
@@ -176,7 +176,7 @@
           <b-card-body class="project-padding pb-0">
             <b-card-title>Eligibility Document</b-card-title>
             <b-card-sub-title>Eligibility Document for Project Registration</b-card-sub-title>
-            <p></p>
+            <p />
             <b-row>
 
               <!-- Col: Certification Type -->
@@ -324,7 +324,7 @@
           <!-- Registered Project Document -->
           <b-card-body class="project-padding pb-0">
             <b-card-title>Registered Project Document</b-card-title>
-            <p></p>
+            <p />
             <b-row>
 
               <!-- Col: Certification Type -->

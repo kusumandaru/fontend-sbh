@@ -18,7 +18,10 @@
     >
       <slot name="header">
         <span class="lead collapse-title">{{ title }}</span>
-        <small class="notification-text" v-if="subtitle">{{ subtitle }}</small>
+        <small
+          v-if="subtitle"
+          class="notification-text"
+        >{{ subtitle }}</small>
       </slot>
     </b-card-header>
 
@@ -59,6 +62,7 @@ export default {
     },
     subtitle: {
       type: String,
+      default: '',
     },
     headerBgVariant: {
       type: String,

@@ -168,6 +168,9 @@ export default {
     BInputGroupAppend,
     BButton,
   },
+  directives: {
+    Ripple,
+  },
   data() {
     return {
       perPage: 5,
@@ -240,9 +243,6 @@ export default {
     addUser() {
       this.$router.push('user-add')
     },
-  },
-  directives: {
-    Ripple,
   },
 }
 </script>

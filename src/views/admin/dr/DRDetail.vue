@@ -20,7 +20,10 @@
           <span>{{ options.subtitle }}</span>
         </div>
 
-        <div class="design-planning-wrapper" style="position:absolute; right:20px;">
+        <div
+          class="design-planning-wrapper"
+          style="position:absolute; right:20px;"
+        >
           <div class="design-planning">
             <p class="card-text mb-25">
               Max Score
@@ -46,64 +49,64 @@
         :key="index"
         :title="data.question"
         :subtitle="data.status"
-        :headerBgVariant="data.selected ? 'primary' : 'warning'"
+        :header-bg-variant="data.selected ? 'primary' : 'warning'"
       >
-      <p v-html="data.ans"></p>
+        <p v-html="data.ans" />
 
-      <!-- Spacer -->
-      <hr class="project-spacing">
+        <!-- Spacer -->
+        <hr class="project-spacing">
 
-      <!-- scoring -->
-      <b-form-group
-        label-cols="4"
-        label-cols-lg="2"
-        label="Nilai"
-        label-for="input-default"
-      >
-        <b-form-input
-          id="input-default"
-          :placeholder="data.reference_score"
-        />
-      </b-form-group>
+        <!-- scoring -->
+        <b-form-group
+          label-cols="4"
+          label-cols-lg="2"
+          label="Nilai"
+          label-for="input-default"
+        >
+          <b-form-input
+            id="input-default"
+            :placeholder="data.reference_score"
+          />
+        </b-form-group>
 
-      <b-form-group
-        label-cols="4"
-        label-cols-lg="2"
-        label="Nilai Potensial"
-        label-for="input-default"
-      >
-        <b-form-input
-          id="input-default"
-          :placeholder="data.reference_score"
-        />
-      </b-form-group>
-      <!-- scoring -->
+        <b-form-group
+          label-cols="4"
+          label-cols-lg="2"
+          label="Nilai Potensial"
+          label-for="input-default"
+        >
+          <b-form-input
+            id="input-default"
+            :placeholder="data.reference_score"
+          />
+        </b-form-group>
+        <!-- scoring -->
 
-      <!-- Spacer -->
-      <hr class="project-spacing">
+        <!-- Spacer -->
+        <hr class="project-spacing">
 
-      <b-table
-        :fields="criteriaFields"
-        :items="data.criterias"
-        responsive
-        class="mb-0"
-      >
-        <template #cell(show_details)="row">
-          <!-- As `row.showDetails` is one-way, we call the toggleDetails function on @change -->
-          <b-form-checkbox
-            v-model="row.detailsShowing"
-            @change="row.toggleDetails"
-            :disabled="!row.item.selected"
-          >
-            {{ row.detailsShowing ? 'Hide' : 'Show' }}
-          </b-form-checkbox>
-        </template>
+        <b-table
+          :fields="criteriaFields"
+          :items="data.criterias"
+          responsive
+          class="mb-0"
+        >
+          <template #cell(show_details)="row">
+            <!-- As `row.showDetails` is one-way, we call the toggleDetails function on @change -->
+            <b-form-checkbox
+              v-model="row.detailsShowing"
+              :disabled="!row.item.selected"
+              @change="row.toggleDetails"
+            >
+              {{ row.detailsShowing ? 'Hide' : 'Show' }}
+            </b-form-checkbox>
+          </template>
 
-        <!-- full detail on click -->
-        <template #row-details="row">
-          <b-card>
-            <b-row class="mb-2">
-              <!-- <b-col
+          <!-- full detail on click -->
+          <template #row-details="row">
+            <b-card>
+              <b-row class="mb-2">
+                <!-- <b-col
                 md="4"
                 class="mb-1"
               >
@@ -124,7 +127,7 @@
                 <strong>Created At : </strong>{{ row.item.created_at }}
               </b-col> -->
 
-              <!-- <b-col
+                <!-- <b-col
                 md="4"
                 class="mb-1"
               >
@@ -140,186 +143,189 @@
                   Submit
                 </b-button>
               </b-col> -->
-              <b-table
-                responsive
-                :items="row.item.documents"
-                :fields="documentFields"
-                class="mb-0"
-              >
-                <template #cell(document_name)="data">
-                  <a :href="`${data.item.link}`">
-                    {{ data.value }}
-                  </a>
-                </template>
-              </b-table>
-            </b-row>
-          </b-card>
-          <b-card>
-            <b-button
-              size="sm"
-              variant="outline-secondary"
-              @click="row.toggleDetails"
-            >
-              Hide Details
-            </b-button>
-          </b-card>
-        </template>
-        <template #cell(link)="link">
-          <a :href="`${link.value}`">
-            download
-          </a>
-        </template>
-        <template #cell(status)="status">
-          <b-badge :variant="documentStatus[1][status.value]">
-            {{ documentStatus[0][status.value] }}
-          </b-badge>
-        </template>
-        <template #cell(name)="name">
-          <div v-html="name.value"></div>
-        </template>
-      </b-table>
-
-      <!-- explanation  -->
-      <div class="apply-job-package bg-light-primary rounded" v-if="data.explanation">
-        <div class="text-body">
-          <p v-html="data.explanation"></p>
-        </div>
-      </div>
-      <!--/ explanation  -->
-
-      <!-- Spacer -->
-      <hr class="project-spacing">
-
-      <!-- placeholder -->
-      <div v-if="data.placeholder">
-        <label for="textarea-default">Internal Notes</label>
-        <quill-editor
-          v-model="data.placeholder"
-          :options="snowOption"
-        />
-        <!-- <span v-html="data.placeholder"></span> -->
-      </div>
-      <!-- placeholder -->
-
-      <!-- status -->
-      <p></p>
-      <b-col md="6">
-        <h6>Approval</h6>
-        <b-form-group>
-          <v-select
-            v-model="selectedStatus"
-            :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-            :options="statusOptions"
-            label="text"
-          >
-            <template #option="{ text, icon }">
-              <feather-icon
-                :icon="icon"
-                size="16"
-                class="align-middle mr-50"
-              />
-              <span> {{ text }}</span>
-            </template>
-          </v-select>
-        </b-form-group>
-      </b-col>
-      <!-- status -->
-
-      <!-- save button -->
-      <p></p>
-      <b-col cols="12">
-        <b-button
-          v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-          variant="primary"
-        >
-          Save Review
-        </b-button>
-      </b-col>
-      <!-- save button -->
-
-      <p></p>
-
-      <!-- Spacer -->
-      <hr class="project-s  pacing">
-
-      <!-- blog comment -->
-      <b-col
-        id="blogComment"
-        cols="12"
-        class="mt-2"
-      >
-        <h6 class="section-label">
-          Comment
-        </h6>
-        <b-card
-          v-for="(comment,index) in comments"
-          :key="index"
-        >
-          <b-media no-body>
-            <b-media-aside class="mr-75">
-              <b-avatar
-                :src="comment.avatar"
-                size="38"
-              />
-            </b-media-aside>
-            <b-media-body>
-              <h6 class="font-weight-bolder mb-25">
-                {{ comment.userFullName }}
-                <b-badge :variant="light-success">
-                  reviewer
-                </b-badge>
-              </h6>
-              <b-card-text>{{ comment.commentedAt }}</b-card-text>
-              <b-card-text>
-                {{ comment.commentText }}
-              </b-card-text>
-            </b-media-body>
-          </b-media>
-        </b-card>
-      </b-col>
-      <!--/ blog comment -->
-
-      <!-- Spacer -->
-      <hr class="project-s  pacing">
-
-      <!-- Leave a Blog Comment -->
-      <b-col
-        cols="12"
-        class="mt-2"
-      >
-        <h6 class="section-label">
-          Leave a Comment
-        </h6>
-        <b-card>
-          <b-form>
-            <b-row>
-              <b-col cols="12">
-                <b-form-group class="mb-2">
-                  <b-form-textarea
-                    name="textarea"
-                    rows="4"
-                    placeholder="Website"
-                  />
-                </b-form-group>
-              </b-col>
-              <b-col cols="12">
-                <b-button
-                  v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-                  variant="primary"
+                <b-table
+                  responsive
+                  :items="row.item.documents"
+                  :fields="documentFields"
+                  class="mb-0"
                 >
-                  Post Comment
-                </b-button>
-              </b-col>
-            </b-row>
-          </b-form>
-        </b-card>
-      </b-col>
-      <!--/ Leave a Blog Comment -->
+                  <template #cell(document_name)="doc">
+                    <a :href="`${doc.item.link}`">
+                      {{ doc.value }}
+                    </a>
+                  </template>
+                </b-table>
+              </b-row>
+            </b-card>
+            <b-card>
+              <b-button
+                size="sm"
+                variant="outline-secondary"
+                @click="row.toggleDetails"
+              >
+                Hide Details
+              </b-button>
+            </b-card>
+          </template>
+          <template #cell(link)="link">
+            <a :href="`${link.value}`">
+              download
+            </a>
+          </template>
+          <template #cell(status)="status">
+            <b-badge :variant="documentStatus[1][status.value]">
+              {{ documentStatus[0][status.value] }}
+            </b-badge>
+          </template>
+          <template #cell(name)="name">
+            <div v-html="name.value" />
+          </template>
+        </b-table>
 
-      <template #code>
-        {{ codeRowDetailsSupport }}
-        {{ codeFormatterCallback }}
-      </template>
+        <!-- explanation  -->
+        <div
+          v-if="data.explanation"
+          class="apply-job-package bg-light-primary rounded"
+        >
+          <div class="text-body">
+            <p v-html="data.explanation" />
+          </div>
+        </div>
+        <!--/ explanation  -->
+
+        <!-- Spacer -->
+        <hr class="project-spacing">
+
+        <!-- placeholder -->
+        <div v-if="data.placeholder">
+          <label for="textarea-default">Internal Notes</label>
+          <quill-editor
+            v-model="data.placeholder"
+            :options="snowOption"
+          />
+        <!-- <span v-html="data.placeholder"></span> -->
+        </div>
+        <!-- placeholder -->
+
+        <!-- status -->
+        <p />
+        <b-col md="6">
+          <h6>Approval</h6>
+          <b-form-group>
+            <v-select
+              v-model="selectedStatus"
+              :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+              :options="statusOptions"
+              label="text"
+            >
+              <template #option="{ text, icon }">
+                <feather-icon
+                  :icon="icon"
+                  size="16"
+                  class="align-middle mr-50"
+                />
+                <span> {{ text }}</span>
+              </template>
+            </v-select>
+          </b-form-group>
+        </b-col>
+        <!-- status -->
+
+        <!-- save button -->
+        <p />
+        <b-col cols="12">
+          <b-button
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="primary"
+          >
+            Save Review
+          </b-button>
+        </b-col>
+        <!-- save button -->
+
+        <p />
+
+        <!-- Spacer -->
+        <hr class="project-s  pacing">
+
+        <!-- blog comment -->
+        <b-col
+          id="blogComment"
+          cols="12"
+          class="mt-2"
+        >
+          <h6 class="section-label">
+            Comment
+          </h6>
+          <b-card
+            v-for="(comment,idx) in comments"
+            :key="idx"
+          >
+            <b-media no-body>
+              <b-media-aside class="mr-75">
+                <b-avatar
+                  :src="comment.avatar"
+                  size="38"
+                />
+              </b-media-aside>
+              <b-media-body>
+                <h6 class="font-weight-bolder mb-25">
+                  {{ comment.userFullName }}
+                  <b-badge :variant="light-success">
+                    reviewer
+                  </b-badge>
+                </h6>
+                <b-card-text>{{ comment.commentedAt }}</b-card-text>
+                <b-card-text>
+                  {{ comment.commentText }}
+                </b-card-text>
+              </b-media-body>
+            </b-media>
+          </b-card>
+        </b-col>
+        <!--/ blog comment -->
+
+        <!-- Spacer -->
+        <hr class="project-s  pacing">
+
+        <!-- Leave a Blog Comment -->
+        <b-col
+          cols="12"
+          class="mt-2"
+        >
+          <h6 class="section-label">
+            Leave a Comment
+          </h6>
+          <b-card>
+            <b-form>
+              <b-row>
+                <b-col cols="12">
+                  <b-form-group class="mb-2">
+                    <b-form-textarea
+                      name="textarea"
+                      rows="4"
+                      placeholder="Website"
+                    />
+                  </b-form-group>
+                </b-col>
+                <b-col cols="12">
+                  <b-button
+                    v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+                    variant="primary"
+                  >
+                    Post Comment
+                  </b-button>
+                </b-col>
+              </b-row>
+            </b-form>
+          </b-card>
+        </b-col>
+        <!--/ Leave a Blog Comment -->
+
+        <template #code>
+          {{ codeRowDetailsSupport }}
+          {{ codeFormatterCallback }}
+        </template>
       </app-collapse-item>
     </app-collapse>
 

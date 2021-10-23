@@ -1,7 +1,8 @@
 <template>
   <b-tabs
+    id="d-r-tab"
     content-class="mt-1"
-    id="d-r-tab">
+  >
 
     <!-- This tabs content will not be mounted until the tab is shown -->
     <!-- and will be un-mounted when hidden -->
@@ -33,9 +34,9 @@
 
           <!-- payment tab -->
           <b-tab
-            v-for="(categoryObj, categoryName, index) in drData"
+            v-for="(categoryObj, categoryName, idx) in drData"
             :key="categoryName"
-            :active="!index"
+            :active="!idx"
             :disabled="!categoryObj.selected"
           >
 

@@ -62,12 +62,12 @@
                   <b-button
                     v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                     variant="flat-primary"
-                    @click="downloadFile('registration_letter')"
                     :disabled="isLoading"
+                    @click="downloadFile('registration_letter')"
                   >
                     <b-spinner
-                      small
                       v-show="isLoading"
+                      small
                     />
                     <feather-icon icon="ArchiveIcon" />
                     Download
@@ -86,12 +86,12 @@
                   <b-button
                     v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                     variant="flat-primary"
-                    @click="downloadFile('first_attachment')"
                     :disabled="isLoading"
+                    @click="downloadFile('first_attachment')"
                   >
                     <b-spinner
-                      small
                       v-show="isLoading"
+                      small
                     />
                     <feather-icon icon="ArchiveIcon" />
                     Download
@@ -110,12 +110,12 @@
                   <b-button
                     v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                     variant="flat-primary"
-                    @click="downloadFile('second_attachment')"
                     :disabled="isLoading"
+                    @click="downloadFile('second_attachment')"
                   >
                     <b-spinner
-                      small
                       v-show="isLoading"
+                      small
                     />
                     <feather-icon icon="ArchiveIcon" />
                     Download
@@ -134,12 +134,12 @@
                   <b-button
                     v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                     variant="flat-primary"
-                    @click="downloadFile('third_attachment')"
                     :disabled="isLoading"
+                    @click="downloadFile('third_attachment')"
                   >
                     <b-spinner
-                      small
                       v-show="isLoading"
+                      small
                     />
                     <feather-icon icon="ArchiveIcon" />
                     Download
