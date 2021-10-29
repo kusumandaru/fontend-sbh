@@ -2,7 +2,6 @@
   <div>
     <evaluation-list-add-new
       :is-add-new-evaluation-sidebar-active.sync="isAddNewEvaluationSidebarActive"
-      :project-type-options="projectTypeOptions"
       @refetch-data="refetchData"
     />
 
@@ -93,11 +92,23 @@
                   icon="EyeIcon"
                   size="16"
                   class="mx-1"
-                  @click="$router.push({ name: 'admin-exercise-list', params: { id: props.row.id }})"
+                  @click="$router.push({ name: 'admin-exercise-list', params: { vendorId: $router.currentRoute.params.vendorId, templateId: $router.currentRoute.params.templateId, evaluationId: props.row.id }})"
                 />
                 <b-tooltip
                   title="Evaluation Detail"
                   :target="`project-row-${props.row.id}-evaluation-icon`"
+                />
+
+                <feather-icon
+                  :id="`project-row-${props.row.id}-evaluation-icon-edit`"
+                  icon="EditIcon"
+                  size="16"
+                  class="mx-1"
+                  @click="$router.push({ name: 'admin-evaluation-edit', params: { vendorId: $router.currentRoute.params.vendorId, templateId: $router.currentRoute.params.templateId, evaluationId: props.row.id }})"
+                />
+                <b-tooltip
+                  title="Evaluation Update"
+                  :target="`project-row-${props.row.id}-evaluation-icon-edit`"
                 />
               </template>
             </b-dropdown>
@@ -204,11 +215,6 @@ export default {
 
     const isAddNewEvaluationSidebarActive = ref(false)
 
-    const projectTypeOptions = [
-      { label: 'Design Recognition', value: 'design_recognition' },
-      { label: 'Final Assessment', value: 'final_assessment' },
-    ]
-
     const {
       resolveProjectTypeIcon,
       resolveProjectTypeVariant,
@@ -218,7 +224,6 @@ export default {
     } = useEvaluationsList()
     return {
       // Sidebar
-      projectTypeOptions,
       isAddNewEvaluationSidebarActive,
       refEvaluationListTable,
       resolveProjectTypeIcon,
@@ -285,7 +290,7 @@ export default {
   },
   methods: {
     retrieveTemplate() {
-      this.$http.get(`engine-rest/master-project/templates/${router.currentRoute.params.id}`, { })
+      this.$http.get(`engine-rest/master-project/templates/${router.currentRoute.params.templateId}`, { })
         .then(res => { this.template = res.data })
         .catch(() => {
           useToast({
@@ -299,7 +304,7 @@ export default {
         })
     },
     retrieveEvaluations() {
-      this.$http.get(`engine-rest/master-project/templates/${router.currentRoute.params.id}/evaluations`)
+      this.$http.get(`engine-rest/master-project/templates/${router.currentRoute.params.templateId}/evaluations`)
         .then(res => { this.rows = res.data })
     },
     /* eslint-disable object-shorthand */

@@ -60,11 +60,23 @@
                   icon="EyeIcon"
                   size="16"
                   class="mx-1"
-                  @click="$router.push({ name: 'admin-template-list', params: { id: props.row.id }})"
+                  @click="$router.push({ name: 'admin-template-list', params: { vendorId: props.row.id }})"
                 />
                 <b-tooltip
                   title="Vendor Detail"
                   :target="`project-row-${props.row.id}-vendor-icon`"
+                />
+
+                <feather-icon
+                  :id="`project-row-${props.row.id}-vendor-icon-edit`"
+                  icon="EditIcon"
+                  size="16"
+                  class="mx-1"
+                  @click="$router.push({ name: 'admin-vendor-edit', params: { vendorId: props.row.id }})"
+                />
+                <b-tooltip
+                  title="Vendor Update"
+                  :target="`project-row-${props.row.id}-vendor-icon-edit`"
                 />
               </template>
             </b-dropdown>

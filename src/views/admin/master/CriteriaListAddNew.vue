@@ -1,4 +1,4 @@
-<criteria>
+<template>
   <b-sidebar
     id="add-new-criteria-sidebar"
     :visible="isAddNewCriteriaSidebarActive"
@@ -11,7 +11,7 @@
     @hidden="resetForm"
     @change="(val) => $emit('update:is-add-new-criteria-sidebar-active', val)"
   >
-    <criteria #default="{ hide }">
+    <template #default="{ hide }">
       <!-- Header -->
       <div class="d-flex justify-content-between align-items-center content-sidebar-header px-2 py-1">
         <h5 class="mb-0">
@@ -39,23 +39,23 @@
           @reset.prevent="resetForm"
         >
 
-          <!-- Project Type -->
+          <!-- Exercise Type -->
           <validation-provider
             #default="validationContext"
-            name="Project Type"
+            name="Exercise Type"
             rules="required"
           >
             <b-form-group
-              label="Project Type"
-              label-for="project-type"
+              label="Exercise Type"
+              label-for="exercise-type"
             >
               <v-select
-                v-model="criteriaData.projectType"
+                v-model="criteriaData.exerciseType"
                 :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                :options="projectTypeOptions"
+                :options="exerciseTypeOptions"
                 :reduce="val => val.value"
                 :clearable="false"
-                input-id="project-type"
+                input-id="exercise-type"
               />
 
               <b-form-invalid-feedback>
@@ -64,23 +64,110 @@
             </b-form-group>
           </validation-provider>
 
-          <!-- Project Version -->
+          <!-- Code -->
           <validation-provider
             #default="validationContext"
-            name="Project Version"
+            name="Code"
             rules="required"
           >
             <b-form-group
-              label="Project Version"
-              label-for="project-version"
+              label="Code"
+              label-for="code"
             >
               <b-form-input
-                id="project-version"
-                v-model="criteriaData.projectVersion"
+                id="code"
+                v-model="criteriaData.code"
                 :state="getValidationState(validationContext)"
+                placeholder="ASD P1"
                 trim
               />
 
+              <b-form-invalid-feedback>
+                {{ validationContext.errors[0] }}
+              </b-form-invalid-feedback>
+            </b-form-group>
+          </validation-provider>
+
+          <!-- Score -->
+          <validation-provider
+            v-if="validationScore"
+            #default="validationContext"
+            name="Score"
+            :rules="validationScore ? 'required' : ''"
+          >
+            <b-form-group
+              label="Score"
+              label-for="score"
+            >
+              <b-form-input
+                id="score"
+                v-model="criteriaData.score"
+                :state="getValidationState(validationContext)"
+                type="number"
+                trim
+              />
+
+              <b-form-invalid-feedback>
+                {{ validationContext.errors[0] }}
+              </b-form-invalid-feedback>
+            </b-form-group>
+          </validation-provider>
+
+          <!-- Description -->
+          <validation-provider
+            #default="validationContext"
+            name="Description"
+            rules="required"
+          >
+            <b-form-group
+              label="Description"
+              label-for="description"
+            >
+              <quill-editor
+                v-model="criteriaData.description"
+                :options="editorOption"
+              />
+              <b-form-invalid-feedback>
+                {{ validationContext.errors[0] }}
+              </b-form-invalid-feedback>
+            </b-form-group>
+          </validation-provider>
+
+          <!-- Additional Notes -->
+          <validation-provider
+            #default="validationContext"
+            name="Additional Notes"
+            rules=""
+          >
+            <b-form-group
+              label="Additional Notes"
+              label-for="additional-notes"
+            >
+              <quill-editor
+                v-model="criteriaData.additionalNotes"
+                :options="editorOption"
+              />
+              <b-form-invalid-feedback>
+                {{ validationContext.errors[0] }}
+              </b-form-invalid-feedback>
+            </b-form-group>
+          </validation-provider>
+
+          <!-- Not Available -->
+          <validation-provider
+            #default="validationContext"
+            name="Not Available"
+            rules=""
+          >
+            <b-form-group
+              label="Not Available"
+              label-for="not-available"
+            >
+              <b-form-checkbox
+                v-model="criteriaData.notAvailable"
+              >
+                No Available / Hide
+              </b-form-checkbox>
               <b-form-invalid-feedback>
                 {{ validationContext.errors[0] }}
               </b-form-invalid-feedback>
@@ -109,21 +196,29 @@
 
         </b-form>
       </validation-observer>
-    </criteria>
+    </template>
   </b-sidebar>
-</criteria>
+</template>
 
 <script>
 import {
-  BSidebar, BForm, BFormGroup, BFormInput, BFormInvalidFeedback, BButton,
+  BSidebar, BForm, BFormGroup, BFormInput, BFormInvalidFeedback, BButton, BFormCheckbox,
 } from 'bootstrap-vue'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import { ref } from '@vue/composition-api'
 import { required, alphaNum, email } from '@validations'
+import router from '@/router'
 import formValidation from '@core/comp-functions/forms/form-validation'
 import Ripple from 'vue-ripple-directive'
 import vSelect from 'vue-select'
 import store from '@/store'
+// eslint-disable-next-line
+import 'quill/dist/quill.core.css'
+// eslint-disable-next-line
+import 'quill/dist/quill.snow.css'
+// eslint-disable-next-line
+import 'quill/dist/quill.bubble.css'
+import { quillEditor } from 'vue-quill-editor'
 
 export default {
   components: {
@@ -133,10 +228,12 @@ export default {
     BFormInput,
     BFormInvalidFeedback,
     BButton,
+    BFormCheckbox,
     vSelect,
     // Form Validation
     ValidationProvider,
     ValidationObserver,
+    quillEditor,
   },
   directives: {
     Ripple,
@@ -150,7 +247,7 @@ export default {
       type: Boolean,
       required: true,
     },
-    projectTypeOptions: {
+    exerciseTypeOptions: {
       type: Array,
       required: true,
     },
@@ -164,8 +261,16 @@ export default {
   },
   setup(props, { emit }) {
     const blankCriteriaData = {
-      projectType: '',
-      projectVersion: '',
+      exerciseType: '',
+      score: '',
+      description: '',
+      additionalNotes: '',
+      notAvailable: false,
+      masterExerciseID: `${router.currentRoute.params.exerciseId}`,
+    }
+
+    const editorOption = {
+      theme: 'snow',
     }
 
     const criteriaData = ref(JSON.parse(JSON.stringify(blankCriteriaData)))
@@ -189,12 +294,18 @@ export default {
 
     return {
       criteriaData,
+      editorOption,
       onSubmit,
 
       refFormObserver,
       getValidationState,
       resetForm,
     }
+  },
+  computed: {
+    validationScore() {
+      return this.criteriaData.exerciseType !== 'prequisite'
+    },
   },
 }
 </script>

@@ -2,7 +2,6 @@
   <div>
     <document-list-add-new
       :is-add-new-document-sidebar-active.sync="isAddNewDocumentSidebarActive"
-      :project-type-options="projectTypeOptions"
       @refetch-data="refetchData"
     />
 
@@ -95,15 +94,15 @@
             >
               <template v-slot:button-content>
                 <feather-icon
-                  :id="`project-row-${props.row.id}-document-icon`"
-                  icon="EyeIcon"
+                  :id="`project-row-${props.row.id}-document-icon-edit`"
+                  icon="EditIcon"
                   size="16"
                   class="mx-1"
-                  @click="$router.push({ name: 'admin-document-list', params: { id: props.row.id }})"
+                  @click="$router.push({ name: 'admin-document-edit', params: { documentId: props.row.id }})"
                 />
                 <b-tooltip
-                  title="Document Detail"
-                  :target="`project-row-${props.row.id}-document-icon`"
+                  title="Document Update"
+                  :target="`project-row-${props.row.id}-document-icon-edit`"
                 />
               </template>
             </b-dropdown>
@@ -187,9 +186,9 @@
             />
             <b-button
               variant="primary"
-              @click="isAddNewBlockerSidebarActive = true"
+              @click="$router.push({ name: 'admin-blocker-correlation', params: { blockerId: $router.currentRoute.params.criteriaId }})"
             >
-              <span class="text-nowrap">Add Blocker</span>
+              <span class="text-nowrap">Update Correlation Blocker</span>
             </b-button>
           </div>
         </b-col>
@@ -220,31 +219,6 @@
         >
           <span class="text-nowrap">{{ props.row.blocker.code }}</span>
         </div>
-
-        <!-- Column: Action -->
-        <span v-if="props.column.field === 'action'">
-          <span>
-            <b-dropdown
-              variant="link"
-              toggle-class="text-decoration-none"
-              no-caret
-            >
-              <template v-slot:button-content>
-                <feather-icon
-                  :id="`project-row-${props.row.id}-document-icon`"
-                  icon="EyeIcon"
-                  size="16"
-                  class="mx-1"
-                  @click="$router.push({ name: 'admin-document-list', params: { id: props.row.id }})"
-                />
-                <b-tooltip
-                  title="Blocker Detail"
-                  :target="`project-row-${props.row.id}-document-icon`"
-                />
-              </template>
-            </b-dropdown>
-          </span>
-        </span>
 
         <!-- Column: Common -->
         <span v-else>
@@ -352,11 +326,6 @@ export default {
 
     const isAddNewDocumentSidebarActive = ref(false)
 
-    const projectTypeOptions = [
-      { label: 'Design Recognition', value: 'design_recognition' },
-      { label: 'Final Assessment', value: 'final_assessment' },
-    ]
-
     const {
       resolveProjectTypeIcon,
       resolveProjectTypeVariant,
@@ -369,7 +338,6 @@ export default {
     } = useBlockersList()
     return {
       // Sidebar
-      projectTypeOptions,
       isAddNewDocumentSidebarActive,
       refDocumentListTable,
       refBlockerListTable,
@@ -414,10 +382,6 @@ export default {
           label: 'Created At',
           field: 'created_at',
         },
-        {
-          label: 'Action',
-          field: 'action',
-        },
       ],
       options: {
         propertiesPanel: {},
@@ -445,7 +409,7 @@ export default {
   },
   methods: {
     retrieveCriteria() {
-      this.$http.get(`engine-rest/master-project/criterias/${router.currentRoute.params.id}`, { })
+      this.$http.get(`engine-rest/master-project/criterias/${router.currentRoute.params.criteriaId}`, { })
         .then(res => { this.criteria = res.data })
         .catch(() => {
           useToast({
@@ -459,11 +423,11 @@ export default {
         })
     },
     retrieveDocuments() {
-      this.$http.get(`engine-rest/master-project/criterias/${router.currentRoute.params.id}/documents`)
+      this.$http.get(`engine-rest/master-project/criterias/${router.currentRoute.params.criteriaId}/documents`)
         .then(res => { this.rows = res.data })
     },
     retrieveBlockers() {
-      this.$http.get(`engine-rest/master-project/criterias/${router.currentRoute.params.id}/blockers`)
+      this.$http.get(`engine-rest/master-project/criterias/${router.currentRoute.params.criteriaId}/blockers`)
         .then(res => { this.blockers = res.data })
     },
     /* eslint-disable object-shorthand */

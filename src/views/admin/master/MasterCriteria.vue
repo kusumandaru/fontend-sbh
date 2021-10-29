@@ -2,7 +2,7 @@
   <div>
     <criteria-list-add-new
       :is-add-new-criteria-sidebar-active.sync="isAddNewCriteriaSidebarActive"
-      :project-type-options="projectTypeOptions"
+      :exercise-type-options="exerciseTypeOptions"
       @refetch-data="refetchData"
     />
 
@@ -72,20 +72,28 @@
         slot="table-row"
         slot-scope="props"
       >
-        <!-- Column: Description -->
+        <!-- Column: Exercise Type -->
         <div
-          v-if="props.column.field === 'description'"
+          v-if="props.column.field === 'exercise'"
           class="text-nowrap"
         >
-          <span :v-html="props.row.description" />
+          <b-badge :variant="resolveExerciseTypeVariant(props.row.exercise_type)">
+            {{ resolveExerciseTypeTranslation(props.row.exercise_type) }}
+          </b-badge>
+        </div>
+
+        <!-- Column: Description -->
+        <div
+          v-if="props.column.field === 'desc'"
+        >
+          <span v-html="props.row.description" />
         </div>
 
         <!-- Column: Additional Notes -->
         <div
-          v-if="props.column.field === 'additional_notes'"
-          class="text-nowrap"
+          v-if="props.column.field === 'note'"
         >
-          <span :v-html="props.row.additional_notes" />
+          <span v-html="props.row.additional_notes" />
         </div>
 
         <!-- Column: Action -->
@@ -102,11 +110,23 @@
                   icon="EyeIcon"
                   size="16"
                   class="mx-1"
-                  @click="$router.push({ name: 'admin-document-list', params: { id: props.row.id }})"
+                  @click="$router.push({ name: 'admin-document-list', params: { vendorId: $router.currentRoute.params.vendorId, templateId: $router.currentRoute.params.templateId, evaluationId: $router.currentRoute.params.evaluationId, exerciseId: $router.currentRoute.params.exerciseId, criteriaId: props.row.id }})"
                 />
                 <b-tooltip
                   title="Criteria Detail"
                   :target="`project-row-${props.row.id}-criteria-icon`"
+                />
+
+                <feather-icon
+                  :id="`project-row-${props.row.id}-criteria-icon-edit`"
+                  icon="EditIcon"
+                  size="16"
+                  class="mx-1"
+                  @click="$router.push({ name: 'admin-criteria-edit', params: { criteriaId: props.row.id }})"
+                />
+                <b-tooltip
+                  title="Criteria Update"
+                  :target="`project-row-${props.row.id}-criteria-icon-edit`"
                 />
               </template>
             </b-dropdown>
@@ -172,7 +192,7 @@
 
 <script>
 import {
-  BPagination, BFormGroup, BFormInput, BFormSelect, BDropdown, BButton, BCol, BCard, BCardText, BTooltip,
+  BPagination, BFormGroup, BFormInput, BFormSelect, BDropdown, BButton, BCol, BCard, BCardText, BTooltip, BBadge,
 } from 'bootstrap-vue'
 import { VueGoodTable } from 'vue-good-table'
 import store from '@/store/index'
@@ -198,6 +218,7 @@ export default {
     BCard,
     BCardText,
     BTooltip,
+    BBadge,
     CriteriaListAddNew,
   },
   setup() {
@@ -213,26 +234,27 @@ export default {
 
     const isAddNewCriteriaSidebarActive = ref(false)
 
-    const projectTypeOptions = [
-      { label: 'Design Recognition', value: 'design_recognition' },
-      { label: 'Final Assessment', value: 'final_assessment' },
+    const exerciseTypeOptions = [
+      { label: 'Prequisite', value: 'prequisite' },
+      { label: 'Score', value: 'score' },
+      { label: 'Max Score', value: 'max_score' },
     ]
 
     const {
-      resolveProjectTypeIcon,
-      resolveProjectTypeVariant,
-      resolveProjectTypeTranslation,
+      resolveExerciseTypeIcon,
+      resolveExerciseTypeVariant,
+      resolveExerciseTypeTranslation,
       refetchData,
       refCriteriaListTable,
     } = useCriteriasList()
     return {
       // Sidebar
-      projectTypeOptions,
+      exerciseTypeOptions,
       isAddNewCriteriaSidebarActive,
       refCriteriaListTable,
-      resolveProjectTypeIcon,
-      resolveProjectTypeVariant,
-      resolveProjectTypeTranslation,
+      resolveExerciseTypeIcon,
+      resolveExerciseTypeVariant,
+      resolveExerciseTypeTranslation,
       refetchData,
     }
   },
@@ -244,7 +266,7 @@ export default {
       searchTerm: '',
       columns: [
         {
-          label: 'code',
+          label: 'Code',
           field: 'code',
           filterOptions: {
             enabled: true,
@@ -253,7 +275,7 @@ export default {
         },
         {
           label: 'Exercise Type',
-          field: 'exercise_type',
+          field: 'exercise',
           filterOptions: {
             enabled: true,
             placeholder: 'Search Type',
@@ -262,14 +284,15 @@ export default {
         {
           label: 'Score',
           field: 'score',
+          type: 'number',
         },
         {
           label: 'Description',
-          field: 'description',
+          field: 'desc',
         },
         {
           label: 'Additional Notes',
-          field: 'additional_notes',
+          field: 'note',
         },
         {
           label: 'Not Available',
@@ -310,7 +333,7 @@ export default {
   },
   methods: {
     retrieveExercise() {
-      this.$http.get(`engine-rest/master-project/exercises/${router.currentRoute.params.id}`, { })
+      this.$http.get(`engine-rest/master-project/exercises/${router.currentRoute.params.exerciseId}`, { })
         .then(res => { this.exercise = res.data })
         .catch(() => {
           useToast({
@@ -324,7 +347,7 @@ export default {
         })
     },
     retrieveCriterias() {
-      this.$http.get(`engine-rest/master-project/exercises/${router.currentRoute.params.id}/criterias`)
+      this.$http.get(`engine-rest/master-project/exercises/${router.currentRoute.params.exerciseId}/criterias`)
         .then(res => { this.rows = res.data })
     },
     /* eslint-disable object-shorthand */

@@ -2,7 +2,6 @@
   <div>
     <exercise-list-add-new
       :is-add-new-exercise-sidebar-active.sync="isAddNewExerciseSidebarActive"
-      :project-type-options="projectTypeOptions"
       @refetch-data="refetchData"
     />
 
@@ -69,16 +68,6 @@
         slot="table-row"
         slot-scope="props"
       >
-        <!-- Column: Code -->
-        <!-- <div
-          v-if="props.column.field === 'project_type'"
-          class="text-nowrap"
-        >
-          <b-badge :variant="resolveProjectTypeVariant(props.row.project_type)">
-            {{ resolveProjectTypeTranslation(props.row.project_type) }}
-          </b-badge>
-        </div> -->
-
         <!-- Column: Action -->
         <span v-if="props.column.field === 'action'">
           <span>
@@ -93,11 +82,23 @@
                   icon="EyeIcon"
                   size="16"
                   class="mx-1"
-                  @click="$router.push({ name: 'admin-criteria-list', params: { id: props.row.id }})"
+                  @click="$router.push({ name: 'admin-criteria-list', params: { vendorId: $router.currentRoute.params.vendorId, templateId: $router.currentRoute.params.templateId, evaluationId: $router.currentRoute.params.evaluationId, exerciseId: props.row.id }})"
                 />
                 <b-tooltip
                   title="Exercise Detail"
                   :target="`project-row-${props.row.id}-exercise-icon`"
+                />
+
+                <feather-icon
+                  :id="`project-row-${props.row.id}-exercise-icon-edit`"
+                  icon="EditIcon"
+                  size="16"
+                  class="mx-1"
+                  @click="$router.push({ name: 'admin-exercise-edit', params: { exerciseId: props.row.id }})"
+                />
+                <b-tooltip
+                  title="Exercise Update"
+                  :target="`project-row-${props.row.id}-exercise-icon-edit`"
                 />
               </template>
             </b-dropdown>
@@ -204,11 +205,6 @@ export default {
 
     const isAddNewExerciseSidebarActive = ref(false)
 
-    const projectTypeOptions = [
-      { label: 'Design Recognition', value: 'design_recognition' },
-      { label: 'Final Assessment', value: 'final_assessment' },
-    ]
-
     const {
       resolveProjectTypeIcon,
       resolveProjectTypeVariant,
@@ -218,7 +214,6 @@ export default {
     } = useExercisesList()
     return {
       // Sidebar
-      projectTypeOptions,
       isAddNewExerciseSidebarActive,
       refExerciseListTable,
       resolveProjectTypeIcon,
@@ -285,7 +280,7 @@ export default {
   },
   methods: {
     retrieveEvaluation() {
-      this.$http.get(`engine-rest/master-project/evaluations/${router.currentRoute.params.id}`, { })
+      this.$http.get(`engine-rest/master-project/evaluations/${router.currentRoute.params.evaluationId}`, { })
         .then(res => { this.evaluation = res.data })
         .catch(() => {
           useToast({
@@ -299,7 +294,7 @@ export default {
         })
     },
     retrieveExercises() {
-      this.$http.get(`engine-rest/master-project/evaluations/${router.currentRoute.params.id}/exercises`)
+      this.$http.get(`engine-rest/master-project/evaluations/${router.currentRoute.params.evaluationId}/exercises`)
         .then(res => { this.rows = res.data })
     },
     /* eslint-disable object-shorthand */

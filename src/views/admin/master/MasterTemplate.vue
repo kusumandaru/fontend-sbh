@@ -72,7 +72,7 @@
         slot="table-row"
         slot-scope="props"
       >
-        <!-- Column: Code -->
+        <!-- Column: Project Type -->
         <div
           v-if="props.column.field === 'project_type'"
           class="text-nowrap"
@@ -96,11 +96,23 @@
                   icon="EyeIcon"
                   size="16"
                   class="mx-1"
-                  @click="$router.push({ name: 'admin-evaluation-list', params: { id: props.row.id }})"
+                  @click="$router.push({ name: 'admin-evaluation-list', params: { vendorId: $router.currentRoute.params.vendorId, templateId: props.row.id }})"
                 />
                 <b-tooltip
                   title="Template Detail"
                   :target="`project-row-${props.row.id}-template-icon`"
+                />
+
+                <feather-icon
+                  :id="`project-row-${props.row.id}-template-icon-edit`"
+                  icon="EditIcon"
+                  size="16"
+                  class="mx-1"
+                  @click="$router.push({ name: 'admin-template-edit', params: { vendorId: $router.currentRoute.params.vendorId, templateId: props.row.id }})"
+                />
+                <b-tooltip
+                  title="Template Update"
+                  :target="`project-row-${props.row.id}-template-icon-edit`"
                 />
               </template>
             </b-dropdown>
@@ -289,7 +301,7 @@ export default {
   },
   methods: {
     retrieveVendor() {
-      this.$http.get(`engine-rest/master-project/vendors/${router.currentRoute.params.id}`, { })
+      this.$http.get(`engine-rest/master-project/vendors/${router.currentRoute.params.vendorId}`, { })
         .then(res => { this.vendor = res.data })
         .catch(() => {
           useToast({
@@ -303,7 +315,7 @@ export default {
         })
     },
     retrieveTemplates() {
-      this.$http.get(`engine-rest/master-project/vendors/${router.currentRoute.params.id}/templates`)
+      this.$http.get(`engine-rest/master-project/vendors/${router.currentRoute.params.vendorId}/templates`)
         .then(res => { this.rows = res.data })
     },
     /* eslint-disable object-shorthand */

@@ -4,9 +4,9 @@ import Vue from 'vue'
 import axios from 'axios'
 
 const axiosIns = axios.create({
-  headers: {
-    'Content-type': 'application/json',
-  },
+  // headers: {
+  //   'Content-type': 'application/json',
+  // },
   // You can add your headers here
   // ================================
   baseURL: 'http://localhost:8080/',
