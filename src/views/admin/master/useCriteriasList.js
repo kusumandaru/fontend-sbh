@@ -90,21 +90,26 @@ export default function useCriteriasList() {
   // *--------- UI ---------------------------------------*
   // *===============================================---*
 
-  const resolveProjectTypeIcon = projectType => {
-    if (projectType === 'design_recognition') return 'SettingsIcon'
-    if (projectType === 'final_assessment') return 'ServerIcon'
+  const resolveExerciseTypeIcon = exerciseType => {
+    if (exerciseType === 'prequisite') return 'SettingsIcon'
+    if (exerciseType === 'score') return 'ServerIcon'
+    if (exerciseType === 'max_score') return 'ServerIcon'
+
     return 'UserIcon'
   }
 
-  const resolveProjectTypeTranslation = projectType => {
-    if (projectType === 'design_recognition') return 'Design Recognition'
-    if (projectType === 'final_assessment') return 'Final Assessment'
+  const resolveExerciseTypeTranslation = exerciseType => {
+    if (exerciseType === 'prequisite') return 'Prequisite'
+    if (exerciseType === 'score') return 'Score'
+    if (exerciseType === 'max_score') return 'Max Score'
     return ''
   }
 
-  const resolveProjectTypeVariant = projectType => {
-    if (projectType === 'design_recognition') return 'primary'
-    if (projectType === 'final_assessment') return 'success'
+  const resolveExerciseTypeVariant = exerciseType => {
+    if (exerciseType === 'prequisite') return 'primary'
+    if (exerciseType === 'score') return 'success'
+    if (exerciseType === 'max_score') return 'secondary'
+
     return 'primary'
   }
 
@@ -121,9 +126,9 @@ export default function useCriteriasList() {
     isSortDirDesc,
     refCriteriaListTable,
 
-    resolveProjectTypeIcon,
-    resolveProjectTypeVariant,
-    resolveProjectTypeTranslation,
+    resolveExerciseTypeIcon,
+    resolveExerciseTypeVariant,
+    resolveExerciseTypeTranslation,
     refetchData,
 
     // Extra Filters

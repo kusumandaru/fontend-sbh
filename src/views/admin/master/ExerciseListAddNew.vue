@@ -1,4 +1,4 @@
-<exercise>
+<template>
   <b-sidebar
     id="add-new-exercise-sidebar"
     :visible="isAddNewExerciseSidebarActive"
@@ -11,7 +11,7 @@
     @hidden="resetForm"
     @change="(val) => $emit('update:is-add-new-exercise-sidebar-active', val)"
   >
-    <exercise #default="{ hide }">
+    <template #default="{ hide }">
       <!-- Header -->
       <div class="d-flex justify-content-between align-items-center content-sidebar-header px-2 py-1">
         <h5 class="mb-0">
@@ -39,23 +39,21 @@
           @reset.prevent="resetForm"
         >
 
-          <!-- Project Type -->
+          <!-- Code -->
           <validation-provider
             #default="validationContext"
-            name="Project Type"
+            name="Code"
             rules="required"
           >
             <b-form-group
-              label="Project Type"
-              label-for="project-type"
+              label="Code"
+              label-for="code"
             >
-              <v-select
-                v-model="exerciseData.projectType"
-                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                :options="projectTypeOptions"
-                :reduce="val => val.value"
-                :clearable="false"
-                input-id="project-type"
+              <b-form-input
+                id="code"
+                v-model="exerciseData.code"
+                :state="getValidationState(validationContext)"
+                trim
               />
 
               <b-form-invalid-feedback>
@@ -64,19 +62,19 @@
             </b-form-group>
           </validation-provider>
 
-          <!-- Project Version -->
+          <!-- Name -->
           <validation-provider
             #default="validationContext"
-            name="Project Version"
+            name="Name"
             rules="required"
           >
             <b-form-group
-              label="Project Version"
-              label-for="project-version"
+              label="Name"
+              label-for="name"
             >
               <b-form-input
-                id="project-version"
-                v-model="exerciseData.projectVersion"
+                id="name"
+                v-model="exerciseData.name"
                 :state="getValidationState(validationContext)"
                 trim
               />
@@ -109,9 +107,9 @@
 
         </b-form>
       </validation-observer>
-    </exercise>
+    </template>
   </b-sidebar>
-</exercise>
+</template>
 
 <script>
 import {
@@ -120,9 +118,9 @@ import {
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import { ref } from '@vue/composition-api'
 import { required, alphaNum, email } from '@validations'
+import router from '@/router'
 import formValidation from '@core/comp-functions/forms/form-validation'
 import Ripple from 'vue-ripple-directive'
-import vSelect from 'vue-select'
 import store from '@/store'
 
 export default {
@@ -133,7 +131,6 @@ export default {
     BFormInput,
     BFormInvalidFeedback,
     BButton,
-    vSelect,
     // Form Validation
     ValidationProvider,
     ValidationObserver,
@@ -150,10 +147,6 @@ export default {
       type: Boolean,
       required: true,
     },
-    projectTypeOptions: {
-      type: Array,
-      required: true,
-    },
   },
   data() {
     return {
@@ -164,8 +157,9 @@ export default {
   },
   setup(props, { emit }) {
     const blankExerciseData = {
-      projectType: '',
-      projectVersion: '',
+      code: '',
+      name: '',
+      masterEvaluationID: `${router.currentRoute.params.evaluationId}`,
     }
 
     const exerciseData = ref(JSON.parse(JSON.stringify(blankExerciseData)))

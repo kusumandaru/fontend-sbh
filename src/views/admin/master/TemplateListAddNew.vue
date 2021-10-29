@@ -121,6 +121,7 @@ import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import { ref } from '@vue/composition-api'
 import { required, alphaNum, email } from '@validations'
 import formValidation from '@core/comp-functions/forms/form-validation'
+import router from '@/router'
 import Ripple from 'vue-ripple-directive'
 import vSelect from 'vue-select'
 import store from '@/store'
@@ -166,6 +167,7 @@ export default {
     const blankTemplateData = {
       projectType: '',
       projectVersion: '',
+      masterVendorID: `${router.currentRoute.params.vendorId}`,
     }
 
     const templateData = ref(JSON.parse(JSON.stringify(blankTemplateData)))
