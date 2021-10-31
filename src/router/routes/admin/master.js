@@ -1,7 +1,7 @@
 export default [
   {
     path: '/admin/master/city',
-    name: 'city-list',
+    name: 'admin-city-list',
     component: () => import('@/views/admin/master/CityList.vue'),
     meta: {
       pageTitle: 'List City',
@@ -16,8 +16,28 @@ export default [
     },
   },
   {
+    path: '/admin/master/city/:cityId/edit',
+    name: 'admin-city-edit',
+    component: () => import('@/views/admin/master/CityEdit.vue'),
+    meta: {
+      pageTitle: 'Update City Type',
+      breadcrumb: [
+        {
+          text: 'List City Type',
+          to: '/admin/master/city',
+        },
+        {
+          text: 'Update City Type',
+          active: true,
+        },
+      ],
+      action: 'read',
+      resource: 'master',
+    },
+  },
+  {
     path: '/admin/master/province',
-    name: 'province-list',
+    name: 'admin-province-list',
     component: () => import('@/views/admin/master/ProvinceList.vue'),
     meta: {
       pageTitle: 'List Province',
@@ -32,8 +52,28 @@ export default [
     },
   },
   {
+    path: '/admin/master/province/:provinceId/edit',
+    name: 'admin-province-edit',
+    component: () => import('@/views/admin/master/ProvinceEdit.vue'),
+    meta: {
+      pageTitle: 'Update Province Type',
+      breadcrumb: [
+        {
+          text: 'List Province Type',
+          to: '/admin/master/province',
+        },
+        {
+          text: 'Update Province Type',
+          active: true,
+        },
+      ],
+      action: 'read',
+      resource: 'master',
+    },
+  },
+  {
     path: '/admin/master/building-type',
-    name: 'building-type-list',
+    name: 'admin-building-type-list',
     component: () => import('@/views/admin/master/BuildingTypeList.vue'),
     meta: {
       pageTitle: 'List Building Type',
@@ -44,6 +84,26 @@ export default [
         },
       ],
       action: 'manage',
+      resource: 'master',
+    },
+  },
+  {
+    path: '/admin/master/building-type/:buildingId/edit',
+    name: 'admin-building-edit',
+    component: () => import('@/views/admin/master/BuildingEdit.vue'),
+    meta: {
+      pageTitle: 'Update Building Type',
+      breadcrumb: [
+        {
+          text: 'List Building Type',
+          to: '/admin/master/building-type',
+        },
+        {
+          text: 'Update Building Type',
+          active: true,
+        },
+      ],
+      action: 'read',
       resource: 'master',
     },
   },
@@ -82,7 +142,7 @@ export default [
   {
     path: '/admin/master/vendor',
     name: 'admin-vendor-list',
-    component: () => import('@/views/admin/master/MasterVendor.vue'),
+    component: () => import('@/views/admin/master/VendorList.vue'),
     meta: {
       pageTitle: 'List Vendor',
       breadcrumb: [
@@ -118,7 +178,7 @@ export default [
   {
     path: '/admin/master/vendor/:vendorId/templates',
     name: 'admin-template-list',
-    component: () => import('@/views/admin/master/MasterTemplate.vue'),
+    component: () => import('@/views/admin/master/TemplateList.vue'),
     meta: {
       pageTitle: 'List Template',
       breadcrumb: [
@@ -161,7 +221,7 @@ export default [
   {
     path: '/admin/master/vendor/:vendorId/templates/:templateId/evaluations',
     name: 'admin-evaluation-list',
-    component: () => import('@/views/admin/master/MasterEvaluation.vue'),
+    component: () => import('@/views/admin/master/EvaluationList.vue'),
     meta: {
       pageTitle: 'List Evaluation',
       breadcrumb: [
@@ -210,7 +270,7 @@ export default [
   {
     path: '/admin/master/vendor/:vendorId/templates/:templateId/evaluations/:evaluationId/exercises',
     name: 'admin-exercise-list',
-    component: () => import('@/views/admin/master/MasterExercise.vue'),
+    component: () => import('@/views/admin/master/ExerciseList.vue'),
     meta: {
       pageTitle: 'List Exercise',
       breadcrumb: [
@@ -265,7 +325,7 @@ export default [
   {
     path: '/admin/master/vendor/:vendorId/templates/:templateId/evaluations/:evaluationId/exercises/:exerciseId/criterias',
     name: 'admin-criteria-list',
-    component: () => import('@/views/admin/master/MasterCriteria.vue'),
+    component: () => import('@/views/admin/master/CriteriaList.vue'),
     meta: {
       pageTitle: 'List Criteria',
       breadcrumb: [
@@ -326,7 +386,7 @@ export default [
   {
     path: '/admin/master/vendor/:vendorId/templates/:templateId/evaluations/:evaluationId/exercises/:exerciseId/criterias/:criteriaId/documents',
     name: 'admin-document-list',
-    component: () => import('@/views/admin/master/MasterDocument.vue'),
+    component: () => import('@/views/admin/master/DocumentList.vue'),
     meta: {
       pageTitle: 'List Document',
       breadcrumb: [

@@ -6,6 +6,86 @@ export default {
   getters: {},
   mutations: {},
   actions: {
+    fetchBuilding(ctx, { buildingId }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/engine-rest/master/building_types/${buildingId}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    addBuilding(ctx, buildingData) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post('/engine-rest/master/building_types', buildingData)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    editBuilding(ctx, { buildingId, buildingData }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .patch(`/engine-rest/master/building_types/${buildingId}`, buildingData)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    fetchCity(ctx, { cityId }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/engine-rest/master/cities/${cityId}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    addCity(ctx, cityData) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post('/engine-rest/master/cities', cityData)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    editCity(ctx, { cityId, cityData }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .patch(`/engine-rest/master/cities/${cityId}`, cityData)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    fetchProvinces(ctx, queryParams) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get('/engine-rest/master/provinces', { params: queryParams })
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    fetchProvince(ctx, { provinceId }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/engine-rest/master/provinces/${provinceId}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    addProvince(ctx, provinceData) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post('/engine-rest/master/provinces', provinceData)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    editProvince(ctx, { provinceId, provinceData }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .patch(`/engine-rest/master/provinces/${provinceId}`, provinceData)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
     fetchVendors(ctx, queryParams) {
       return new Promise((resolve, reject) => {
         axios

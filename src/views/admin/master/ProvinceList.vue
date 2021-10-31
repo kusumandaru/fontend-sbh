@@ -1,18 +1,22 @@
 <template>
   <div>
+    <province-list-add-new
+      :is-add-new-province-sidebar-active.sync="isAddNewProvinceSidebarActive"
+      @refetch-data="refetchData"
+    />
     <!-- input search -->
-    <div class="custom-search d-flex justify-content-end">
-      <b-form-group>
-        <div class="d-flex align-items-center">
-          <label class="mr-1">Search</label>
-          <b-form-input
-            v-model="searchTerm"
-            placeholder="Search"
-            type="text"
-            class="d-inline-block"
-          />
-        </div>
-      </b-form-group>
+    <div class="d-flex align-items-center justify-content-end">
+      <b-form-input
+        v-model="searchTerm"
+        class="d-inline-block mr-1"
+        placeholder="Search..."
+      />
+      <b-button
+        variant="primary"
+        @click="isAddNewProvinceSidebarActive = true"
+      >
+        <span class="text-nowrap">Add Province</span>
+      </b-button>
     </div>
     <!-- table -->
     <vue-good-table
@@ -58,9 +62,15 @@
             >
               <template v-slot:button-content>
                 <feather-icon
-                  icon="MoreVerticalIcon"
+                  :id="`master-row-${props.row.id}-province-icon-edit`"
+                  icon="EditIcon"
                   size="16"
-                  class="text-body align-middle mr-25"
+                  class="mx-1"
+                  @click="$router.push({ name: 'admin-province-edit', params: { provinceId: props.row.id }})"
+                />
+                <b-tooltip
+                  title="Vendor Update"
+                  :target="`master-row-${props.row.id}-province-icon-edit`"
                 />
               </template>
             </b-dropdown>
@@ -126,20 +136,50 @@
 
 <script>
 import {
-  BPagination, BFormGroup, BFormInput, BFormSelect, BDropdown,
+  BPagination, BFormInput, BFormSelect, BDropdown, BButton, BTooltip,
 } from 'bootstrap-vue'
 import { VueGoodTable } from 'vue-good-table'
+import { ref, onUnmounted } from '@vue/composition-api'
 import store from '@/store/index'
 import 'vue-good-table/dist/vue-good-table.css'
+import useProvincesList from './useProvincesList'
+import masterStoreModule from './masterStoreModule'
+import ProvinceListAddNew from './ProvinceListAddNew.vue'
 
 export default {
   components: {
     VueGoodTable,
     BDropdown,
     BPagination,
-    BFormGroup,
     BFormInput,
     BFormSelect,
+    BButton,
+    BTooltip,
+    ProvinceListAddNew,
+  },
+  setup() {
+    const PROVINCE_APP_STORE_MODULE_NAME = 'app-province'
+
+    // Register module
+    if (!store.hasModule(PROVINCE_APP_STORE_MODULE_NAME)) store.registerModule(PROVINCE_APP_STORE_MODULE_NAME, masterStoreModule)
+
+    // UnRegister on leave
+    onUnmounted(() => {
+      if (store.hasModule(PROVINCE_APP_STORE_MODULE_NAME)) store.unregisterModule(PROVINCE_APP_STORE_MODULE_NAME)
+    })
+
+    const isAddNewProvinceSidebarActive = ref(false)
+
+    const {
+      refetchData,
+      refProvinceListTable,
+    } = useProvincesList()
+    return {
+      // Sidebar
+      isAddNewProvinceSidebarActive,
+      refProvinceListTable,
+      refetchData,
+    }
   },
   data() {
     return {

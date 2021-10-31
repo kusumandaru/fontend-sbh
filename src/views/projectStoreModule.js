@@ -121,7 +121,7 @@ export default {
     fetchAdminData() {
       return new Promise((resolve, reject) => {
         axios
-          .get('engine-rest/master/master_admins')
+          .get('engine-rest/master/_admins')
           .then(response => resolve(response))
           .catch(error => reject(error))
       })

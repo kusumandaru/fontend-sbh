@@ -289,7 +289,7 @@ export default {
   },
   methods: {
     retrieveAdminData() {
-      this.$http.get('engine-rest/master/master_admins')
+      this.$http.get('engine-rest/master/_admins')
         .then(res => {
           this.adminData = res.data
         })

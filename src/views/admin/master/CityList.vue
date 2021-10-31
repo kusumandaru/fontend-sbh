@@ -1,18 +1,22 @@
 <template>
   <div>
+    <city-list-add-new
+      :is-add-new-city-sidebar-active.sync="isAddNewCitySidebarActive"
+      @refetch-data="refetchData"
+    />
     <!-- input search -->
-    <div class="custom-search d-flex justify-content-end">
-      <b-form-group>
-        <div class="d-flex align-items-center">
-          <label class="mr-1">Search</label>
-          <b-form-input
-            v-model="searchTerm"
-            placeholder="Search"
-            type="text"
-            class="d-inline-block"
-          />
-        </div>
-      </b-form-group>
+    <div class="d-flex align-items-center justify-content-end">
+      <b-form-input
+        v-model="searchTerm"
+        class="d-inline-block mr-1"
+        placeholder="Search..."
+      />
+      <b-button
+        variant="primary"
+        @click="isAddNewCitySidebarActive = true"
+      >
+        <span class="text-nowrap">Add City</span>
+      </b-button>
     </div>
     <!-- table -->
     <vue-good-table
@@ -42,10 +46,10 @@
 
         <!-- Column: Name -->
         <div
-          v-if="props.column.field === 'provinceId'"
+          v-if="props.column.field === 'cityId'"
           class="text-nowrap"
         >
-          <span class="text-nowrap">{{ props.row.province.name }}</span>
+          <span class="text-nowrap">{{ props.row.city.name }}</span>
         </div>
 
         <!-- Column: Action -->
@@ -58,9 +62,15 @@
             >
               <template v-slot:button-content>
                 <feather-icon
-                  icon="MoreVerticalIcon"
+                  :id="`master-row-${props.row.id}-city-icon-edit`"
+                  icon="EditIcon"
                   size="16"
-                  class="text-body align-middle mr-25"
+                  class="mx-1"
+                  @click="$router.push({ name: 'admin-city-edit', params: { cityId: props.row.id }})"
+                />
+                <b-tooltip
+                  title="Vendor Update"
+                  :target="`master-row-${props.row.id}-city-icon-edit`"
                 />
               </template>
             </b-dropdown>
@@ -126,20 +136,50 @@
 
 <script>
 import {
-  BPagination, BFormGroup, BFormInput, BFormSelect, BDropdown,
+  BPagination, BFormInput, BFormSelect, BDropdown, BButton, BTooltip,
 } from 'bootstrap-vue'
 import { VueGoodTable } from 'vue-good-table'
+import { ref, onUnmounted } from '@vue/composition-api'
 import store from '@/store/index'
 import 'vue-good-table/dist/vue-good-table.css'
+import useCitiesList from './useCitiesList'
+import masterStoreModule from './masterStoreModule'
+import CityListAddNew from './CityListAddNew.vue'
 
 export default {
   components: {
     VueGoodTable,
     BPagination,
     BDropdown,
-    BFormGroup,
     BFormInput,
     BFormSelect,
+    BButton,
+    BTooltip,
+    CityListAddNew,
+  },
+  setup() {
+    const CITY_APP_STORE_MODULE_NAME = 'app-city'
+
+    // Register module
+    if (!store.hasModule(CITY_APP_STORE_MODULE_NAME)) store.registerModule(CITY_APP_STORE_MODULE_NAME, masterStoreModule)
+
+    // UnRegister on leave
+    onUnmounted(() => {
+      if (store.hasModule(CITY_APP_STORE_MODULE_NAME)) store.unregisterModule(CITY_APP_STORE_MODULE_NAME)
+    })
+
+    const isAddNewCitySidebarActive = ref(false)
+
+    const {
+      refetchData,
+      refCityListTable,
+    } = useCitiesList()
+    return {
+      // Sidebar
+      isAddNewCitySidebarActive,
+      refCityListTable,
+      refetchData,
+    }
   },
   data() {
     return {
