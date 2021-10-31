@@ -39,17 +39,17 @@ export default [
           },
           {
             title: 'Master City',
-            route: 'city-list',
+            route: 'admin-city-list',
             icon: 'MapIcon',
           },
           {
             title: 'Master Province',
-            route: 'province-list',
+            route: 'admin-province-list',
             icon: 'MapIcon',
           },
           {
             title: 'Master Building Type',
-            route: 'building-type-list',
+            route: 'admin-building-type-list',
             icon: 'MapIcon',
           },
           {

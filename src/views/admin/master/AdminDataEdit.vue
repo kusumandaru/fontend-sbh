@@ -359,7 +359,7 @@ export default {
   },
   methods: {
     retrieveAdminData() {
-      this.$http.get('engine-rest/master/master_admins')
+      this.$http.get('engine-rest/master/_admins')
         .then(res => {
           this.adminData = res.data
         })
@@ -386,7 +386,7 @@ export default {
               'Content-Type': 'multipart/form-data',
             },
           }
-          this.$http.post('/engine-rest/master/master_admins', request, config).then(res => {
+          this.$http.post('/engine-rest/master/_admins', request, config).then(res => {
             this.result = JSON.parse(JSON.stringify(res.data))
             this.successShow = true
             this.isLoading = false

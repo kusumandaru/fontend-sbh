@@ -1,18 +1,22 @@
 <template>
   <div>
+    <building-list-add-new
+      :is-add-new-building-sidebar-active.sync="isAddNewBuildingSidebarActive"
+      @refetch-data="refetchData"
+    />
     <!-- input search -->
-    <div class="custom-search d-flex justify-content-end">
-      <b-form-group>
-        <div class="d-flex align-items-center">
-          <label class="mr-1">Search</label>
-          <b-form-input
-            v-model="searchTerm"
-            placeholder="Search"
-            type="text"
-            class="d-inline-block"
-          />
-        </div>
-      </b-form-group>
+    <div class="d-flex align-items-center justify-content-end">
+      <b-form-input
+        v-model="searchTerm"
+        class="d-inline-block mr-1"
+        placeholder="Search..."
+      />
+      <b-button
+        variant="primary"
+        @click="isAddNewBuildingSidebarActive = true"
+      >
+        <span class="text-nowrap">Add Building</span>
+      </b-button>
     </div>
     <!-- table -->
     <vue-good-table
@@ -34,7 +38,7 @@
 
         <!-- Column: Name -->
         <div
-          v-if="props.column.field === 'nameEn'"
+          v-if="props.column.field === 'name_en'"
           class="text-nowrap"
         >
           <!-- <span class="text-nowrap">{{ props.row.name }}</span> -->
@@ -48,16 +52,8 @@
           <!-- <span class="text-nowrap">{{ props.row.name }}</span> -->
         </div>
 
-        <!-- Column: Name -->
-        <div
-          v-if="props.column.field === 'building_type_id'"
-          class="text-nowrap"
-        >
-          <span class="text-nowrap">{{ props.row.buildingType.name }}</span>
-        </div>
-
         <!-- Column: Action -->
-        <span v-else-if="props.column.field === 'action'">
+        <span v-if="props.column.field === 'action'">
           <span>
             <b-dropdown
               variant="link"
@@ -66,9 +62,15 @@
             >
               <template v-slot:button-content>
                 <feather-icon
-                  icon="MoreVerticalIcon"
+                  :id="`master-row-${props.row.id}-building-icon-edit`"
+                  icon="EditIcon"
                   size="16"
-                  class="text-body align-middle mr-25"
+                  class="mx-1"
+                  @click="$router.push({ name: 'admin-building-edit', params: { buildingId: props.row.id }})"
+                />
+                <b-tooltip
+                  title="Vendor Update"
+                  :target="`master-row-${props.row.id}-building-icon-edit`"
                 />
               </template>
             </b-dropdown>
@@ -134,20 +136,50 @@
 
 <script>
 import {
-  BPagination, BFormGroup, BFormInput, BFormSelect, BDropdown,
+  BPagination, BFormInput, BFormSelect, BDropdown, BButton, BTooltip,
 } from 'bootstrap-vue'
 import { VueGoodTable } from 'vue-good-table'
+import { ref, onUnmounted } from '@vue/composition-api'
 import store from '@/store/index'
 import 'vue-good-table/dist/vue-good-table.css'
+import useBuildingsList from './useBuildingsList'
+import masterStoreModule from './masterStoreModule'
+import BuildingListAddNew from './BuildingListAddNew.vue'
 
 export default {
   components: {
     VueGoodTable,
     BDropdown,
     BPagination,
-    BFormGroup,
     BFormInput,
     BFormSelect,
+    BButton,
+    BTooltip,
+    BuildingListAddNew,
+  },
+  setup() {
+    const BUILDING_APP_STORE_MODULE_NAME = 'app-building'
+
+    // Register module
+    if (!store.hasModule(BUILDING_APP_STORE_MODULE_NAME)) store.registerModule(BUILDING_APP_STORE_MODULE_NAME, masterStoreModule)
+
+    // UnRegister on leave
+    onUnmounted(() => {
+      if (store.hasModule(BUILDING_APP_STORE_MODULE_NAME)) store.unregisterModule(BUILDING_APP_STORE_MODULE_NAME)
+    })
+
+    const isAddNewBuildingSidebarActive = ref(false)
+
+    const {
+      refetchData,
+      refBuildingListTable,
+    } = useBuildingsList()
+    return {
+      // Sidebar
+      isAddNewBuildingSidebarActive,
+      refBuildingListTable,
+      refetchData,
+    }
   },
   data() {
     return {
