@@ -34,6 +34,30 @@
               <tr>
                 <th class="pb-50">
                   <feather-icon
+                    icon="UserIcon"
+                    class="mr-75"
+                  />
+                  <span class="font-weight-bold">Default Design Recognition Template</span>
+                </th>
+                <td class="pb-50">
+                  {{ drTemplate.project_type }} - {{ drTemplate.project_version }}
+                </td>
+              </tr>
+              <tr>
+                <th class="pb-50">
+                  <feather-icon
+                    icon="UserIcon"
+                    class="mr-75"
+                  />
+                  <span class="font-weight-bold">Default Final Assessment Template</span>
+                </th>
+                <td class="pb-50">
+                  {{ faTemplate.project_type }} - {{ faTemplate.project_version }}
+                </td>
+              </tr>
+              <tr>
+                <th class="pb-50">
+                  <feather-icon
                     icon="UserCheckIcon"
                     class="mr-75"
                   />
@@ -242,7 +266,29 @@ export default {
     this.retrieveManagerSignatureImage()
   },
   setup() {
-    const adminData = ref(null)
+    const blankAdminData = {
+      manager_name: '',
+      manager_signature: '',
+      registration_letter: '',
+      first_attachment: '',
+      second_attachment: '',
+      third_attachment: '',
+      dr_template_id: '',
+      fa_template_id: '',
+    }
+    const adminData = ref(JSON.parse(JSON.stringify(blankAdminData)))
+    const blankDrTemplate = {
+      project_version: '',
+      project_type: '',
+      master_vendor_id: '',
+    }
+    const drTemplate = ref(JSON.parse(JSON.stringify(blankDrTemplate)))
+    const blankFaTemplate = {
+      project_version: '',
+      project_type: '',
+      master_vendor_id: '',
+    }
+    const faTemplate = ref(JSON.parse(JSON.stringify(blankFaTemplate)))
     const signatureImage = ref(null)
     let isLoading = ref(false)
     const PROJECT_APP_STORE_MODULE_NAME = 'app-project'
@@ -282,6 +328,8 @@ export default {
     return {
       downloadFile,
       adminData,
+      drTemplate,
+      faTemplate,
       signatureImage,
       isLoading,
       updateAdminData,
@@ -289,21 +337,36 @@ export default {
   },
   methods: {
     retrieveAdminData() {
-      this.$http.get('engine-rest/master/_admins')
+      this.$http.get('engine-rest/master/master_admins')
         .then(res => {
           this.adminData = res.data
+          this.retrieveFaTemplate()
+          this.retrieveDrTemplate()
         })
     },
-    /* eslint-disable object-shorthand */
-    handleError(err) {
-      console.error('failed to show diagram', err)
-    },
+
     /* eslint-enable object-shorthand */
     retrieveManagerSignatureImage() {
       this.$http.get('engine-rest/master/url_file/manager_signature')
         .then(res => {
           this.signatureImage = res.data.url
         })
+    },
+    retrieveFaTemplate() {
+      this.$http.get(`engine-rest/master-project/templates/${this.adminData.fa_template_id}`)
+        .then(res => {
+          this.faTemplate = res.data
+        })
+    },
+    retrieveDrTemplate() {
+      this.$http.get(`engine-rest/master-project/templates/${this.adminData.dr_template_id}`)
+        .then(res => {
+          this.drTemplate = res.data
+        })
+    },
+    /* eslint-disable object-shorthand */
+    handleError(err) {
+      console.error('failed to show data', err)
     },
   },
 }

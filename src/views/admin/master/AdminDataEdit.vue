@@ -29,6 +29,60 @@
           </b-form-group>
         </b-col>
 
+        <!-- design recognition template -->
+        <b-col cols="12">
+          <b-form-group
+            label="Design Recognition Template"
+            label-for="design_recognition_template"
+          >
+            <validation-provider
+              #default="{ errors }"
+              name="Design Recognition Template"
+              rules="required"
+            >
+              <v-select
+                v-model="adminData.dr_template_id"
+                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                :options="drTemplateOptions"
+                :reduce="val => val.id"
+                :clearable="false"
+                :required="!adminData.dr_template_id"
+                input-id="dr-template"
+                label="project_version"
+                code="id"
+              />
+              <small class="text-danger">{{ errors[0] }}</small>
+            </validation-provider>
+          </b-form-group>
+        </b-col>
+
+        <!-- final assessment template -->
+        <b-col cols="12">
+          <b-form-group
+            label="Final Assessment Template"
+            label-for="final)assessment_template"
+          >
+            <validation-provider
+              #default="{ errors }"
+              name="Final Assessment Template"
+              rules="required"
+            >
+              <v-select
+                v-model="adminData.fa_template_id"
+                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                :options="faTemplateOptions"
+                :reduce="val => val.id"
+                :clearable="false"
+                :required="!adminData.fa_template_id"
+                input-id="fa-template"
+                label="project_version"
+                code="id"
+              />
+              <small class="text-danger">{{ errors[0] }}</small>
+            </validation-provider>
+          </b-form-group>
+        </b-col>
+
         <!--Manager Signature -->
         <b-col md="12">
           <b-form-group>
@@ -237,6 +291,7 @@ import {
   BModal,
   BForm,
 } from 'bootstrap-vue'
+import vSelect from 'vue-select'
 import Ripple from 'vue-ripple-directive'
 import projectStoreModule from '@/views/projectStoreModule'
 import router from '@/router'
@@ -262,6 +317,7 @@ export default {
     BFormInput,
     BForm,
     BModal,
+    vSelect,
     ValidationProvider,
     ValidationObserver,
   },
@@ -301,7 +357,19 @@ export default {
     },
   },
   setup() {
-    const adminData = ref({})
+    const blankAdminData = {
+      manager_name: '',
+      manager_signature: '',
+      registration_letter: '',
+      first_attachment: '',
+      second_attachment: '',
+      third_attachment: '',
+      dr_template_id: '',
+      fa_template_id: '',
+    }
+    const adminData = ref(JSON.parse(JSON.stringify(blankAdminData)))
+    const drTemplateOptions = ref(JSON.parse('[]'))
+    const faTemplateOptions = ref(JSON.parse('[]'))
     const PROJECT_APP_STORE_MODULE_NAME = 'app-project'
 
     // Register module
@@ -322,6 +390,26 @@ export default {
         }
         if (error.response.status === 500) {
           adminData.value = undefined
+        }
+      })
+
+    store.dispatch('app-project/fetchTemplates', { project_type: 'design_recognition' })
+      .then(response => {
+        drTemplateOptions.value = response.data
+      })
+      .catch(error => {
+        if (error.response.status === 404) {
+          drTemplateOptions.value = undefined
+        }
+      })
+
+    store.dispatch('app-project/fetchTemplates', { project_type: 'final_assessment' })
+      .then(response => {
+        faTemplateOptions.value = response.data
+      })
+      .catch(error => {
+        if (error.response.status === 404) {
+          faTemplateOptions.value = undefined
         }
       })
 
@@ -353,13 +441,15 @@ export default {
     return {
       downloadFile,
       adminData,
+      drTemplateOptions,
+      faTemplateOptions,
       updateAdminData,
       showAdminData,
     }
   },
   methods: {
     retrieveAdminData() {
-      this.$http.get('engine-rest/master/_admins')
+      this.$http.get('engine-rest/master/master_admins')
         .then(res => {
           this.adminData = res.data
         })
@@ -380,13 +470,15 @@ export default {
           request.append('first_attachment', this.firstAttachment)
           request.append('second_attachment', this.secondAttachment)
           request.append('third_attachment', this.thirdAttachment)
+          request.append('dr_template_id', this.adminData.dr_template_id)
+          request.append('fa_template_id', this.adminData.fa_template_id)
 
           const config = {
             header: {
               'Content-Type': 'multipart/form-data',
             },
           }
-          this.$http.post('/engine-rest/master/_admins', request, config).then(res => {
+          this.$http.post('/engine-rest/master/master_admins', request, config).then(res => {
             this.result = JSON.parse(JSON.stringify(res.data))
             this.successShow = true
             this.isLoading = false
@@ -406,4 +498,5 @@ export default {
 
 <style lang="scss" scoped>
 @import "~@core/scss/base/pages/app-project.scss";
+@import '~@core/scss/vue/libs/vue-select.scss';
 </style>

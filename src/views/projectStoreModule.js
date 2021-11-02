@@ -121,7 +121,15 @@ export default {
     fetchAdminData() {
       return new Promise((resolve, reject) => {
         axios
-          .get('engine-rest/master/_admins')
+          .get('engine-rest/master/master_admins')
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    fetchTemplates(ctx, queryParams) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get('/engine-rest/master-project/templates', { params: queryParams })
           .then(response => resolve(response))
           .catch(error => reject(error))
       })
