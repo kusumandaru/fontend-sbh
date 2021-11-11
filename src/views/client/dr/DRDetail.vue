@@ -1,0 +1,504 @@
+<template>
+  <div v-if="exercise">
+    <b-card class="card-app-design">
+      <div class="d-flex align-items-center">
+        <b-avatar
+          rounded
+          size="42"
+          variant="light-primary"
+          class="mr-1"
+        >
+          <feather-icon
+            icon="CheckSquareIcon"
+            size="20"
+          />
+        </b-avatar>
+        <div>
+          <h4 class="mb-0">
+            {{ exercise.exercise.name }}
+          </h4>
+          <span>{{ exercise.exercise.code }}</span>
+        </div>
+
+        <div
+          class="design-planning-wrapper"
+          style="position:absolute; right:20px;"
+        >
+          <div class="design-planning">
+            <p class="card-text mb-25">
+              {{ exercise.exercise.exercise_type }}
+            </p>
+            <h6 class="mb-0">
+              {{ exercise.exercise.max_score }}
+            </h6>
+          </div>
+        </div>
+      </div>
+    </b-card>
+
+    <!-- collapse -->
+    <app-collapse
+      id="d-r-detail"
+      accordion
+      type="margin"
+      class="mt-2"
+    >
+      <app-collapse-item
+        v-for="( criteria,idx) in exercise.criterias"
+        :key="idx"
+        :title="criteria.criteria.code"
+        :subtitle="translateStatus(criteria)"
+        :header-bg-variant="criteria.criteria.not_available ? 'warning' : 'primary'"
+      >
+        <p v-html="criteria.criteria.description" />
+
+        <!-- Spacer -->
+        <hr class="project-spacing">
+
+        <!-- scoring -->
+        <b-form-group
+          label-cols="4"
+          label-cols-lg="2"
+          label="Nilai"
+          label-for="input-default"
+        >
+          <b-form-input
+            id="input-default"
+            :disabled='disabled'
+            v-model="criteria.score"
+          />
+        </b-form-group>
+
+        <b-form-group
+          label-cols="4"
+          label-cols-lg="2"
+          label="Nilai Potensial"
+          label-for="input-default"
+        >
+          <b-form-input
+            id="input-default"
+            :disabled='disabled'
+            v-model="criteria.potential_score"
+          />
+        </b-form-group>
+        <!-- scoring -->
+
+        <!-- Spacer -->
+        <hr class="project-spacing">
+
+        <b-table
+          :fields="docFields"
+          :items="criteria.documents"
+          responsive
+          class="mb-0"
+        >
+          <template #cell(show_details)="row">
+            <!-- As `row.showDetails` is one-way, we call the toggleDetails function on @change -->
+            <b-form-checkbox
+              v-model="row.detailsShowing"
+              @change="row.toggleDetails"
+            >
+              {{ row.detailsShowing ? 'Hide' : 'Show' }}
+            </b-form-checkbox>
+          </template>
+
+          <!-- full detail on click -->
+          <template #row-details="row">
+            <b-card>
+              <b-row class="mb-2">
+                <b-table
+                  responsive
+                  :items="row.item.attachments"
+                  :fields="documentFields"
+                  class="mb-0"
+                >
+                  <template #cell(filename)="doc">
+                    <a :href="`${doc.item.link}`">
+                      {{ doc.value }}
+                    </a>
+                  </template>
+                </b-table>
+                <b-form-file
+                  placeholder="Choose a file or drop it here..."
+                  drop-placeholder="Drop file here..."
+                  multiple
+                  v-model="row.item.files"
+                />
+              </b-row>
+            </b-card>
+            <b-card>
+              <b-button
+                size="sm"
+                variant="outline-secondary"
+                @click="row.toggleDetails"
+              >
+                Hide Details
+              </b-button>
+            </b-card>
+          </template>
+          <template #cell(name)="name">
+            <div v-html="name.value" />
+          </template>
+        </b-table>
+
+        <!-- explanation  -->
+        <!-- <div
+          v-if="criteria.criteria.additional_notes"
+          class="apply-job-package bg-light-primary rounded"
+        >
+          <div class="text-body">
+            <p v-html="criteria.criteria.additional_notes" />
+          </div>
+        </div> -->
+        <!--/ explanation  -->
+
+        <!-- Spacer -->
+        <hr class="project-spacing">
+
+        <!-- placeholder -->
+        <div v-if="criteria.criteria.additional_notes">
+          <label for="textarea-default">Internal Notes</label>
+          <quill-editor
+            v-model="criteria.criteria.additional_notes"
+            :disabled='disabled'
+            :exercise="snowOption"
+          />
+        <!-- <span v-html="criteria.placeholder"></span> -->
+        </div>
+        <!-- placeholder -->
+
+        <!-- save button -->
+        <p />
+        <b-col cols="12">
+          <b-button
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="primary"
+            :disabled="isLoading"
+            @click="saveCriteria(criteria)"
+          >
+            <b-spinner
+              v-if="isLoading"
+              small
+              type="grow"
+            />
+            Save
+          </b-button>
+        </b-col>
+        <!-- save button -->
+
+        <p />
+
+        <!-- Spacer -->
+        <hr class="project-s  pacing">
+
+        <!-- comment -->
+        <b-col
+          id="comment"
+          cols="12"
+          class="mt-2"
+        >
+          <h6 class="section-label">
+            Comment
+          </h6>
+          <b-card
+            v-for="(comment, idx) in criteria.comments"
+            :key="idx"
+          >
+            <b-media no-body>
+              <b-media-aside class="mr-75">
+                <b-avatar
+                  :src="comment.avatar"
+                  size="38"
+                />
+              </b-media-aside>
+              <b-media-body>
+                <h6 class="font-weight-bolder mb-25">
+                  {{ comment.user.first_name }} {{ comment.user.last_name }}
+                  <b-badge variant="light-success">
+                    {{ comment.role }}
+                  </b-badge>
+                </h6>
+                <b-card-text>{{ comment.created_at }}</b-card-text>
+                <b-card-text>
+                  {{ comment.comment }}
+                </b-card-text>
+              </b-media-body>
+            </b-media>
+          </b-card>
+        </b-col>
+        <!--/ blog comment -->
+
+        <!-- Spacer -->
+        <hr class="project-s  pacing">
+
+        <!-- Leave a Blog Comment -->
+        <b-col
+          cols="12"
+          class="mt-2"
+        >
+          <h6 class="section-label">
+            Leave a Comment
+          </h6>
+          <b-card>
+            <b-form>
+              <b-row>
+                <b-col cols="12">
+                  <b-form-group class="mb-2">
+                    <b-form-textarea
+                      name="textarea"
+                      rows="4"
+                      v-model="criteriaComment"
+                      placeholder="comment here"
+                    />
+                  </b-form-group>
+                </b-col>
+                <b-col cols="12">
+                  <b-button
+                    v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+                    variant="primary"
+                    @click="submitComment(criteria)"
+                  >
+                    Post Comment
+                  </b-button>
+                </b-col>
+              </b-row>
+            </b-form>
+          </b-card>
+        </b-col>
+        <!--/ Leave a Blog Comment -->
+
+        <template #code>
+          {{ codeRowDetailsSupport }}
+          {{ codeFormatterCallback }}
+        </template>
+      </app-collapse-item>
+    </app-collapse>
+
+    <!--/ collapse -->
+  </div>
+</template>
+
+<script>
+import {
+  BAvatar,
+  BBadge,
+  BCard,
+  BTable,
+  BButton,
+  BFormCheckbox,
+  BRow,
+  BCol,
+  // BFormSelect,
+  BFormGroup,
+  BFormInput,
+  BMedia,
+  BMediaAside,
+  BMediaBody,
+  BCardText,
+  BForm,
+  BFormTextarea,
+  BFormFile,
+  BSpinner,
+} from 'bootstrap-vue'
+import {
+  ref, onUnmounted,
+} from '@vue/composition-api'
+import router from '@/router'
+import store from '@/store'
+import Ripple from 'vue-ripple-directive'
+// eslint-disable-next-line
+import 'quill/dist/quill.core.css'
+// eslint-disable-next-line
+import 'quill/dist/quill.snow.css'
+// eslint-disable-next-line
+import 'quill/dist/quill.bubble.css'
+import { quillEditor } from 'vue-quill-editor'
+import AppCollapse from '@core/components/app-collapse/AppCollapse.vue'
+import AppCollapseItem from '@core/components/app-collapse/AppCollapseItemCustom.vue'
+import masterDrStoreModule from './masterDrStoreModule'
+import { codeFormatterCallback, codeRowDetailsSupport } from './code'
+
+export default {
+  directives: {
+    Ripple,
+  },
+  components: {
+    BAvatar,
+    BBadge,
+    BCard,
+    BTable,
+    BButton,
+    BFormCheckbox,
+    BRow,
+    BCol,
+    // BFormSelect,
+    BFormGroup,
+    BFormInput,
+    AppCollapseItem,
+    AppCollapse,
+    BMedia,
+    BMediaAside,
+    BMediaBody,
+    BCardText,
+    BForm,
+    BFormTextarea,
+    BFormFile,
+    BSpinner,
+    quillEditor,
+  },
+  props: {
+    exercise: {
+      type: Object,
+      default: () => {},
+    },
+    rerenderScoreParent: {
+      type: Function,
+    },
+    rerenderCriteriaParent: {
+      type: Function,
+    },
+  },
+  data() {
+    return {
+      light: '',
+      success: '',
+      criteriaComment: '',
+      commentCheckmark: '',
+      commentKey: 0,
+      docFields: [
+        'show_details',
+        { key: 'document.name', label: 'Document Name' },
+      ],
+      documentFields: [
+        { key: 'filename', label: 'Document Name' },
+        { key: 'uploader_name', label: 'Creator' },
+        { key: 'created_at', label: 'Created At' },
+      ],
+      documentStatus: [
+        {
+          1: 'belum diserahkan', 2: 'belum memenuhi tolok ukur', 3: 'telah memenuhi tolok ukur',
+        },
+        {
+          1: 'light-danger', 2: 'light-warning', 3: 'light-success',
+        },
+      ],
+      statusOptions: [
+        { value: 1, text: 'Idle', icon: 'SearchIcon' },
+        { value: 2, text: 'Under Review', icon: 'SearchIcon' },
+        { value: 3, text: 'Rejected', icon: 'SlashIcon' },
+        { value: 4, text: 'Accepted', icon: 'CheckCircleIcon' },
+      ],
+      comments: [
+        {
+          avatar: '',
+          userFullName: 'Chad Alexander',
+          commentedAt: 'May 24, 2020',
+          commentText:
+            'Telah dilakukan pengamatan pada remote audit site. kriteria dapat diterima, video dapat dilihat di https://drive.google.com/drive/folders/1zasdasdhes',
+        },
+      ],
+      codeFormatterCallback,
+      codeRowDetailsSupport,
+      snowOption: {
+        theme: 'snow',
+      },
+      isLoading: false,
+      disabled: true,
+    }
+  },
+  computed: {
+  },
+  setup() {
+    const DR_APP_STORE_MODULE_NAME = 'app-dr'
+
+    // Register module
+    if (!store.hasModule(DR_APP_STORE_MODULE_NAME)) store.registerModule(DR_APP_STORE_MODULE_NAME, masterDrStoreModule)
+
+    // UnRegister on leave
+    onUnmounted(() => {
+      if (store.hasModule(DR_APP_STORE_MODULE_NAME)) store.unregisterModule(DR_APP_STORE_MODULE_NAME)
+    })
+  },
+  methods: {
+    submitCriteria(criteria) {
+      this.isLoading = true
+      store.dispatch('app-dr/submitCriteria', { criteriaScoringId: criteria.id })
+        .then(() => {
+          this.isLoading = false
+          router.push({ name: 'client-project-dr-assessment' })
+        })
+    },
+    // eslint-disable-next-line
+    submitComment(criteria) {
+      const initCommentData = {
+        criteriaScoringID: criteria.id,
+        comment: this.criteriaComment,
+      }
+
+      // eslint-disable-next-line
+      const commentData = ref(JSON.parse(JSON.stringify(initCommentData)))
+
+      this.$http.post(`/engine-rest/new-building/criteria_scoring/${criteria.id}/attachments`, commentData.value)
+        .then(response => {
+          console.log(response.data)
+          this.isLoading = false
+          this.rerenderCriteria()
+        })
+    },
+    fetchCommentCriteria(criteria) {
+      const comments = ref(JSON.parse('{}'))
+      this.$http.get(`/engine-rest/new-building/criteria_scoring/${criteria.id}/comments`).then(response => {
+        comments.value = response.data
+      })
+      return comments
+    },
+    saveCriteria(criteria) {
+      const request = new FormData()
+      for (let doc = 0; doc < criteria.documents.length; doc += 1) {
+        // eslint-disable-next-line
+        const files = criteria.documents[doc].files
+        if (files !== null && files !== undefined) {
+          for (let fi = 0; fi < files.length; fi += 1) {
+            const file = files[fi]
+            request.append(`${doc}_${fi}`, file)
+          }
+        }
+      }
+      const config = {
+        header: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+      this.$http.post(`/engine-rest/new-building/criteria_scoring/${criteria.id}/attachments`, request, config).then(res => {
+        this.result = JSON.parse(JSON.stringify(res.data))
+        this.isLoading = false
+      }).catch(() => {
+        this.isLoading = false
+        // this.showToast('danger', 'Cannot Save', 'There is error when submit data, contact administrator')
+      })
+    },
+    rerenderScore() {
+      this.rerenderScoreParent()
+    },
+    rerenderCriteria() {
+      this.rerenderCriteriaParent()
+    },
+    forceRerenderComment() {
+      this.commentKey += 1
+    },
+    translateStatus(criteria) {
+      // eslint-disable-next-line
+      const filtered = this.statusOptions.filter(f => { 
+        // eslint-disable-next-line
+        return f.value === criteria.approval_status 
+      })
+      return filtered[0].text
+    },
+  },
+}
+</script>
+
+<style lang="scss">
+@import "~@core/scss/base/pages/app-email.scss";
+@import '~@core/scss/vue/libs/vue-select.scss';
+</style>

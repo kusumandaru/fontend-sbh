@@ -59,6 +59,7 @@ export default {
     title: {
       type: String,
       required: true,
+      default: '',
     },
     subtitle: {
       type: String,
@@ -91,8 +92,13 @@ export default {
   },
   methods: {
     updateVisible(val = true) {
-      this.visible = val
-      this.$emit('visible', val)
+      if (this.headerBgVariant === 'primary') {
+        this.visible = val
+        this.$emit('visible', val)
+      } else {
+        this.visible = false
+        this.$emit('visible', false)
+      }
     },
     collapseOpen() {
       if (this.openOnHover) this.updateVisible(true)

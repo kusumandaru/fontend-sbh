@@ -46,4 +46,9 @@ export default [
     name: 'client-project-upload-document',
     component: () => import('@/views/client/project/UploadDocument.vue'),
   },
+  {
+    path: '/client/project/dr/assesment/:id',
+    name: 'client-project-dr-assessment',
+    component: () => import('@/views/client/dr/DRList.vue'),
+  },
 ]

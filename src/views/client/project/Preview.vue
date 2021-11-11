@@ -417,6 +417,18 @@
             Upload Document Building
           </b-button>
 
+          <!-- Button: Design Recognition-->
+          <b-button
+            v-if="designRecognitionShow"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="success"
+            class="mb-75"
+            block
+            @click="designRecognitionSubmission"
+          >
+            Design Recognition Submission
+          </b-button>
+
           <!-- Button: Print -->
           <b-button
             v-ripple.400="'rgba(186, 191, 199, 0.15)'"
@@ -479,6 +491,9 @@ export default {
     },
     registrationLetterAttachmentShow() {
       return !(this.aboveFirstPaymentTasks.includes(this.projectData.definition_key))
+    },
+    designRecognitionShow() {
+      return ['design-recognition-submission'].includes(this.projectData.definition_key)
     },
   },
   setup() {
@@ -603,6 +618,10 @@ export default {
         })
     }
 
+    const designRecognitionSubmission = () => {
+      router.push({ name: 'client-project-dr-assessment', params: { id: router.currentRoute.params.id } })
+    }
+
     const draftRegistrationLetter = () => {
       store.dispatch('app-project/downloadMasterLink', {
         filename: 'registration_letter',
@@ -654,6 +673,7 @@ export default {
       eligibleStatement,
       registeredProject,
       registeredProjectAttachment,
+      designRecognitionSubmission,
       draftRegistrationLetter,
       aboveCheckBuildingTasks,
       aboveFirstPaymentTasks,
