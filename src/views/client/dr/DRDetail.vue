@@ -1,281 +1,295 @@
 <template>
-  <div v-if="exercise">
-    <b-card class="card-app-design">
-      <div class="d-flex align-items-center">
-        <b-avatar
-          rounded
-          size="42"
-          variant="light-primary"
-          class="mr-1"
-        >
-          <feather-icon
-            icon="CheckSquareIcon"
-            size="20"
-          />
-        </b-avatar>
-        <div>
-          <h4 class="mb-0">
-            {{ exercise.exercise.name }}
-          </h4>
-          <span>{{ exercise.exercise.code }}</span>
-        </div>
-
-        <div
-          class="design-planning-wrapper"
-          style="position:absolute; right:20px;"
-        >
-          <div class="design-planning">
-            <p class="card-text mb-25">
-              {{ exercise.exercise.exercise_type }}
-            </p>
-            <h6 class="mb-0">
-              {{ exercise.exercise.max_score }}
-            </h6>
-          </div>
-        </div>
-      </div>
-    </b-card>
-
-    <!-- collapse -->
-    <app-collapse
-      id="d-r-detail"
-      accordion
-      type="margin"
-      class="mt-2"
-    >
-      <app-collapse-item
-        v-for="( criteria,idx) in exercise.criterias"
-        :key="idx"
-        :title="criteria.criteria.code"
-        :subtitle="translateStatus(criteria)"
-        :header-bg-variant="criteria.criteria.not_available ? 'warning' : 'primary'"
-      >
-        <p v-html="criteria.criteria.description" />
-
-        <!-- Spacer -->
-        <hr class="project-spacing">
-
-        <!-- scoring -->
-        <b-form-group
-          label-cols="4"
-          label-cols-lg="2"
-          label="Nilai"
-          label-for="input-default"
-        >
-          <b-form-input
-            id="input-default"
-            :disabled='disabled'
-            v-model="criteria.score"
-          />
-        </b-form-group>
-
-        <b-form-group
-          label-cols="4"
-          label-cols-lg="2"
-          label="Nilai Potensial"
-          label-for="input-default"
-        >
-          <b-form-input
-            id="input-default"
-            :disabled='disabled'
-            v-model="criteria.potential_score"
-          />
-        </b-form-group>
-        <!-- scoring -->
-
-        <!-- Spacer -->
-        <hr class="project-spacing">
-
-        <b-table
-          :fields="docFields"
-          :items="criteria.documents"
-          responsive
-          class="mb-0"
-        >
-          <template #cell(show_details)="row">
-            <!-- As `row.showDetails` is one-way, we call the toggleDetails function on @change -->
-            <b-form-checkbox
-              v-model="row.detailsShowing"
-              @change="row.toggleDetails"
-            >
-              {{ row.detailsShowing ? 'Hide' : 'Show' }}
-            </b-form-checkbox>
-          </template>
-
-          <!-- full detail on click -->
-          <template #row-details="row">
-            <b-card>
-              <b-row class="mb-2">
-                <b-table
-                  responsive
-                  :items="row.item.attachments"
-                  :fields="documentFields"
-                  class="mb-0"
-                >
-                  <template #cell(filename)="doc">
-                    <a :href="`${doc.item.link}`">
-                      {{ doc.value }}
-                    </a>
-                  </template>
-                </b-table>
-                <b-form-file
-                  placeholder="Choose a file or drop it here..."
-                  drop-placeholder="Drop file here..."
-                  multiple
-                  v-model="row.item.files"
-                />
-              </b-row>
-            </b-card>
-            <b-card>
-              <b-button
-                size="sm"
-                variant="outline-secondary"
-                @click="row.toggleDetails"
-              >
-                Hide Details
-              </b-button>
-            </b-card>
-          </template>
-          <template #cell(name)="name">
-            <div v-html="name.value" />
-          </template>
-        </b-table>
-
-        <!-- explanation  -->
-        <!-- <div
-          v-if="criteria.criteria.additional_notes"
-          class="apply-job-package bg-light-primary rounded"
-        >
-          <div class="text-body">
-            <p v-html="criteria.criteria.additional_notes" />
-          </div>
-        </div> -->
-        <!--/ explanation  -->
-
-        <!-- Spacer -->
-        <hr class="project-spacing">
-
-        <!-- placeholder -->
-        <div v-if="criteria.criteria.additional_notes">
-          <label for="textarea-default">Internal Notes</label>
-          <quill-editor
-            v-model="criteria.criteria.additional_notes"
-            :disabled='disabled'
-            :exercise="snowOption"
-          />
-        <!-- <span v-html="criteria.placeholder"></span> -->
-        </div>
-        <!-- placeholder -->
-
-        <!-- save button -->
-        <p />
-        <b-col cols="12">
-          <b-button
-            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-            variant="primary"
-            :disabled="isLoading"
-            @click="saveCriteria(criteria)"
+  <b-overlay
+    :show="isLoading"
+    rounded="sm"
+  >
+    <div v-if="exercise">
+      <b-card class="card-app-design">
+        <div class="d-flex align-items-center">
+          <b-avatar
+            rounded
+            size="42"
+            variant="light-primary"
+            class="mr-1"
           >
-            <b-spinner
-              v-if="isLoading"
-              small
-              type="grow"
+            <feather-icon
+              icon="CheckSquareIcon"
+              size="20"
             />
-            Save
-          </b-button>
-        </b-col>
-        <!-- save button -->
+          </b-avatar>
+          <div>
+            <h4 class="mb-0">
+              {{ exercise.exercise.name }}
+            </h4>
+            <span>{{ exercise.exercise.code }}</span>
+          </div>
 
-        <p />
-
-        <!-- Spacer -->
-        <hr class="project-s  pacing">
-
-        <!-- comment -->
-        <b-col
-          id="comment"
-          cols="12"
-          class="mt-2"
-        >
-          <h6 class="section-label">
-            Comment
-          </h6>
-          <b-card
-            v-for="(comment, idx) in criteria.comments"
-            :key="idx"
+          <div
+            class="design-planning-wrapper"
+            style="position:absolute; right:20px;"
           >
-            <b-media no-body>
-              <b-media-aside class="mr-75">
-                <b-avatar
-                  :src="comment.avatar"
-                  size="38"
-                />
-              </b-media-aside>
-              <b-media-body>
-                <h6 class="font-weight-bolder mb-25">
-                  {{ comment.user.first_name }} {{ comment.user.last_name }}
-                  <b-badge variant="light-success">
-                    {{ comment.role }}
-                  </b-badge>
-                </h6>
-                <b-card-text>{{ comment.created_at }}</b-card-text>
-                <b-card-text>
-                  {{ comment.comment }}
-                </b-card-text>
-              </b-media-body>
-            </b-media>
-          </b-card>
-        </b-col>
-        <!--/ blog comment -->
+            <div class="design-planning">
+              <p class="card-text mb-25">
+                {{ exercise.exercise.exercise_type }}
+              </p>
+              <h6 class="mb-0">
+                {{ exercise.exercise.max_score }}
+              </h6>
+            </div>
+          </div>
+        </div>
+      </b-card>
 
-        <!-- Spacer -->
-        <hr class="project-s  pacing">
-
-        <!-- Leave a Blog Comment -->
-        <b-col
-          cols="12"
-          class="mt-2"
+      <!-- collapse -->
+      <app-collapse
+        id="d-r-detail"
+        accordion
+        type="margin"
+        class="mt-2"
+      >
+        <app-collapse-item
+          v-for="( criteria,idx) in exercise.criterias"
+          :key="idx"
+          :title="criteria.criteria.code"
+          :subtitle="translateStatus(criteria)"
+          :header-bg-variant="criteria.criteria.not_available ? 'warning' : 'primary'"
         >
-          <h6 class="section-label">
-            Leave a Comment
-          </h6>
-          <b-card>
-            <b-form>
-              <b-row>
-                <b-col cols="12">
-                  <b-form-group class="mb-2">
-                    <b-form-textarea
-                      name="textarea"
-                      rows="4"
-                      v-model="criteriaComment"
-                      placeholder="comment here"
-                    />
-                  </b-form-group>
-                </b-col>
-                <b-col cols="12">
-                  <b-button
-                    v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-                    variant="primary"
-                    @click="submitComment(criteria)"
+          <p v-html="criteria.criteria.description" />
+
+          <!-- Spacer -->
+          <hr class="project-spacing">
+
+          <!-- scoring -->
+          <b-form-group
+            label-cols="4"
+            label-cols-lg="2"
+            label="Nilai"
+            label-for="input-default"
+          >
+            <b-form-input
+              id="input-default"
+              :disabled='disabled'
+              v-model="criteria.score"
+            />
+          </b-form-group>
+
+          <b-form-group
+            label-cols="4"
+            label-cols-lg="2"
+            label="Nilai Potensial"
+            label-for="input-default"
+          >
+            <b-form-input
+              id="input-default"
+              :disabled='disabled'
+              v-model="criteria.potential_score"
+            />
+          </b-form-group>
+          <!-- scoring -->
+
+          <!-- save button -->
+          <p />
+          <b-col cols="12">
+            <b-button
+              v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+              variant="primary"
+              @click="saveCriteria(criteria)"
+            >
+              Take Point
+            </b-button>
+          </b-col>
+          <!-- save button -->
+
+          <p />
+
+          <!-- Spacer -->
+          <hr class="project-spacing">
+
+          <b-table
+            :fields="docFields"
+            :items="criteria.documents"
+            responsive
+            class="mb-0"
+          >
+            <template #cell(show_attachment)="row">
+              <!-- As `row.showDetails` is one-way, we call the toggleDetails function on @change -->
+              <b-form-checkbox
+                v-model="row.detailsShowing"
+                @change="row.toggleDetails"
+              >
+                {{ row.detailsShowing ? 'Hide' : 'Show' }}
+              </b-form-checkbox>
+            </template>
+            <template #cell(attachment_size)="row">
+              {{ row.item.attachments.length }}
+            </template>
+            <!-- full detail on click -->
+            <template #row-details="row">
+              <b-card>
+                <b-row class="mb-2">
+                  <b-table
+                    responsive
+                    :items="row.item.attachments"
+                    :fields="documentFields"
+                    class="mb-0"
                   >
-                    Post Comment
-                  </b-button>
-                </b-col>
-              </b-row>
-            </b-form>
-          </b-card>
-        </b-col>
-        <!--/ Leave a Blog Comment -->
+                    <template #cell(uploader_id)="uploader">
+                      {{ uploader.item.user.first_name }} {{ uploader.item.user.last_name }}
+                    </template>
+                    <template #cell(filename)="doc">
+                      <a :href="`${doc.item.link}`">
+                        {{ doc.value }}
+                      </a>
+                    </template>
+                    <template #cell(action)="row">
+                      <feather-icon
+                        :id="`master-row-${row.id}-delete-icon`"
+                        icon="Trash2Icon"
+                        size="16"
+                        class="mx-1"
+                        @click="deleteAttachment(row.item)"
+                      />
+                    </template>
+                  </b-table>
+                  <b-form-file
+                    placeholder="Choose a file or drop it here..."
+                    drop-placeholder="Drop file here..."
+                    multiple
+                    v-model="row.item.files"
+                    :change="uploadFile(row.item)"
+                  />
+                </b-row>
+              </b-card>
+              <b-card>
+                <b-button
+                  size="sm"
+                  variant="outline-secondary"
+                  @click="row.toggleDetails"
+                >
+                  Hide Details
+                </b-button>
+              </b-card>
+            </template>
+            <template #cell(name)="name">
+              <div v-html="name.value" />
+            </template>
+          </b-table>
 
-        <template #code>
-          {{ codeRowDetailsSupport }}
-          {{ codeFormatterCallback }}
-        </template>
-      </app-collapse-item>
-    </app-collapse>
+          <!-- explanation  -->
+          <!-- <div
+            v-if="criteria.criteria.additional_notes"
+            class="apply-job-package bg-light-primary rounded"
+          >
+            <div class="text-body">
+              <p v-html="criteria.criteria.additional_notes" />
+            </div>
+          </div> -->
+          <!--/ explanation  -->
 
-    <!--/ collapse -->
-  </div>
+          <!-- Spacer -->
+          <hr class="project-spacing">
+
+          <!-- placeholder -->
+          <div v-if="criteria.criteria.additional_notes">
+            <label for="textarea-default">Internal Notes</label>
+            <quill-editor
+              v-model="criteria.criteria.additional_notes"
+              :disabled='disabled'
+              :exercise="snowOption"
+            />
+          <!-- <span v-html="criteria.placeholder"></span> -->
+          </div>
+          <!-- placeholder -->
+
+          <!-- Spacer -->
+          <hr class="project-s  pacing">
+
+          <!-- comment -->
+          <b-col
+            id="comment"
+            cols="12"
+            class="mt-2"
+          >
+            <h6 class="section-label">
+              Comment
+            </h6>
+            <b-card
+              v-for="(comment, idx) in criteria.comments"
+              :key="idx"
+            >
+              <b-media no-body>
+                <b-media-aside class="mr-75">
+                  <b-avatar
+                    :src="comment.avatar"
+                    size="38"
+                  />
+                </b-media-aside>
+                <b-media-body>
+                  <h6 class="font-weight-bolder mb-25">
+                    {{ comment.user.first_name }} {{ comment.user.last_name }}
+                    <b-badge variant="light-success">
+                      {{ comment.role }}
+                    </b-badge>
+                  </h6>
+                  <b-card-text>{{ comment.created_at }}</b-card-text>
+                  <b-card-text>
+                    {{ comment.comment }}
+                  </b-card-text>
+                </b-media-body>
+              </b-media>
+            </b-card>
+          </b-col>
+          <!--/ blog comment -->
+
+          <!-- Spacer -->
+          <hr class="project-s  pacing">
+
+          <!-- Leave a Blog Comment -->
+          <b-col
+            cols="12"
+            class="mt-2"
+          >
+            <h6 class="section-label">
+              Leave a Comment
+            </h6>
+            <b-card>
+              <b-form>
+                <b-row>
+                  <b-col cols="12">
+                    <b-form-group class="mb-2">
+                      <b-form-textarea
+                        name="textarea"
+                        rows="4"
+                        v-model="criteriaComment"
+                        placeholder="comment here"
+                      />
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="12">
+                    <b-button
+                      v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+                      variant="primary"
+                      @click="submitComment(criteria)"
+                    >
+                      Post Comment
+                    </b-button>
+                  </b-col>
+                </b-row>
+              </b-form>
+            </b-card>
+          </b-col>
+          <!--/ Leave a Blog Comment -->
+
+          <template #code>
+            {{ codeRowDetailsSupport }}
+            {{ codeFormatterCallback }}
+          </template>
+        </app-collapse-item>
+      </app-collapse>
+
+      <!--/ collapse -->
+    </div>
+  </b-overlay>
 </template>
 
 <script>
@@ -288,7 +302,6 @@ import {
   BFormCheckbox,
   BRow,
   BCol,
-  // BFormSelect,
   BFormGroup,
   BFormInput,
   BMedia,
@@ -298,7 +311,7 @@ import {
   BForm,
   BFormTextarea,
   BFormFile,
-  BSpinner,
+  BOverlay,
 } from 'bootstrap-vue'
 import {
   ref, onUnmounted,
@@ -313,6 +326,7 @@ import 'quill/dist/quill.snow.css'
 // eslint-disable-next-line
 import 'quill/dist/quill.bubble.css'
 import { quillEditor } from 'vue-quill-editor'
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 import AppCollapse from '@core/components/app-collapse/AppCollapse.vue'
 import AppCollapseItem from '@core/components/app-collapse/AppCollapseItemCustom.vue'
 import masterDrStoreModule from './masterDrStoreModule'
@@ -331,7 +345,6 @@ export default {
     BFormCheckbox,
     BRow,
     BCol,
-    // BFormSelect,
     BFormGroup,
     BFormInput,
     AppCollapseItem,
@@ -343,7 +356,7 @@ export default {
     BForm,
     BFormTextarea,
     BFormFile,
-    BSpinner,
+    BOverlay,
     quillEditor,
   },
   props: {
@@ -360,19 +373,22 @@ export default {
   },
   data() {
     return {
+      isLoading: false,
       light: '',
       success: '',
       criteriaComment: '',
       commentCheckmark: '',
       commentKey: 0,
       docFields: [
-        'show_details',
+        'show_attachment',
         { key: 'document.name', label: 'Document Name' },
+        'attachment_size',
       ],
       documentFields: [
         { key: 'filename', label: 'Document Name' },
-        { key: 'uploader_name', label: 'Creator' },
+        { key: 'uploader_id', label: 'Creator' },
         { key: 'created_at', label: 'Created At' },
+        'action',
       ],
       documentStatus: [
         {
@@ -402,7 +418,6 @@ export default {
       snowOption: {
         theme: 'snow',
       },
-      isLoading: false,
       disabled: true,
     }
   },
@@ -420,6 +435,17 @@ export default {
     })
   },
   methods: {
+    showToast(variant, titleToast, description) {
+      this.$toast({
+        component: ToastificationContent,
+        props: {
+          title: titleToast,
+          icon: 'BellIcon',
+          text: description,
+          variant,
+        },
+      })
+    },
     submitCriteria(criteria) {
       this.isLoading = true
       store.dispatch('app-dr/submitCriteria', { criteriaScoringId: criteria.id })
@@ -430,6 +456,7 @@ export default {
     },
     // eslint-disable-next-line
     submitComment(criteria) {
+      this.isLoading = true
       const initCommentData = {
         criteriaScoringID: criteria.id,
         comment: this.criteriaComment,
@@ -438,19 +465,51 @@ export default {
       // eslint-disable-next-line
       const commentData = ref(JSON.parse(JSON.stringify(initCommentData)))
 
-      this.$http.post(`/engine-rest/new-building/criteria_scoring/${criteria.id}/attachments`, commentData.value)
-        .then(response => {
-          console.log(response.data)
+      this.$http.post(`/engine-rest/new-building/criteria_scoring/${criteria.id}/comments`, commentData.value)
+        .then(() => {
           this.isLoading = false
           this.rerenderCriteria()
+          this.showToast('success', 'Saved', 'Comment successfully saved')
+        }).catch(() => {
+          this.isLoading = false
+          this.showToast('danger', 'Cannot Save', 'There is error when submit comment, contact administrator')
         })
     },
-    fetchCommentCriteria(criteria) {
-      const comments = ref(JSON.parse('{}'))
-      this.$http.get(`/engine-rest/new-building/criteria_scoring/${criteria.id}/comments`).then(response => {
-        comments.value = response.data
+    uploadFile(document) {
+      if (document.files === undefined) {
+        return
+      }
+      this.isLoading = true
+      const request = new FormData()
+      for (let i = 0; i < document.files.length; i += 1) {
+        request.append('files', document.files[i])
+      }
+      request.append('document_id', document.id)
+      request.append('task_id', router.currentRoute.params.id)
+      const config = {
+        header: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+      this.$http.post('/engine-rest/new-building/design_recognition/attachments', request, config).then(() => {
+        this.isLoading = false
+        this.rerenderCriteria()
+        this.showToast('success', 'Saved', 'Attachment successfully saved')
+      }).catch(() => {
+        this.isLoading = false
+        this.showToast('danger', 'Cannot Save', 'There is error when submit attachment, contact administrator')
       })
-      return comments
+    },
+    deleteAttachment(attachment) {
+      this.isLoading = true
+      this.$http.delete(`/engine-rest/new-building/design_recognition/attachments/${attachment.id}`).then(() => {
+        this.isLoading = false
+        this.rerenderCriteria()
+        this.showToast('success', 'Deleted', 'Attachment successfully delete')
+      }).catch(() => {
+        this.isLoading = false
+        this.showToast('danger', 'Cannot Delete', 'There is error when delete attachment, contact administrator')
+      })
     },
     saveCriteria(criteria) {
       const request = new FormData()
