@@ -34,10 +34,10 @@
         class="border-top border-right d-flex align-items-between flex-column py-1"
       >
         <b-card-text class="text-muted mb-0">
-          Temporary Score
+          Approved Score
         </b-card-text>
         <h3 class="font-weight-bolder mb-50">
-          {{ projectAssessment.temporary_score  }}
+          {{ projectAssessment.approved_score  }}
         </h3>
       </b-col>
 
@@ -46,10 +46,10 @@
         class="border-top d-flex align-items-between flex-column py-1"
       >
         <b-card-text class="text-muted mb-0">
-          Potential Score
+          Submitted Score
         </b-card-text>
         <h3 class="font-weight-bolder mb-0">
-          {{ projectAssessment.potential_score }}
+          {{ projectAssessment.submitted_score }}
         </h3>
       </b-col>
     </b-row>
@@ -177,7 +177,7 @@ export default {
       .then(response => {
         // eslint-disable-next-line prefer-destructuring
         projectAssessment.value = response.data[0]
-        goalOverviewRadialBar.value.series = [Math.round(((projectAssessment.value.temporary_score + projectAssessment.value.potential_score) / projectAssessment.value.proposed_level.minimum_score) * 100)]
+        goalOverviewRadialBar.value.series = [Math.round(((projectAssessment.value.approved_score + projectAssessment.value.submitted_score) / projectAssessment.value.proposed_level.minimum_score) * 100)]
       })
       .catch(error => {
         if (error.response.status === 404) {

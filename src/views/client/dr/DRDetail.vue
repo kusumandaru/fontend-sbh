@@ -30,7 +30,7 @@
           >
             <div class="design-planning">
               <p class="card-text mb-25">
-                {{ exercise.exercise.exercise_type }}
+                {{ translateExerciseType(exercise) }}
               </p>
               <h6 class="mb-0">
                 {{ exercise.exercise.max_score }}
@@ -60,31 +60,46 @@
           <hr class="project-spacing">
 
           <!-- scoring -->
-          <b-form-group
-            label-cols="4"
-            label-cols-lg="2"
-            label="Nilai"
-            label-for="input-default"
-          >
-            <b-form-input
-              id="input-default"
-              :disabled='disabled'
-              v-model="criteria.score"
-            />
-          </b-form-group>
+          <div v-if="exercise.exercise.exercise_type === 'score'">
+            <b-form-group
+              label-cols="4"
+              label-cols-lg="2"
+              label="Nilai yang disetujui"
+              label-for="input-default"
+            >
+              <b-form-input
+                id="input-default"
+                :disabled='disabled'
+                v-model="criteria.approved_score"
+              />
+            </b-form-group>
 
-          <b-form-group
-            label-cols="4"
-            label-cols-lg="2"
-            label="Nilai Potensial"
-            label-for="input-default"
-          >
-            <b-form-input
-              id="input-default"
-              :disabled='disabled'
-              v-model="criteria.potential_score"
-            />
-          </b-form-group>
+            <b-form-group
+              label-cols="4"
+              label-cols-lg="2"
+              label="Nilai yang diajukan"
+              label-for="input-default"
+            >
+              <b-form-input
+                id="input-default"
+                :disabled='disabled'
+                v-model="criteria.submitted_score"
+              />
+            </b-form-group>
+
+            <b-form-group
+              label-cols="4"
+              label-cols-lg="2"
+              label="Nilai Maksimal"
+              label-for="input-default"
+            >
+              <b-form-input
+                id="input-default"
+                :disabled='disabled'
+                v-model="criteria.criteria.score"
+              />
+            </b-form-group>
+          </div>
           <!-- scoring -->
 
           <!-- save button -->
@@ -137,13 +152,19 @@
                       {{ uploader.item.user.first_name }} {{ uploader.item.user.last_name }}
                     </template>
                     <template #cell(filename)="doc">
-                      <a :href="`${doc.item.link}`">
+                      <!-- <a :href="`${doc.item.link}`">
                         {{ doc.value }}
-                      </a>
+                      </a> -->
+                      <b-link
+                        @click="getAttachment(doc.item)"
+                        class="font-weight-bold d-block text-nowrap"
+                      >
+                        {{ doc.value }}
+                      </b-link>
                     </template>
                     <template #cell(action)="row">
                       <feather-icon
-                        :id="`master-row-${row.id}-delete-icon`"
+                        :id="`master-row-${row.item.id}-delete-icon`"
                         icon="Trash2Icon"
                         size="16"
                         class="mx-1"
@@ -151,13 +172,25 @@
                       />
                     </template>
                   </b-table>
-                  <b-form-file
-                    placeholder="Choose a file or drop it here..."
-                    drop-placeholder="Drop file here..."
-                    multiple
-                    v-model="row.item.files"
-                    :change="uploadFile(row.item)"
-                  />
+                  <b-row>
+                    <b-col md="10">
+                      <b-form-file
+                        placeholder="Choose a file or drop it here..."
+                        drop-placeholder="Drop file here..."
+                        multiple
+                        v-model="row.item.files"
+                      />
+                    </b-col>
+                    <b-col md="2">
+                      <b-button
+                        size="14"
+                        variant="outline-secondary"
+                        @click="uploadFile(row.item)"
+                      >
+                        Upload
+                      </b-button>
+                    </b-col>
+                  </b-row>
                 </b-row>
               </b-card>
               <b-card>
@@ -311,6 +344,7 @@ import {
   BForm,
   BFormTextarea,
   BFormFile,
+  BLink,
   BOverlay,
 } from 'bootstrap-vue'
 import {
@@ -357,6 +391,7 @@ export default {
     BFormTextarea,
     BFormFile,
     BOverlay,
+    BLink,
     quillEditor,
   },
   props: {
@@ -404,6 +439,10 @@ export default {
         { value: 3, text: 'Rejected', icon: 'SlashIcon' },
         { value: 4, text: 'Accepted', icon: 'CheckCircleIcon' },
       ],
+      exerciseTypeOptions: [
+        { value: 'score', text: 'Max Score' },
+        { value: 'prequisite', text: 'Prequisite' },
+      ],
       comments: [
         {
           avatar: '',
@@ -445,14 +484,6 @@ export default {
           variant,
         },
       })
-    },
-    submitCriteria(criteria) {
-      this.isLoading = true
-      store.dispatch('app-dr/submitCriteria', { criteriaScoringId: criteria.id })
-        .then(() => {
-          this.isLoading = false
-          router.push({ name: 'client-project-dr-assessment' })
-        })
     },
     // eslint-disable-next-line
     submitComment(criteria) {
@@ -500,6 +531,16 @@ export default {
         this.showToast('danger', 'Cannot Save', 'There is error when submit attachment, contact administrator')
       })
     },
+    getAttachment(attachment) {
+      this.isLoading = true
+      this.$http.get(`/engine-rest/new-building/design_recognition/attachments/${attachment.id}`).then(response => {
+        window.open(response.data.url)
+        this.isLoading = false
+      }).catch(() => {
+        this.isLoading = false
+        this.showToast('danger', 'Cannot Load Attachment', 'There is error when load attachment, contact administrator')
+      })
+    },
     deleteAttachment(attachment) {
       this.isLoading = true
       this.$http.delete(`/engine-rest/new-building/design_recognition/attachments/${attachment.id}`).then(() => {
@@ -512,28 +553,15 @@ export default {
       })
     },
     saveCriteria(criteria) {
-      const request = new FormData()
-      for (let doc = 0; doc < criteria.documents.length; doc += 1) {
-        // eslint-disable-next-line
-        const files = criteria.documents[doc].files
-        if (files !== null && files !== undefined) {
-          for (let fi = 0; fi < files.length; fi += 1) {
-            const file = files[fi]
-            request.append(`${doc}_${fi}`, file)
-          }
-        }
-      }
-      const config = {
-        header: {
-          'Content-Type': 'multipart/form-data',
-        },
-      }
-      this.$http.post(`/engine-rest/new-building/criteria_scoring/${criteria.id}/attachments`, request, config).then(res => {
-        this.result = JSON.parse(JSON.stringify(res.data))
+      this.isLoading = true
+      this.$http.post(`/engine-rest/new-building/design_recognition/${criteria.id}/take_score`).then(() => {
         this.isLoading = false
-      }).catch(() => {
+        this.rerenderCriteria()
+        this.rerenderScoreParent()
+        this.showToast('success', 'Saved', 'Take score successfully')
+      }).catch(error => {
         this.isLoading = false
-        // this.showToast('danger', 'Cannot Save', 'There is error when submit data, contact administrator')
+        this.showToast('danger', 'Cannot Take Score', error.response.data.message)
       })
     },
     rerenderScore() {
@@ -549,7 +577,15 @@ export default {
       // eslint-disable-next-line
       const filtered = this.statusOptions.filter(f => { 
         // eslint-disable-next-line
-        return f.value === criteria.approval_status 
+        return f.value === criteria.approval_status
+      })
+      return filtered[0].text
+    },
+    translateExerciseType(exercise) {
+      // eslint-disable-next-line
+      const filtered = this.exerciseTypeOptions.filter(f => { 
+        // eslint-disable-next-line
+        return f.value === exercise.exercise.exercise_type
       })
       return filtered[0].text
     },
