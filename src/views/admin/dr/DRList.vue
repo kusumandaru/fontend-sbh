@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- project information section -->
-    <section id="faq-search-filter">
+    <section id="dr-search-filter">
       <b-card
         no-body
         class="faq-search"
@@ -80,13 +80,24 @@
               Evaluation
             </h2>
           </b-card-text>
+          <div class="container h-100">
+            <div class="row align-items-center h-100">
+              <div class="col-6 mx-auto">
+                <div class="card h-100 border-primary justify-content-center">
+                  <div>
+                    <card-analytic-goal-overview :key="scoreKey"/>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </b-card-body>
       </b-card>
     </section>
     <!--/ project information section -->
 
     <!-- tab for evaluation -->
-    <d-r-tab />
+    <d-r-tab :rerenderScoreParent="forceRerenderScore"/>
     <!--/ tab for evaluation -->
 
   </div>
@@ -104,6 +115,7 @@ import store from '@/store'
 import Ripple from 'vue-ripple-directive'
 import projectStoreModule from '@/views/projectStoreModule'
 import DRTab from './DRTab.vue'
+import CardAnalyticGoalOverview from './CardAnalyticGoalOverview.vue'
 
 export default {
   components: {
@@ -111,14 +123,14 @@ export default {
     BCardBody,
     BCardText,
     DRTab,
+    CardAnalyticGoalOverview,
   },
   directives: {
     Ripple,
   },
   data() {
     return {
-      faqSearchQuery: '',
-      evaluationData: [],
+      scoreKey: 0,
     }
   },
   computed: {
@@ -135,11 +147,10 @@ export default {
     },
   },
   watch: {
-    faqSearchQuery: {
-      immediate: true,
-      handler() {
-        this.fetchData()
-      },
+  },
+  methods: {
+    forceRerenderScore() {
+      this.scoreKey += 1
     },
   },
   setup() {
@@ -167,27 +178,8 @@ export default {
         }
       })
 
-    const downloadFile = fileName => {
-      store.dispatch('app-project/downloadLink', {
-        id: projectData.value.task_id,
-        filename: fileName,
-      })
-        .then(response => {
-          window.open(response.data.url)
-        })
-        .catch(error => {
-          if (error.response.status === 404) {
-            console.error(error)
-          }
-          if (error.response.status === 500) {
-            console.error(error)
-          }
-        })
-    }
-
     return {
       projectData,
-      downloadFile,
     }
   },
 }

@@ -1,336 +1,355 @@
 <template>
-  <div v-if="options">
-    <b-card class="card-app-design">
-      <div class="d-flex align-items-center">
-        <b-avatar
-          rounded
-          size="42"
-          variant="light-primary"
-          class="mr-1"
-        >
-          <feather-icon
-            :icon="options.icon"
-            size="20"
-          />
-        </b-avatar>
-        <div>
-          <h4 class="mb-0">
-            {{ options.title }}
-          </h4>
-          <span>{{ options.subtitle }}</span>
-        </div>
+  <b-overlay
+    :show="isLoading"
+    rounded="sm"
+  >
+    <div v-if="exercise">
+      <b-card class="card-app-design">
+        <div class="d-flex align-items-center">
+          <b-avatar
+            rounded
+            size="42"
+            variant="light-primary"
+            class="mr-1"
+          >
+            <feather-icon
+              icon="CheckSquareIcon"
+              size="20"
+            />
+          </b-avatar>
+          <div>
+            <h4 class="mb-0">
+              {{ exercise.exercise.name }}
+            </h4>
+            <span>{{ exercise.exercise.code }}</span>
+          </div>
 
-        <div
-          class="design-planning-wrapper"
-          style="position:absolute; right:20px;"
-        >
-          <div class="design-planning">
-            <p class="card-text mb-25">
-              Max Score
-            </p>
-            <h6 class="mb-0">
-              {{ options.max_score }}
-            </h6>
+          <div
+            class="design-planning-wrapper"
+            style="position:absolute; right:20px;"
+          >
+            <div class="design-planning">
+              <p class="card-text mb-25">
+                {{ translateExerciseType(exercise) }}
+              </p>
+              <h6 class="mb-0">
+                {{ exercise.exercise.max_score }}
+              </h6>
+            </div>
           </div>
         </div>
-      </div>
-    </b-card>
+      </b-card>
 
-    <!-- collapse -->
-    <app-collapse
-      id="d-r-detail"
-      accordion
-      type="margin"
-      class="mt-2"
-    >
-
-      <app-collapse-item
-        v-for="( data,index) in options.qandA"
-        :key="index"
-        :title="data.question"
-        :subtitle="data.status"
-        :header-bg-variant="data.selected ? 'primary' : 'warning'"
+      <!-- collapse -->
+      <app-collapse
+        id="d-r-detail"
+        accordion
+        type="margin"
+        class="mt-2"
       >
-        <p v-html="data.ans" />
-
-        <!-- Spacer -->
-        <hr class="project-spacing">
-
-        <!-- scoring -->
-        <b-form-group
-          label-cols="4"
-          label-cols-lg="2"
-          label="Nilai"
-          label-for="input-default"
+        <app-collapse-item
+          v-for="( criteria,idx) in exercise.criterias"
+          :key="idx"
+          :title="criteria.criteria.code"
+          :subtitle="translateStatus(criteria)"
+          :header-bg-variant="criteria.criteria.not_available || criteria.approval_status == 1 ? 'warning' : 'primary'"
         >
-          <b-form-input
-            id="input-default"
-            :placeholder="data.reference_score"
-          />
-        </b-form-group>
+          <p v-html="criteria.criteria.description" />
 
-        <b-form-group
-          label-cols="4"
-          label-cols-lg="2"
-          label="Nilai Potensial"
-          label-for="input-default"
-        >
-          <b-form-input
-            id="input-default"
-            :placeholder="data.reference_score"
-          />
-        </b-form-group>
-        <!-- scoring -->
+          <!-- Spacer -->
+          <hr class="project-spacing">
 
-        <!-- Spacer -->
-        <hr class="project-spacing">
-
-        <b-table
-          :fields="criteriaFields"
-          :items="data.criterias"
-          responsive
-          class="mb-0"
-        >
-          <template #cell(show_details)="row">
-            <!-- As `row.showDetails` is one-way, we call the toggleDetails function on @change -->
-            <b-form-checkbox
-              v-model="row.detailsShowing"
-              :disabled="!row.item.selected"
-              @change="row.toggleDetails"
+          <!-- scoring -->
+          <div v-if="exercise.exercise.exercise_type === 'score'">
+            <b-form-group
+              label-cols="4"
+              label-cols-lg="2"
+              label="Nilai yang disetujui"
+              label-for="input-default"
             >
-              {{ row.detailsShowing ? 'Hide' : 'Show' }}
-            </b-form-checkbox>
-          </template>
+              <b-form-input
+                id="input-default"
+                :disabled='disabled'
+                v-model="criteria.approved_score"
+              />
+            </b-form-group>
 
-          <!-- full detail on click -->
-          <template #row-details="row">
-            <b-card>
-              <b-row class="mb-2">
-                <!-- <b-col
-                md="4"
-                class="mb-1"
-              >
-                <strong>Link : </strong>{{ row.item.link }}
-              </b-col>
+            <b-form-group
+              label-cols="4"
+              label-cols-lg="2"
+              label="Nilai yang diajukan"
+              label-for="input-default"
+            >
+              <b-form-input
+                id="input-default"
+                :disabled='disabled'
+                v-model="criteria.submitted_score"
+              />
+            </b-form-group>
 
-              <b-col
-                md="4"
-                class="mb-1"
-              >
-                <strong>Creator : </strong>{{ row.item.uploader }}
-              </b-col>
-
-              <b-col
-                md="4"
-                class="mb-1"
-              >
-                <strong>Created At : </strong>{{ row.item.created_at }}
-              </b-col> -->
-
-                <!-- <b-col
-                md="4"
-                class="mb-1"
-              >
-                <b-form-select
-                  v-model="selectedStatus"
-                  :options="statusOptions"
-                />
-                <b-button
-                  v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-                  type="submit"
-                  variant="primary"
-                >
-                  Submit
-                </b-button>
-              </b-col> -->
-                <b-table
-                  responsive
-                  :items="row.item.documents"
-                  :fields="documentFields"
-                  class="mb-0"
-                >
-                  <template #cell(document_name)="doc">
-                    <a :href="`${doc.item.link}`">
-                      {{ doc.value }}
-                    </a>
-                  </template>
-                </b-table>
-              </b-row>
-            </b-card>
-            <b-card>
-              <b-button
-                size="sm"
-                variant="outline-secondary"
-                @click="row.toggleDetails"
-              >
-                Hide Details
-              </b-button>
-            </b-card>
-          </template>
-          <template #cell(link)="link">
-            <a :href="`${link.value}`">
-              download
-            </a>
-          </template>
-          <template #cell(status)="status">
-            <b-badge :variant="documentStatus[1][status.value]">
-              {{ documentStatus[0][status.value] }}
-            </b-badge>
-          </template>
-          <template #cell(name)="name">
-            <div v-html="name.value" />
-          </template>
-        </b-table>
-
-        <!-- explanation  -->
-        <div
-          v-if="data.explanation"
-          class="apply-job-package bg-light-primary rounded"
-        >
-          <div class="text-body">
-            <p v-html="data.explanation" />
+            <b-form-group
+              label-cols="4"
+              label-cols-lg="2"
+              label="Nilai Maksimal"
+              label-for="input-default"
+            >
+              <b-form-input
+                id="input-default"
+                :disabled='disabled'
+                v-model="criteria.criteria.score"
+              />
+            </b-form-group>
           </div>
-        </div>
-        <!--/ explanation  -->
+          <!-- scoring -->
+          <!-- status -->
+          <p />
+          <b-col md="6">
+            <h6>Approval</h6>
+            <b-form-group>
+              <v-select
+                v-model="criteria.approval_status"
+                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                :options="statusOptions"
+                :reduce="val => val.value"
+                :clearable="false"
+                :disabled="criteria.approval_status == 1"
+                input-id="approval-status"
+                label="text"
+                code="value"
+              >
+                <template #option="{ text, icon }">
+                  <feather-icon
+                    :icon="icon"
+                    size="16"
+                    class="align-middle mr-50"
+                  />
+                  <span> {{ text }}</span>
+                </template>
+              </v-select>
+            </b-form-group>
+          </b-col>
+          <!-- status -->
 
-        <!-- Spacer -->
-        <hr class="project-spacing">
-
-        <!-- placeholder -->
-        <div v-if="data.placeholder">
-          <label for="textarea-default">Internal Notes</label>
-          <quill-editor
-            v-model="data.placeholder"
-            :options="snowOption"
-          />
-        <!-- <span v-html="data.placeholder"></span> -->
-        </div>
-        <!-- placeholder -->
-
-        <!-- status -->
-        <p />
-        <b-col md="6">
-          <h6>Approval</h6>
-          <b-form-group>
-            <v-select
-              v-model="selectedStatus"
-              :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-              :options="statusOptions"
-              label="text"
+          <!-- save button -->
+          <p />
+          <b-col cols="12">
+            <b-button
+              v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+              variant="primary"
+              @click="reviewCriteria(criteria)"
             >
-              <template #option="{ text, icon }">
-                <feather-icon
-                  :icon="icon"
-                  size="16"
-                  class="align-middle mr-50"
-                />
-                <span> {{ text }}</span>
-              </template>
-            </v-select>
-          </b-form-group>
-        </b-col>
-        <!-- status -->
+              Save Review
+            </b-button>
+          </b-col>
+          <!-- save button -->
+          <p />
 
-        <!-- save button -->
-        <p />
-        <b-col cols="12">
-          <b-button
-            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-            variant="primary"
+          <!-- Spacer -->
+          <hr class="project-spacing">
+
+          <b-table
+            :fields="docFields"
+            :items="criteria.documents"
+            responsive
+            class="mb-0"
           >
-            Save Review
-          </b-button>
-        </b-col>
-        <!-- save button -->
-
-        <p />
-
-        <!-- Spacer -->
-        <hr class="project-s  pacing">
-
-        <!-- blog comment -->
-        <b-col
-          id="blogComment"
-          cols="12"
-          class="mt-2"
-        >
-          <h6 class="section-label">
-            Comment
-          </h6>
-          <b-card
-            v-for="(comment,idx) in comments"
-            :key="idx"
-          >
-            <b-media no-body>
-              <b-media-aside class="mr-75">
-                <b-avatar
-                  :src="comment.avatar"
-                  size="38"
-                />
-              </b-media-aside>
-              <b-media-body>
-                <h6 class="font-weight-bolder mb-25">
-                  {{ comment.userFullName }}
-                  <b-badge :variant="light-success">
-                    reviewer
-                  </b-badge>
-                </h6>
-                <b-card-text>{{ comment.commentedAt }}</b-card-text>
-                <b-card-text>
-                  {{ comment.commentText }}
-                </b-card-text>
-              </b-media-body>
-            </b-media>
-          </b-card>
-        </b-col>
-        <!--/ blog comment -->
-
-        <!-- Spacer -->
-        <hr class="project-s  pacing">
-
-        <!-- Leave a Blog Comment -->
-        <b-col
-          cols="12"
-          class="mt-2"
-        >
-          <h6 class="section-label">
-            Leave a Comment
-          </h6>
-          <b-card>
-            <b-form>
-              <b-row>
-                <b-col cols="12">
-                  <b-form-group class="mb-2">
-                    <b-form-textarea
-                      name="textarea"
-                      rows="4"
-                      placeholder="Website"
-                    />
-                  </b-form-group>
-                </b-col>
-                <b-col cols="12">
-                  <b-button
-                    v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-                    variant="primary"
+            <template #cell(show_attachment)="row">
+              <!-- As `row.showDetails` is one-way, we call the toggleDetails function on @change -->
+              <b-form-checkbox
+                v-model="row.detailsShowing"
+                @change="row.toggleDetails"
+              >
+                {{ row.detailsShowing ? 'Hide' : 'Show' }}
+              </b-form-checkbox>
+            </template>
+            <template #cell(attachment_size)="row">
+              {{ row.item.attachments.length }}
+            </template>
+            <!-- full detail on click -->
+            <template #row-details="row">
+              <b-card>
+                <b-row class="mb-2">
+                  <b-table
+                    responsive
+                    :items="row.item.attachments"
+                    :fields="documentFields"
+                    class="mb-0"
                   >
-                    Post Comment
-                  </b-button>
-                </b-col>
-              </b-row>
-            </b-form>
-          </b-card>
-        </b-col>
-        <!--/ Leave a Blog Comment -->
+                    <template #cell(uploader_id)="uploader">
+                      {{ uploader.item.user.first_name }} {{ uploader.item.user.last_name }}
+                    </template>
+                    <template #cell(filename)="doc">
+                      <!-- <a :href="`${doc.item.link}`">
+                        {{ doc.value }}
+                      </a> -->
+                      <b-link
+                        @click="getAttachment(doc.item)"
+                        class="font-weight-bold d-block text-nowrap"
+                      >
+                        {{ doc.value }}
+                      </b-link>
+                    </template>
+                    <template #cell(action)="row">
+                      <feather-icon
+                        :id="`master-row-${row.item.id}-delete-icon`"
+                        icon="Trash2Icon"
+                        size="16"
+                        class="mx-1"
+                        @click="deleteAttachment(row.item)"
+                      />
+                    </template>
+                  </b-table>
+                  <b-row>
+                    <b-col md="10">
+                      <b-form-file
+                        placeholder="Choose a file or drop it here..."
+                        drop-placeholder="Drop file here..."
+                        multiple
+                        v-model="row.item.files"
+                      />
+                    </b-col>
+                    <b-col md="2">
+                      <b-button
+                        size="14"
+                        variant="outline-secondary"
+                        @click="uploadFile(row.item)"
+                      >
+                        Upload
+                      </b-button>
+                    </b-col>
+                  </b-row>
+                </b-row>
+              </b-card>
+              <b-card>
+                <b-button
+                  size="sm"
+                  variant="outline-secondary"
+                  @click="row.toggleDetails"
+                >
+                  Hide Details
+                </b-button>
+              </b-card>
+            </template>
+            <template #cell(name)="name">
+              <div v-html="name.value" />
+            </template>
+          </b-table>
 
-        <template #code>
-          {{ codeRowDetailsSupport }}
-          {{ codeFormatterCallback }}
-        </template>
-      </app-collapse-item>
-    </app-collapse>
+          <!-- explanation  -->
+          <!-- <div
+            v-if="criteria.criteria.additional_notes"
+            class="apply-job-package bg-light-primary rounded"
+          >
+            <div class="text-body">
+              <p v-html="criteria.criteria.additional_notes" />
+            </div>
+          </div> -->
+          <!--/ explanation  -->
 
-    <!--/ collapse -->
-  </div>
+          <!-- Spacer -->
+          <hr class="project-spacing">
+
+          <!-- placeholder -->
+          <div v-if="criteria.criteria.additional_notes">
+            <label for="textarea-default">Internal Notes</label>
+            <quill-editor
+              v-model="criteria.criteria.additional_notes"
+              :disabled='disabled'
+              :exercise="snowOption"
+            />
+          <!-- <span v-html="criteria.placeholder"></span> -->
+          </div>
+          <!-- placeholder -->
+
+          <!-- Spacer -->
+          <hr class="project-s  pacing">
+
+          <!-- comment -->
+          <b-col
+            id="comment"
+            cols="12"
+            class="mt-2"
+          >
+            <h6 class="section-label">
+              Comment
+            </h6>
+            <b-card
+              v-for="(comment, idx) in criteria.comments"
+              :key="idx"
+            >
+              <b-media no-body>
+                <b-media-aside class="mr-75">
+                  <b-avatar
+                    :src="comment.avatar"
+                    size="38"
+                  />
+                </b-media-aside>
+                <b-media-body>
+                  <h6 class="font-weight-bolder mb-25">
+                    {{ comment.user.first_name }} {{ comment.user.last_name }}
+                    <b-badge variant="light-success">
+                      {{ comment.role }}
+                    </b-badge>
+                  </h6>
+                  <b-card-text>{{ comment.created_at }}</b-card-text>
+                  <b-card-text>
+                    {{ comment.comment }}
+                  </b-card-text>
+                </b-media-body>
+              </b-media>
+            </b-card>
+          </b-col>
+          <!--/ blog comment -->
+
+          <!-- Spacer -->
+          <hr class="project-s  pacing">
+
+          <!-- Leave a Blog Comment -->
+          <b-col
+            cols="12"
+            class="mt-2"
+          >
+            <h6 class="section-label">
+              Leave a Comment
+            </h6>
+            <b-card>
+              <b-form>
+                <b-row>
+                  <b-col cols="12">
+                    <b-form-group class="mb-2">
+                      <b-form-textarea
+                        name="textarea"
+                        rows="4"
+                        v-model="criteriaComment"
+                        placeholder="comment here"
+                      />
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="12">
+                    <b-button
+                      v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+                      variant="primary"
+                      @click="submitComment(criteria)"
+                    >
+                      Post Comment
+                    </b-button>
+                  </b-col>
+                </b-row>
+              </b-form>
+            </b-card>
+          </b-col>
+          <!--/ Leave a Blog Comment -->
+
+          <template #code>
+            {{ codeRowDetailsSupport }}
+            {{ codeFormatterCallback }}
+          </template>
+        </app-collapse-item>
+      </app-collapse>
+
+      <!--/ collapse -->
+    </div>
+  </b-overlay>
 </template>
 
 <script>
@@ -343,7 +362,6 @@ import {
   BFormCheckbox,
   BRow,
   BCol,
-  // BFormSelect,
   BFormGroup,
   BFormInput,
   BMedia,
@@ -352,8 +370,17 @@ import {
   BCardText,
   BForm,
   BFormTextarea,
+  BFormFile,
+  BLink,
+  BOverlay,
 } from 'bootstrap-vue'
 import vSelect from 'vue-select'
+import {
+  ref, onUnmounted,
+} from '@vue/composition-api'
+import router from '@/router'
+import store from '@/store'
+import Ripple from 'vue-ripple-directive'
 // eslint-disable-next-line
 import 'quill/dist/quill.core.css'
 // eslint-disable-next-line
@@ -361,11 +388,16 @@ import 'quill/dist/quill.snow.css'
 // eslint-disable-next-line
 import 'quill/dist/quill.bubble.css'
 import { quillEditor } from 'vue-quill-editor'
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 import AppCollapse from '@core/components/app-collapse/AppCollapse.vue'
 import AppCollapseItem from '@core/components/app-collapse/AppCollapseItemCustom.vue'
+import masterDrStoreModule from './masterDrStoreModule'
 import { codeFormatterCallback, codeRowDetailsSupport } from './code'
 
 export default {
+  directives: {
+    Ripple,
+  },
   components: {
     BAvatar,
     BBadge,
@@ -375,7 +407,6 @@ export default {
     BFormCheckbox,
     BRow,
     BCol,
-    // BFormSelect,
     BFormGroup,
     BFormInput,
     AppCollapseItem,
@@ -386,43 +417,81 @@ export default {
     BCardText,
     BForm,
     BFormTextarea,
+    BFormFile,
+    BOverlay,
+    BLink,
     vSelect,
     quillEditor,
   },
   props: {
-    options: {
+    exercise: {
       type: Object,
       default: () => {},
     },
+    rerenderScoreParent: {
+      type: Function,
+    },
+    rerenderCriteriaParent: {
+      type: Function,
+    },
   },
-
   data() {
     return {
+      isLoading: false,
+      light: '',
+      success: '',
+      criteriaComment: '',
       commentCheckmark: '',
-      criteriaFields: [
-        'show_details',
-        { key: 'name', label: 'Document Name' },
-        // { key: 'link', label: 'Document Link' },
-        // { key: 'status', label: 'Status' },
+      commentKey: 0,
+      docFields: [
+        'show_attachment',
+        { key: 'document.name', label: 'Document Name' },
+        'attachment_size',
       ],
       documentFields: [
-        { key: 'document_name', label: 'Document' },
-        // { key: 'link', label: 'Document Link' },
-        { key: 'uploader', label: 'Creator' },
+        { key: 'filename', label: 'Document Name' },
+        { key: 'uploader_id', label: 'Creator' },
         { key: 'created_at', label: 'Created At' },
+        'action',
       ],
-      documentStatus: [{
-        1: 'belum diserahkan', 2: 'belum memenuhi tolok ukur', 3: 'telah memenuhi tolok ukur',
-      },
-      {
-        1: 'light-danger', 2: 'light-warning', 3: 'light-success',
-      }],
+      documentStatus: [
+        {
+          1: 'belum diserahkan', 2: 'belum memenuhi tolok ukur', 3: 'telah memenuhi tolok ukur',
+        },
+        {
+          1: 'light-danger', 2: 'light-warning', 3: 'light-success',
+        },
+      ],
       statusOptions: [
-        { value: 1, text: 'Under Review', icon: 'SearchIcon' },
-        { value: 2, text: 'Rejected', icon: 'SlashIcon' },
-        { value: 3, text: 'Accepted', icon: 'CheckCircleIcon' },
+        // {
+        //   value: 1,
+        //   text: 'Idle',
+        //   icon: 'SearchIcon',
+        //   disabled: true,
+        // },
+        {
+          value: 2,
+          text: 'Under Review',
+          icon: 'SearchIcon',
+          disabled: true,
+        },
+        {
+          value: 3,
+          text: 'Rejected',
+          icon: 'SlashIcon',
+          disabled: false,
+        },
+        {
+          value: 4,
+          text: 'Accepted',
+          icon: 'CheckCircleIcon',
+          disabled: false,
+        },
       ],
-      selectedStatus: { value: 1, text: 'Under Review', icon: 'SearchIcon' },
+      exerciseTypeOptions: [
+        { value: 'score', text: 'Max Score' },
+        { value: 'prequisite', text: 'Prequisite' },
+      ],
       comments: [
         {
           avatar: '',
@@ -434,7 +503,152 @@ export default {
       ],
       codeFormatterCallback,
       codeRowDetailsSupport,
+      snowOption: {
+        theme: 'snow',
+      },
+      disabled: true,
     }
+  },
+  computed: {
+  },
+  setup() {
+    const DR_APP_STORE_MODULE_NAME = 'app-dr'
+
+    // Register module
+    if (!store.hasModule(DR_APP_STORE_MODULE_NAME)) store.registerModule(DR_APP_STORE_MODULE_NAME, masterDrStoreModule)
+
+    // UnRegister on leave
+    onUnmounted(() => {
+      if (store.hasModule(DR_APP_STORE_MODULE_NAME)) store.unregisterModule(DR_APP_STORE_MODULE_NAME)
+    })
+  },
+  methods: {
+    showToast(variant, titleToast, description) {
+      this.$toast({
+        component: ToastificationContent,
+        props: {
+          title: titleToast,
+          icon: 'BellIcon',
+          text: description,
+          variant,
+        },
+      })
+    },
+    // eslint-disable-next-line
+    submitComment(criteria) {
+      this.isLoading = true
+      const initCommentData = {
+        criteriaScoringID: criteria.id,
+        comment: this.criteriaComment,
+      }
+
+      // eslint-disable-next-line
+      const commentData = ref(JSON.parse(JSON.stringify(initCommentData)))
+
+      this.$http.post(`/engine-rest/new-building/criteria_scoring/${criteria.id}/comments`, commentData.value)
+        .then(() => {
+          this.isLoading = false
+          this.rerenderCriteria()
+          this.showToast('success', 'Saved', 'Comment successfully saved')
+        }).catch(() => {
+          this.isLoading = false
+          this.showToast('danger', 'Cannot Save', 'There is error when submit comment, contact administrator')
+        })
+    },
+    uploadFile(document) {
+      if (document.files === undefined) {
+        return
+      }
+      this.isLoading = true
+      const request = new FormData()
+      for (let i = 0; i < document.files.length; i += 1) {
+        request.append('files', document.files[i])
+      }
+      request.append('document_id', document.id)
+      request.append('task_id', router.currentRoute.params.id)
+      const config = {
+        header: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+      this.$http.post('/engine-rest/new-building/design_recognition/attachments', request, config).then(() => {
+        this.isLoading = false
+        this.rerenderCriteria()
+        this.showToast('success', 'Saved', 'Attachment successfully saved')
+      }).catch(() => {
+        this.isLoading = false
+        this.showToast('danger', 'Cannot Save', 'There is error when submit attachment, contact administrator')
+      })
+    },
+    getAttachment(attachment) {
+      this.isLoading = true
+      this.$http.get(`/engine-rest/new-building/design_recognition/attachments/${attachment.id}`).then(response => {
+        window.open(response.data.url)
+        this.isLoading = false
+      }).catch(() => {
+        this.isLoading = false
+        this.showToast('danger', 'Cannot Load Attachment', 'There is error when load attachment, contact administrator')
+      })
+    },
+    deleteAttachment(attachment) {
+      this.isLoading = true
+      this.$http.delete(`/engine-rest/new-building/design_recognition/attachments/${attachment.id}`).then(() => {
+        this.isLoading = false
+        this.rerenderCriteria()
+        this.showToast('success', 'Deleted', 'Attachment successfully delete')
+      }).catch(() => {
+        this.isLoading = false
+        this.showToast('danger', 'Cannot Delete', 'There is error when delete attachment, contact administrator')
+      })
+    },
+    reviewCriteria(criteria) {
+      this.isLoading = true
+      const request = new FormData()
+      request.append('task_id', router.currentRoute.params.id)
+      request.append('approval_status', criteria.approval_status)
+      const config = {
+        header: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+      this.$http.post(`/engine-rest/new-building/design_recognition/${criteria.id}/review`, request, config).then(() => {
+        this.isLoading = false
+        this.rerenderCriteria()
+        this.rerenderScoreParent()
+        this.showToast('success', 'Saved', 'Review successfully')
+      }).catch(error => {
+        this.isLoading = false
+        this.showToast('danger', 'Cannot review', error.response.data.message)
+      })
+    },
+    rerenderScore() {
+      this.rerenderScoreParent()
+    },
+    rerenderCriteria() {
+      this.rerenderCriteriaParent()
+    },
+    forceRerenderComment() {
+      this.commentKey += 1
+    },
+    translateStatus(criteria) {
+      // eslint-disable-next-line
+      const filtered = this.statusOptions.filter(f => { 
+        // eslint-disable-next-line
+        return f.value === criteria.approval_status
+      })
+      if (filtered[0] === undefined) {
+        return 'Idle'
+      }
+      return filtered[0].text
+    },
+    translateExerciseType(exercise) {
+      // eslint-disable-next-line
+      const filtered = this.exerciseTypeOptions.filter(f => { 
+        // eslint-disable-next-line
+        return f.value === exercise.exercise.exercise_type
+      })
+      return filtered[0].text
+    },
   },
 }
 </script>
