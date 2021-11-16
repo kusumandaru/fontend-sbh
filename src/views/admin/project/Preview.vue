@@ -424,6 +424,18 @@
             Workshop and Consultation Submission
           </b-button>
 
+          <!-- Button: Design Recognition-->
+          <b-button
+            v-if="designRecognitionShow"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="success"
+            class="mb-75"
+            block
+            @click="designRecognitionSubmission"
+          >
+            Design Recognition Submission
+          </b-button>
+
           <!-- Button: Print -->
           <b-button
             v-ripple.400="'rgba(186, 191, 199, 0.15)'"
@@ -492,6 +504,9 @@ export default {
     },
     workshopShow() {
       return this.workshopTasks.includes(this.projectData.definition_key)
+    },
+    designRecognitionShow() {
+      return ['design-recognition-submission'].includes(this.projectData.definition_key)
     },
   },
   setup() {
@@ -620,6 +635,10 @@ export default {
       router.push({ name: 'admin-project-workshop', params: { id: router.currentRoute.params.id } })
     }
 
+    const designRecognitionSubmission = () => {
+      router.push({ name: 'admin-project-dr-assessment', params: { id: router.currentRoute.params.id } })
+    }
+
     const adminTasks = ['check-registration-project', 'check-document-building']
     const firstPaymentTasks = ['agreement-and-first-payment']
     const secondPaymentTasks = ['second-payment']
@@ -640,6 +659,7 @@ export default {
       downloadFile,
       downloadAllFiles,
       registeredProject,
+      designRecognitionSubmission,
     }
   },
 }

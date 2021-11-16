@@ -37,7 +37,7 @@ export default [
   },
   {
     path: '/admin/project/dr/assesment/:id',
-    name: 'admin-project-dr-assesment',
+    name: 'admin-project-dr-assessment',
     component: () => import('@/views/admin/dr/DRList.vue'),
   },
 ]
