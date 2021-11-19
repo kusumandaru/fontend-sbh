@@ -20,13 +20,21 @@
       :options="goalOverviewRadialBar.chartOptions"
       :series="goalOverviewRadialBar.series"
     />
-    <!-- button -->
-    <b-button
-      v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-      variant="flat-primary"
+    <!-- success -->
+    <b-dropdown
+      v-ripple.400="'rgba(40, 199, 111, 0.15)'"
+      :text="projectAssessment.proposed_level.name"
+      variant="flat-success"
     >
-      <span>{{ projectAssessment.proposed_level.name }} </span>
-    </b-button>
+      <b-dropdown-item
+        v-for="level in masterLevels"
+        :key="level.id"
+        :value="level.id"
+        @click="changeLevel(level)"
+      >
+      {{ level.name }}
+      </b-dropdown-item>
+    </b-dropdown>
     <span>Minimum Score {{ projectAssessment.proposed_level.minimum_score }} </span>
     <b-row class="text-center mx-0">
       <b-col
@@ -58,7 +66,7 @@
 
 <script>
 import {
-  BCard, BCardHeader, BRow, BCol, BCardText, BButton,
+  BCard, BCardHeader, BRow, BCol, BCardText, BDropdown, BDropdownItem,
 } from 'bootstrap-vue'
 import VueApexCharts from 'vue-apexcharts'
 import {
@@ -67,6 +75,7 @@ import {
 import router from '@/router'
 import store from '@/store'
 import { $themeColors } from '@themeConfig'
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 import Ripple from 'vue-ripple-directive'
 import masterDrStoreModule from './masterDrStoreModule'
 
@@ -78,7 +87,13 @@ export default {
     BRow,
     BCardText,
     BCol,
-    BButton,
+    BDropdown,
+    BDropdownItem,
+  },
+  props: {
+    rerenderScoreParent: {
+      type: Function,
+    },
   },
   data() {
     return {
@@ -100,6 +115,7 @@ export default {
     }
     const projectAssessment = ref(JSON.parse(JSON.stringify(blankProjectAssessment)))
     const goalOverviewRadialBar = ref(JSON.parse('{}'))
+    const masterLevels = ref(JSON.parse('[]'))
 
     goalOverviewRadialBar.value = {
       series: [0],
@@ -185,12 +201,56 @@ export default {
         }
       })
 
+    store.dispatch('app-dr/fetchMasterLevel')
+      .then(response => {
+        // eslint-disable-next-line prefer-destructuring
+        masterLevels.value = response.data
+      })
+      .catch(error => {
+        if (error.response.status === 404) {
+          masterLevels.value = undefined
+        }
+      })
+
     return {
       projectAssessment,
+      masterLevels,
       goalOverviewRadialBar,
     }
   },
   methods: {
+    showToast(variant, titleToast, description) {
+      this.$toast({
+        component: ToastificationContent,
+        props: {
+          title: titleToast,
+          icon: 'BellIcon',
+          text: description,
+          variant,
+        },
+      })
+    },
+    changeLevel(level) {
+      if (level === undefined) {
+        return
+      }
+      this.isLoading = true
+      const request = new FormData()
+      request.append('level_id', level.id)
+      const config = {
+        header: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+      this.$http.post(`/engine-rest/new-building/design_recognition/${router.currentRoute.params.id}/update_level`, request, config).then(() => {
+        this.isLoading = false
+        this.rerenderScoreParent()
+        this.showToast('success', 'Saved', 'Update level successfully')
+      }).catch(() => {
+        this.isLoading = false
+        this.showToast('danger', 'Cannot Save', 'There is error when update level, contact administrator')
+      })
+    },
   },
 }
 </script>

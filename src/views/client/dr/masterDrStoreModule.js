@@ -30,6 +30,14 @@ export default {
           .catch(error => reject(error))
       })
     },
+    fetchMasterLevel() {
+      return new Promise((resolve, reject) => {
+        axios
+          .get('/engine-rest/master-project/levels')
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
     fetchMasterEvaluation(ctx, { taskId }) {
       return new Promise((resolve, reject) => {
         axios
@@ -74,6 +82,14 @@ export default {
       return new Promise((resolve, reject) => {
         axios
           .post(`/engine-rest/new-building/criteria_scoring/${criteriaScoringId}/comments`, commentData)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    downloadLink(ctx, { taskId }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/engine-rest/new-building/design_recognition/${taskId}/assessment_attachment`)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })
