@@ -85,10 +85,11 @@
               <div class="col-6 mx-auto">
                 <div class="card h-100 border-primary justify-content-center">
                   <div>
-                    <card-analytic-goal-overview :key="scoreKey"/>
+                    <card-analytic-goal-overview :key="scoreKey" :rerenderScoreParent="forceRerenderScore"/>
                   </div>
                 </div>
               </div>
+              <upload-assessment :key="uploadAssessmentKey" :rerenderUploadAssessment="forceRerenderUploadAssessment"/>
             </div>
           </div>
         </b-card-body>
@@ -116,6 +117,7 @@ import Ripple from 'vue-ripple-directive'
 import projectStoreModule from '@/views/projectStoreModule'
 import DRTab from './DRTab.vue'
 import CardAnalyticGoalOverview from './CardAnalyticGoalOverview.vue'
+import UploadAssessment from './UploadAssessment.vue'
 
 export default {
   components: {
@@ -124,6 +126,7 @@ export default {
     BCardText,
     DRTab,
     CardAnalyticGoalOverview,
+    UploadAssessment,
   },
   directives: {
     Ripple,
@@ -131,6 +134,7 @@ export default {
   data() {
     return {
       scoreKey: 0,
+      uploadAssessmentKey: 0,
     }
   },
   computed: {
@@ -151,6 +155,9 @@ export default {
   methods: {
     forceRerenderScore() {
       this.scoreKey += 1
+    },
+    forceRerenderUploadAssessment() {
+      this.uploadAssessmentKey += 1
     },
   },
   setup() {

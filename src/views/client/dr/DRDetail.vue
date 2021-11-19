@@ -106,7 +106,7 @@
           <p />
           <b-col cols="12">
             <b-button
-               v-if="[1,3].includes(criteria.approval_status)"
+              v-if="[1,3].includes(criteria.approval_status)"
               v-ripple.400="'rgba(255, 255, 255, 0.15)'"
               variant="primary"
               @click="saveCriteria(criteria)"
