@@ -96,6 +96,7 @@
       </b-card>
     </section>
     <!--/ project information section -->
+    <card-statistic :key="cardStatisticKey"/>
 
     <!-- tab for evaluation -->
     <d-r-tab :rerenderScoreParent="forceRerenderScore"/>
@@ -117,6 +118,7 @@ import Ripple from 'vue-ripple-directive'
 import projectStoreModule from '@/views/projectStoreModule'
 import DRTab from './DRTab.vue'
 import CardAnalyticGoalOverview from './CardAnalyticGoalOverview.vue'
+import CardStatistic from './CardStatistic.vue'
 import UploadAssessment from './UploadAssessment.vue'
 
 export default {
@@ -126,6 +128,7 @@ export default {
     BCardText,
     DRTab,
     CardAnalyticGoalOverview,
+    CardStatistic,
     UploadAssessment,
   },
   directives: {
@@ -134,6 +137,7 @@ export default {
   data() {
     return {
       scoreKey: 0,
+      cardStatisticKey: 0,
       uploadAssessmentKey: 0,
     }
   },
@@ -155,6 +159,7 @@ export default {
   methods: {
     forceRerenderScore() {
       this.scoreKey += 1
+      this.cardStatisticKey += 1
     },
     forceRerenderUploadAssessment() {
       this.uploadAssessmentKey += 1

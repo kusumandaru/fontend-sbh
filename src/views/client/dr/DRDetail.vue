@@ -69,8 +69,8 @@
             >
               <b-form-input
                 id="input-default"
-                :disabled='disabled'
                 v-model="criteria.approved_score"
+                :disabled="disabled"
               />
             </b-form-group>
 
@@ -82,39 +82,71 @@
             >
               <b-form-input
                 id="input-default"
-                :disabled='disabled'
                 v-model="criteria.submitted_score"
+                :disabled="disabled"
               />
             </b-form-group>
 
             <b-form-group
               label-cols="4"
               label-cols-lg="2"
-              label="Nilai Maksimal"
+              :label="criteria.criteria.exercise_type == 'score' ? 'Nilai' : 'Nilai yang dipilih'"
               label-for="input-default"
             >
+              <!-- score -->
               <b-form-input
+                v-if="criteria.criteria.exercise_type == 'score'"
                 id="input-default"
-                :disabled='disabled'
                 v-model="criteria.criteria.score"
+                :disabled='disabled'
               />
+
+              <v-select
+                v-if="criteria.criteria.exercise_type == 'max_score'"
+                v-model="criteria.submitted_score"
+                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                :options="scoreDictionary(criteria)"
+                :reduce="val => val.value"
+                :clearable="false"
+                :disabled="criteria.approval_status != 1"
+                label="text"
+                code="value"
+              >
+                <template #option="{ text }">
+                  <span> {{ text }}</span>
+                </template>
+              </v-select>
             </b-form-group>
           </div>
           <!-- scoring -->
 
-          <!-- save button -->
+          <!-- take score -->
           <p />
           <b-col cols="12">
             <b-button
               v-if="[1,3].includes(criteria.approval_status)"
               v-ripple.400="'rgba(255, 255, 255, 0.15)'"
               variant="primary"
-              @click="saveCriteria(criteria)"
+              @click="takeScore(criteria)"
             >
               Take Point
             </b-button>
           </b-col>
-          <!-- save button -->
+          <!-- take score -->
+
+          <!-- untake score -->
+          <p />
+          <b-col cols="12">
+            <b-button
+              v-if="[2].includes(criteria.approval_status)"
+              v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+              variant="danger"
+              @click="untakeScore(criteria)"
+            >
+              Cancel Take
+            </b-button>
+          </b-col>
+          <!-- untake score -->
 
           <p />
 
@@ -208,17 +240,6 @@
               <div v-html="name.value" />
             </template>
           </b-table>
-
-          <!-- explanation  -->
-          <!-- <div
-            v-if="criteria.criteria.additional_notes"
-            class="apply-job-package bg-light-primary rounded"
-          >
-            <div class="text-body">
-              <p v-html="criteria.criteria.additional_notes" />
-            </div>
-          </div> -->
-          <!--/ explanation  -->
 
           <!-- Spacer -->
           <hr class="project-spacing">
@@ -348,6 +369,7 @@ import {
   BLink,
   BOverlay,
 } from 'bootstrap-vue'
+import vSelect from 'vue-select'
 import {
   ref, onUnmounted,
 } from '@vue/composition-api'
@@ -393,6 +415,7 @@ export default {
     BFormFile,
     BOverlay,
     BLink,
+    vSelect,
     quillEditor,
   },
   props: {
@@ -443,15 +466,6 @@ export default {
       exerciseTypeOptions: [
         { value: 'score', text: 'Max Score' },
         { value: 'prequisite', text: 'Prequisite' },
-      ],
-      comments: [
-        {
-          avatar: '',
-          userFullName: 'Chad Alexander',
-          commentedAt: 'May 24, 2020',
-          commentText:
-            'Telah dilakukan pengamatan pada remote audit site. kriteria dapat diterima, video dapat dilihat di https://drive.google.com/drive/folders/1zasdasdhes',
-        },
       ],
       codeFormatterCallback,
       codeRowDetailsSupport,
@@ -553,9 +567,17 @@ export default {
         this.showToast('danger', 'Cannot Delete', 'There is error when delete attachment, contact administrator')
       })
     },
-    saveCriteria(criteria) {
+    takeScore(criteria) {
       this.isLoading = true
-      this.$http.post(`/engine-rest/new-building/design_recognition/${criteria.id}/take_score`).then(() => {
+
+      const initCriteriaScoringData = {
+        submittedScore: criteria.submitted_score,
+      }
+
+      // eslint-disable-next-line
+      const criteriaScoringData = ref(JSON.parse(JSON.stringify(initCriteriaScoringData)))
+
+      this.$http.post(`/engine-rest/new-building/design_recognition/${criteria.id}/take_score`, criteriaScoringData.value).then(() => {
         this.isLoading = false
         this.rerenderCriteria()
         this.rerenderScoreParent()
@@ -563,6 +585,18 @@ export default {
       }).catch(error => {
         this.isLoading = false
         this.showToast('danger', 'Cannot Take Score', error.response.data.message)
+      })
+    },
+    untakeScore(criteria) {
+      this.isLoading = true
+      this.$http.post(`/engine-rest/new-building/design_recognition/${criteria.id}/untake_score`).then(() => {
+        this.isLoading = false
+        this.rerenderCriteria()
+        this.rerenderScoreParent()
+        this.showToast('success', 'Saved', 'Untake score successfully')
+      }).catch(error => {
+        this.isLoading = false
+        this.showToast('danger', 'Cannot Untake Score', error.response.data.message)
       })
     },
     rerenderScore() {
@@ -589,6 +623,23 @@ export default {
         return f.value === exercise.exercise.exercise_type
       })
       return filtered[0].text
+    },
+    scoreDictionary(criteria) {
+      const maxScore = criteria.criteria.score
+      const scoreArray = []
+      // const blankScore = {
+      //   value: 0,
+      //   text: '',
+      // }
+      for (let index = 0; index <= maxScore; index += 1) {
+        // const scoreDict = ref(JSON.parse(JSON.stringify(blankScore)))
+        // scoreDict.value = index
+        // scoreDict.text = index.toString()
+        // scoreArray.push(scoreDict.value)
+        scoreArray.push({ value: index, text: index.toString() })
+      }
+
+      return scoreArray
     },
   },
 }
