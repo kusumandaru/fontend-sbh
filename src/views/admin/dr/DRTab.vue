@@ -43,11 +43,10 @@
             <!-- title -->
             <!-- :icon="exercise.icon" -->
             <template #title>
-              <feather-icon
-                icon="CheckSquareIcon"
-                size="18"
-                class="mr-1"
-              />
+              <b-badge variant="light-secondary">
+                {{ exercise.submitted_score + exercise.approved_score }}
+              </b-badge>
+              &nbsp;
               <span class="font-weight-bold">{{ exercise.exercise.code }} - {{ exercise.exercise.name }}</span>
             </template>
             <d-r-detail :exercise="exercise" :rerenderScoreParent="rerenderScore" :rerenderCriteriaParent="forceRerenderCriteria" :key="criteriaKey" />
@@ -76,6 +75,7 @@ import {
   BTab,
   BAlert,
   BImg,
+  BBadge,
 } from 'bootstrap-vue'
 import {
   ref, onUnmounted,
@@ -91,6 +91,7 @@ export default {
     BTab,
     BAlert,
     BImg,
+    BBadge,
     DRDetail,
   },
   data() {

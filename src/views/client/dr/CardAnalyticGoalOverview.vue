@@ -12,15 +12,28 @@
         />
       </b-card-text>
     </b-card-header>
+    <b-col
+      sm="12"
+      class="d-flex flex-column flex-wrap text-center"
+    >
+      <h1 class="font-large-2 font-weight-bolder mt-2 mb-0">
+        {{ [Math.round(projectAssessment.approved_score + projectAssessment.submitted_score)] }}
+      </h1>
+      <b-card-text>Point Taken from minimum {{projectAssessment.proposed_level.minimum_score}} score</b-card-text>
+    </b-col>
+
+    <!-- Spacer -->
+    <hr class="project-spacing">
 
     <!-- apex chart -->
     <vue-apex-charts
       type="radialBar"
-      height="245"
+      height="300"
       :options="goalOverviewRadialBar.chartOptions"
       :series="goalOverviewRadialBar.series"
     />
-    <!-- success -->
+    <!-- evaluation score -->
+    <!-- level -->
     <b-dropdown
       v-ripple.400="'rgba(40, 199, 111, 0.15)'"
       :text="projectAssessment.proposed_level.name"
@@ -35,7 +48,6 @@
       {{ level.name }}
       </b-dropdown-item>
     </b-dropdown>
-    <span>Minimum Score {{ projectAssessment.proposed_level.minimum_score }} </span>
     <b-row class="text-center mx-0">
       <b-col
         cols="6"
@@ -147,9 +159,11 @@ export default {
             },
             dataLabels: {
               name: {
-                show: false,
+                offsetY: -20,
+                show: true,
               },
               value: {
+                offsetY: 20,
                 color: '#5e5873',
                 fontSize: '2.86rem',
                 fontWeight: '600',
@@ -178,6 +192,7 @@ export default {
             bottom: 30,
           },
         },
+        labels: ['Percentage'],
       },
     }
 
@@ -193,6 +208,7 @@ export default {
       .then(response => {
         // eslint-disable-next-line prefer-destructuring
         projectAssessment.value = response.data[0]
+        // goalOverviewRadialBar.value.series = [Math.round(projectAssessment.value.approved_score + projectAssessment.value.submitted_score)]
         goalOverviewRadialBar.value.series = [Math.round(((projectAssessment.value.approved_score + projectAssessment.value.submitted_score) / projectAssessment.value.proposed_level.minimum_score) * 100)]
       })
       .catch(error => {

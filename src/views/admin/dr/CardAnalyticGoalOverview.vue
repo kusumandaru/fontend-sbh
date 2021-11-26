@@ -12,7 +12,18 @@
         />
       </b-card-text>
     </b-card-header>
+    <b-col
+      sm="12"
+      class="d-flex flex-column flex-wrap text-center"
+    >
+      <h1 class="font-large-2 font-weight-bolder mt-2 mb-0">
+        {{ [Math.round(projectAssessment.approved_score + projectAssessment.submitted_score)] }}
+      </h1>
+      <b-card-text>Point Taken from minimum {{projectAssessment.proposed_level.minimum_score}} score</b-card-text>
+    </b-col>
 
+    <!-- Spacer -->
+    <hr class="project-spacing">
     <!-- apex chart -->
     <vue-apex-charts
       type="radialBar"
@@ -24,10 +35,10 @@
     <b-button
       v-ripple.400="'rgba(255, 255, 255, 0.15)'"
       variant="flat-primary"
+      :disabled="true"
     >
       <span>{{ projectAssessment.proposed_level.name }} </span>
     </b-button>
-    <span>Minimum Score {{ projectAssessment.proposed_level.minimum_score }} </span>
     <b-row class="text-center mx-0">
       <b-col
         cols="6"

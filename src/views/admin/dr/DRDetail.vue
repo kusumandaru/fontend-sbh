@@ -90,7 +90,7 @@
             <b-form-group
               label-cols="4"
               label-cols-lg="2"
-              label="Nilai Maksimal"
+              :label="criteria.criteria.exercise_type == 'score' ? 'Nilai' : 'Nilai maksimal'"
               label-for="input-default"
             >
               <b-form-input
@@ -234,17 +234,6 @@
               <div v-html="name.value" />
             </template>
           </b-table>
-
-          <!-- explanation  -->
-          <!-- <div
-            v-if="criteria.criteria.additional_notes"
-            class="apply-job-package bg-light-primary rounded"
-          >
-            <div class="text-body">
-              <p v-html="criteria.criteria.additional_notes" />
-            </div>
-          </div> -->
-          <!--/ explanation  -->
 
           <!-- Spacer -->
           <hr class="project-spacing">
