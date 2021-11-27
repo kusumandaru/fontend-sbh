@@ -627,15 +627,7 @@ export default {
     scoreDictionary(criteria) {
       const maxScore = criteria.criteria.score
       const scoreArray = []
-      // const blankScore = {
-      //   value: 0,
-      //   text: '',
-      // }
       for (let index = 0; index <= maxScore; index += 1) {
-        // const scoreDict = ref(JSON.parse(JSON.stringify(blankScore)))
-        // scoreDict.value = index
-        // scoreDict.text = index.toString()
-        // scoreArray.push(scoreDict.value)
         scoreArray.push({ value: index, text: index.toString() })
       }
 

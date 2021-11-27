@@ -90,14 +90,32 @@
             <b-form-group
               label-cols="4"
               label-cols-lg="2"
-              :label="criteria.criteria.exercise_type == 'score' ? 'Nilai' : 'Nilai maksimal'"
+              :label="criteria.criteria.exercise_type == 'score' ? 'Nilai' : 'Nilai yang dipilih *'"
               label-for="input-default"
             >
+              <!-- score -->
               <b-form-input
+                v-if="criteria.criteria.exercise_type == 'score'"
                 id="input-default"
-                :disabled='disabled'
                 v-model="criteria.criteria.score"
+                :disabled='disabled'
               />
+
+              <v-select
+                v-if="criteria.criteria.exercise_type == 'max_score'"
+                v-model="criteria.approved_score"
+                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                :options="scoreDictionary(criteria)"
+                :reduce="val => val.value"
+                :clearable="false"
+                :disabled="criteria.approval_status != 2"
+                label="text"
+                code="value"
+              >
+                <template #option="{ text }">
+                  <span> {{ text }}</span>
+                </template>
+              </v-select>
             </b-form-group>
           </div>
           <!-- scoring -->
@@ -595,6 +613,8 @@ export default {
       const request = new FormData()
       request.append('task_id', router.currentRoute.params.id)
       request.append('approval_status', criteria.approval_status)
+      request.append('approved_score', criteria.approved_score)
+
       const config = {
         header: {
           'Content-Type': 'multipart/form-data',
@@ -637,6 +657,15 @@ export default {
         return f.value === exercise.exercise.exercise_type
       })
       return filtered[0].text
+    },
+    scoreDictionary(criteria) {
+      const maxScore = criteria.criteria.score
+      const scoreArray = []
+      for (let index = 0; index <= maxScore; index += 1) {
+        scoreArray.push({ value: index, text: index.toString() })
+      }
+
+      return scoreArray
     },
   },
 }
