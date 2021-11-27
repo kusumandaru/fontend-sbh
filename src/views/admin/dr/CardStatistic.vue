@@ -3,11 +3,11 @@
     <!-- Stats Card Vertical -->
     <b-row class="match-height">
       <b-col
+        v-for="evaluation in evaluations"
+        :key="evaluation.id"
         xl="2"
         md="4"
         sm="6"
-        v-for="evaluation in evaluations"
-        :key="evaluation.id"
       >
         <statistic-card-vertical
           color="success"

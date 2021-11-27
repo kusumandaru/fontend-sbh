@@ -98,7 +98,7 @@
                 v-if="criteria.criteria.exercise_type == 'score'"
                 id="input-default"
                 v-model="criteria.criteria.score"
-                :disabled='disabled'
+                :disabled="disabled"
               />
 
               <v-select
@@ -189,29 +189,29 @@
                         {{ doc.value }}
                       </a> -->
                       <b-link
-                        @click="getAttachment(doc.item)"
                         class="font-weight-bold d-block text-nowrap"
+                        @click="getAttachment(doc.item)"
                       >
                         {{ doc.value }}
                       </b-link>
                     </template>
-                    <template #cell(action)="row">
+                    <template #cell(action)="drow">
                       <feather-icon
                         :id="`master-row-${row.item.id}-delete-icon`"
                         icon="Trash2Icon"
                         size="16"
                         class="mx-1"
-                        @click="deleteAttachment(row.item)"
+                        @click="deleteAttachment(drow.item)"
                       />
                     </template>
                   </b-table>
                   <b-row>
                     <b-col md="10">
                       <b-form-file
+                        v-model="row.item.files"
                         placeholder="Choose a file or drop it here..."
                         drop-placeholder="Drop file here..."
                         multiple
-                        v-model="row.item.files"
                       />
                     </b-col>
                     <b-col md="2">
@@ -249,7 +249,7 @@
             <label for="textarea-default">Internal Notes</label>
             <quill-editor
               v-model="criteria.criteria.additional_notes"
-              :disabled='disabled'
+              :disabled="disabled"
               :exercise="snowOption"
             />
           <!-- <span v-html="criteria.placeholder"></span> -->
@@ -269,8 +269,8 @@
               Comment
             </h6>
             <b-card
-              v-for="(comment, idx) in criteria.comments"
-              :key="idx"
+              v-for="(comment, cidx) in criteria.comments"
+              :key="cidx"
             >
               <b-media no-body>
                 <b-media-aside class="mr-75">
@@ -313,9 +313,9 @@
                   <b-col cols="12">
                     <b-form-group class="mb-2">
                       <b-form-textarea
+                        v-model="criteriaComment"
                         name="textarea"
                         rows="4"
-                        v-model="criteriaComment"
                         placeholder="comment here"
                       />
                     </b-form-group>
@@ -425,9 +425,11 @@ export default {
     },
     rerenderScoreParent: {
       type: Function,
+      default: () => {},
     },
     rerenderCriteriaParent: {
       type: Function,
+      default: () => {},
     },
   },
   data() {

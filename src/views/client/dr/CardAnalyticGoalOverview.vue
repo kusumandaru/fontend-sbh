@@ -19,7 +19,7 @@
       <h1 class="font-large-2 font-weight-bolder mt-2 mb-0">
         {{ [Math.round(projectAssessment.approved_score + projectAssessment.submitted_score)] }}
       </h1>
-      <b-card-text>Point Taken from minimum {{projectAssessment.proposed_level.minimum_score}} score</b-card-text>
+      <b-card-text>Point Taken from minimum {{ projectAssessment.proposed_level.minimum_score }} score</b-card-text>
     </b-col>
 
     <!-- Spacer -->
@@ -45,7 +45,7 @@
         :value="level.id"
         @click="changeLevel(level)"
       >
-      {{ level.name }}
+        {{ level.name }}
       </b-dropdown-item>
     </b-dropdown>
     <b-row class="text-center mx-0">
@@ -57,7 +57,7 @@
           Approved Score
         </b-card-text>
         <h3 class="font-weight-bolder mb-50">
-          {{ projectAssessment.approved_score  }}
+          {{ projectAssessment.approved_score }}
         </h3>
       </b-col>
 
@@ -102,17 +102,18 @@ export default {
     BDropdown,
     BDropdownItem,
   },
+  directives: {
+    Ripple,
+  },
   props: {
     rerenderScoreParent: {
       type: Function,
+      default: () => {},
     },
   },
   data() {
     return {
     }
-  },
-  directives: {
-    Ripple,
   },
   created() {
   },

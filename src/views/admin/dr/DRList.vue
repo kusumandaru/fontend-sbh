@@ -85,21 +85,27 @@
               <div class="col-6 mx-auto">
                 <div class="card h-100 border-primary justify-content-center">
                   <div>
-                    <card-analytic-goal-overview :key="scoreKey" :rerenderScoreParent="forceRerenderScore"/>
+                    <card-analytic-goal-overview
+                      :key="scoreKey"
+                      :rerender-score-parent="forceRerenderScore"
+                    />
                   </div>
                 </div>
               </div>
-              <upload-assessment :key="uploadAssessmentKey" :rerenderUploadAssessment="forceRerenderUploadAssessment"/>
+              <upload-assessment
+                :key="uploadAssessmentKey"
+                :rerender-upload-assessment="forceRerenderUploadAssessment"
+              />
             </div>
           </div>
         </b-card-body>
       </b-card>
     </section>
     <!--/ project information section -->
-    <card-statistic :key="cardStatisticKey"/>
+    <card-statistic :key="cardStatisticKey" />
 
     <!-- tab for evaluation -->
-    <d-r-tab :rerenderScoreParent="forceRerenderScore"/>
+    <d-r-tab :rerender-score-parent="forceRerenderScore" />
     <!--/ tab for evaluation -->
 
   </div>
