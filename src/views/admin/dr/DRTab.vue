@@ -49,7 +49,12 @@
               &nbsp;
               <span class="font-weight-bold">{{ exercise.exercise.code }} - {{ exercise.exercise.name }}</span>
             </template>
-            <d-r-detail :exercise="exercise" :rerenderScoreParent="rerenderScore" :rerenderCriteriaParent="forceRerenderCriteria" :key="criteriaKey" />
+            <d-r-detail
+              :key="criteriaKey"
+              :exercise="exercise"
+              :rerender-score-parent="rerenderScore"
+              :rerender-criteria-parent="forceRerenderCriteria"
+            />
           </b-tab>
           <!--/ payment tab -->
 
@@ -94,15 +99,16 @@ export default {
     BBadge,
     DRDetail,
   },
+  props: {
+    rerenderScoreParent: {
+      type: Function,
+      default: () => {},
+    },
+  },
   data() {
     return {
       criteriaKey: 0,
     }
-  },
-  props: {
-    rerenderScoreParent: {
-      type: Function,
-    },
   },
   watch: {
   },

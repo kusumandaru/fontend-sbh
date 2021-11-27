@@ -69,8 +69,8 @@
             >
               <b-form-input
                 id="input-default"
-                :disabled='disabled'
                 v-model="criteria.approved_score"
+                :disabled="disabled"
               />
             </b-form-group>
 
@@ -82,22 +82,40 @@
             >
               <b-form-input
                 id="input-default"
-                :disabled='disabled'
                 v-model="criteria.submitted_score"
+                :disabled="disabled"
               />
             </b-form-group>
 
             <b-form-group
               label-cols="4"
               label-cols-lg="2"
-              :label="criteria.criteria.exercise_type == 'score' ? 'Nilai' : 'Nilai maksimal'"
+              :label="criteria.criteria.exercise_type == 'score' ? 'Nilai' : 'Nilai yang dipilih *'"
               label-for="input-default"
             >
+              <!-- score -->
               <b-form-input
+                v-if="criteria.criteria.exercise_type == 'score'"
                 id="input-default"
-                :disabled='disabled'
                 v-model="criteria.criteria.score"
+                :disabled="disabled"
               />
+
+              <v-select
+                v-if="criteria.criteria.exercise_type == 'max_score'"
+                v-model="criteria.approved_score"
+                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                :options="scoreDictionary(criteria)"
+                :reduce="val => val.value"
+                :clearable="false"
+                :disabled="criteria.approval_status != 2"
+                label="text"
+                code="value"
+              >
+                <template #option="{ text }">
+                  <span> {{ text }}</span>
+                </template>
+              </v-select>
             </b-form-group>
           </div>
           <!-- scoring -->
@@ -179,33 +197,30 @@
                       {{ uploader.item.user.first_name }} {{ uploader.item.user.last_name }}
                     </template>
                     <template #cell(filename)="doc">
-                      <!-- <a :href="`${doc.item.link}`">
-                        {{ doc.value }}
-                      </a> -->
                       <b-link
-                        @click="getAttachment(doc.item)"
                         class="font-weight-bold d-block text-nowrap"
+                        @click="getAttachment(doc.item)"
                       >
                         {{ doc.value }}
                       </b-link>
                     </template>
-                    <template #cell(action)="row">
+                    <template #cell(action)="rowc">
                       <feather-icon
-                        :id="`master-row-${row.item.id}-delete-icon`"
+                        :id="`master-row-${rowc.item.id}-delete-icon`"
                         icon="Trash2Icon"
                         size="16"
                         class="mx-1"
-                        @click="deleteAttachment(row.item)"
+                        @click="deleteAttachment(rowc.item)"
                       />
                     </template>
                   </b-table>
                   <b-row>
                     <b-col md="10">
                       <b-form-file
+                        v-model="row.item.files"
                         placeholder="Choose a file or drop it here..."
                         drop-placeholder="Drop file here..."
                         multiple
-                        v-model="row.item.files"
                       />
                     </b-col>
                     <b-col md="2">
@@ -243,7 +258,7 @@
             <label for="textarea-default">Internal Notes</label>
             <quill-editor
               v-model="criteria.criteria.additional_notes"
-              :disabled='disabled'
+              :disabled="disabled"
               :exercise="snowOption"
             />
           <!-- <span v-html="criteria.placeholder"></span> -->
@@ -263,8 +278,8 @@
               Comment
             </h6>
             <b-card
-              v-for="(comment, idx) in criteria.comments"
-              :key="idx"
+              v-for="(comment, cidx) in criteria.comments"
+              :key="cidx"
             >
               <b-media no-body>
                 <b-media-aside class="mr-75">
@@ -307,9 +322,9 @@
                   <b-col cols="12">
                     <b-form-group class="mb-2">
                       <b-form-textarea
+                        v-model="criteriaComment"
                         name="textarea"
                         rows="4"
-                        v-model="criteriaComment"
                         placeholder="comment here"
                       />
                     </b-form-group>
@@ -419,9 +434,11 @@ export default {
     },
     rerenderScoreParent: {
       type: Function,
+      default: () => {},
     },
     rerenderCriteriaParent: {
       type: Function,
+      default: () => {},
     },
   },
   data() {
@@ -595,6 +612,8 @@ export default {
       const request = new FormData()
       request.append('task_id', router.currentRoute.params.id)
       request.append('approval_status', criteria.approval_status)
+      request.append('approved_score', criteria.approved_score)
+
       const config = {
         header: {
           'Content-Type': 'multipart/form-data',
@@ -637,6 +656,15 @@ export default {
         return f.value === exercise.exercise.exercise_type
       })
       return filtered[0].text
+    },
+    scoreDictionary(criteria) {
+      const maxScore = criteria.criteria.score
+      const scoreArray = []
+      for (let index = 0; index <= maxScore; index += 1) {
+        scoreArray.push({ value: index, text: index.toString() })
+      }
+
+      return scoreArray
     },
   },
 }

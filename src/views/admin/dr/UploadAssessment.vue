@@ -48,6 +48,7 @@ export default {
   props: {
     rerenderUploadAssessment: {
       type: Function,
+      default: () => {},
     },
   },
   data() {
