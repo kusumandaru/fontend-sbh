@@ -352,22 +352,22 @@
           <b-form-group>
             <label>Bukti Pembayaran (Proof of Payment)</label>
             <b-form-file
-              v-model="proofOfPayment"
+              v-model="proofOfPaymentInput"
               placeholder="Choose a file or drop it here..."
               drop-placeholder="Drop file here..."
             />
             <b-card-text class="my-1">
-              Selected file: <strong>{{ proofOfPayment ? proofOfPayment.name : '' }}</strong>
+              Selected file: <strong>{{ proofOfPaymentInput ? proofOfPaymentInput.name : '' }}</strong>
             </b-card-text>
 
             <b-card-text
-              v-if="projectData.proof_of_payment"
+              v-if="proofOfPayment"
               class="mb-0"
             >
               <b-button
                 v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                 variant="flat-primary"
-                @click="downloadFile('proof_of_payment')"
+                @click="downloadFileByAttachment(proofOfPayment.id)"
               >
                 <feather-icon icon="ArchiveIcon" />
                 Download Bukti Pembayaran
@@ -484,11 +484,7 @@ export default {
       buildingOption: [],
       provinceOption: [],
       cityOption: [],
-      // designRecognitionOption: [
-      //   { id: 'true', name: 'Need Design Recognition' },
-      //   { id: 'false', name: 'Skip Design Recognition' },
-      // ],
-      proofOfPayment: null,
+      proofOfPaymentInput: null,
       maxChar: 200,
       successShow: false,
       result: {},
@@ -534,6 +530,8 @@ export default {
   },
   setup() {
     const projectData = ref({})
+    const proofOfPayment = ref({})
+
     const PROJECT_APP_STORE_MODULE_NAME = 'app-project'
 
     let buildingAddress = ref('')
@@ -602,10 +600,23 @@ export default {
         }
       })
 
-    const downloadFile = fileName => {
-      store.dispatch('app-project/downloadLink', {
-        id: projectData.value.task_id,
-        filename: fileName,
+    store.dispatch('app-project/getLatestAttachmentByType', { taskId: router.currentRoute.params.id, fileType: 'proof_of_payment' })
+      .then(response => {
+        proofOfPayment.value = response.data
+      })
+      .catch(error => {
+        if (error.response.status === 404) {
+          proofOfPayment.value = undefined
+        }
+        if (error.response.status === 500) {
+          proofOfPayment.value = undefined
+        }
+      })
+
+    const downloadFileByAttachment = attachmentId => {
+      store.dispatch('app-project/downloadLinkByAttachmentId', {
+        taskId: projectData.value.task_id,
+        attachmentId,
       })
         .then(response => {
           window.open(response.data.url)
@@ -622,6 +633,7 @@ export default {
 
     return {
       projectData,
+      proofOfPayment,
       selectedBuilding,
       selectedCertification,
       selectedProvince,
@@ -629,7 +641,7 @@ export default {
       selectedDesignRecognition,
       designRecognitionOption,
       paymentProps,
-      downloadFile,
+      downloadFileByAttachment,
       buildingAddress,
     }
   },
@@ -648,6 +660,7 @@ export default {
   methods: {
     reset() {
       this.projectData = {}
+      this.proofOfPaymentInput = {}
       this.selectedProvince = {}
       this.selectedCity = {}
       this.selectedBuilding = {}
@@ -704,7 +717,7 @@ export default {
           request.append('email', this.projectData.email)
           request.append('faximile', this.projectData.faximile)
           request.append('postal_code', this.projectData.postal_code)
-          request.append('file', this.proofOfPayment)
+          request.append('file', this.proofOfPaymentInput)
           request.append('design_recognition', this.stringToBoolean(this.selectedDesignRecognition.id))
           request.append('gross_floor_area', this.projectData.gross_floor_area)
           const config = {
@@ -712,6 +725,7 @@ export default {
               'Content-Type': 'multipart/form-data',
             },
           }
+
           this.$http.patch(`/engine-rest/new-building/edit-project/${router.currentRoute.params.id}`, request, config).then(res => {
             this.result = JSON.parse(JSON.stringify(res.data))
             this.successShow = true

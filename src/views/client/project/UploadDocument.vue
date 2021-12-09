@@ -1,82 +1,9 @@
 <template>
   <validation-observer ref="uploadDocumentRules">
     <b-form @submit.prevent>
-      <b-row
-        v-if="projectData"
-        class="project-preview"
-      >
-        <!-- Col: Left (project Container) -->
-        <b-col
-          cols="12"
-          xl="12"
-          md="12"
-        >
-          <!-- Header -->
-          <b-card
-            no-body
-            class="project-preview-card"
-          >
-            <b-card-body class="project-padding pb-0">
-              <div class="d-flex justify-content-between flex-md-row flex-column project-spacing mt-0">
-                <!-- Header: Left Content -->
-                <div>
-                  <div class="logo-wrapper">
-                    <h3 class="text-primary project-logo">
-                      {{ projectData.building_name }}
-                    </h3>
-                  </div>
-                  <p class="card-text mb-25">
-                    {{ projectData.building_address }}
-                  </p>
-                  <p class="card-text mb-25">
-                    {{ projectData.city_name }}
-                  </p>
-                  <p class="card-text mb-25">
-                    {{ projectData.province_name }}
-                  </p>
-                  <p class="card-text mb-25">
-                    {{ projectData.postal_code }}
-                  </p>
-                  <p class="card-text mb-0">
-                    <feather-icon icon="PhoneIcon" />
-                    Telephone: {{ projectData.telephone }}
-                  </p>
-                  <p class="card-text mb-0">
-                    <feather-icon icon="PhoneIcon" />
-                    Handphone: {{ projectData.handphone }}
-                  </p>
-                  <p class="card-text mb-0">
-                    <feather-icon icon="MailIcon" />
-                    Email: {{ projectData.email }}
-                  </p>
-                  <p class="card-text mb-0">
-                    <feather-icon icon="PrinterIcon" />
-                    Faximile: {{ projectData.faximile }}
-                  </p>
-                </div>
+      <project-header :key="projectHeaderKey" />
 
-                <!-- Header: Right Content -->
-                <div class="mt-md-0 mt-2">
-                  <h4 class="project-title">
-                    Project ID
-                    <span class="project-number">#{{ projectData.task_id }}</span>
-                  </h4>
-                  <div class="project-date-wrapper">
-                    <p class="project-date-title">
-                      Date Created:
-                    </p>
-                    <p class="project-date">
-                      {{ projectData.created_at | moment("dddd, MMMM Do YYYY") }}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </b-card-body>
-          </b-card>
-        </b-col>
-      </b-row>
       <b-row>
-
         <!--Building Plan -->
         <b-col md="12">
           <b-form-group>
@@ -374,8 +301,6 @@
 import {
   BCardText,
   BRow,
-  BCard,
-  BCardBody,
   BCol,
   BFormFile,
   BFormGroup,
@@ -396,13 +321,12 @@ import {
   required, email, confirmed, url, between, alpha, integer, password, min, digits, alphaDash, length,
 } from '@validations'
 import projectStoreModule from '@/views/projectStoreModule'
+import ProjectHeader from './ProjectHeader.vue'
 
 export default {
   components: {
     BCardText,
     BRow,
-    BCard,
-    BCardBody,
     BCol,
     BFormFile,
     BFormGroup,
@@ -412,12 +336,14 @@ export default {
     BSpinner,
     ValidationObserver,
     ValidationProvider,
+    ProjectHeader,
   },
   directives: {
     Ripple,
   },
   data() {
     return {
+      projectHeaderKey: 0,
       buildingPlan: null,
       rtRw: null,
       uplUkl: null,

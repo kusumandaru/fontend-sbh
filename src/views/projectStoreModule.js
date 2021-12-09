@@ -22,7 +22,7 @@ export default {
           .catch(error => reject(error))
       })
     },
-    approveProject(ctx, { id }) {
+    approveTask(ctx, { id }) {
       return new Promise((resolve, reject) => {
         const request = new FormData()
         request.append('task_id', id)
@@ -32,12 +32,12 @@ export default {
           },
         }
         axios
-          .post('/engine-rest/new-building/accept-register-project', request, config)
+          .post('/engine-rest/new-building/accept-task', request, config)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })
     },
-    rejectProject(ctx, { id, rejectionReason }) {
+    rejectTask(ctx, { id, rejectionReason }) {
       return new Promise((resolve, reject) => {
         const request = new FormData()
         request.append('task_id', id)
@@ -49,15 +49,31 @@ export default {
           },
         }
         axios
-          .post('/engine-rest/new-building/reject-register-project', request, config)
+          .post('/engine-rest/new-building/reject-task', request, config)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })
     },
-    downloadLink(ctx, { id, filename }) {
+    getLatestAttachmentByType(ctx, { taskId, fileType }) {
       return new Promise((resolve, reject) => {
         axios
-          .get(`/engine-rest/new-building/url_file/${id}/${filename}`)
+          .get(`/engine-rest/new-building/project/attachments/${taskId}/${fileType}/latest`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    getAttachmentsByType(ctx, { taskId, fileType }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/engine-rest/new-building/project/attachments/${taskId}/${fileType}/files`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    downloadLinkByAttachmentId(ctx, { taskId, attachmentId }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/engine-rest/new-building/project/attachments/${taskId}/${attachmentId}`)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })
@@ -104,7 +120,7 @@ export default {
       return new Promise((resolve, reject) => {
         axios({
           method: 'get',
-          url: `/engine-rest/new-building/archived_files/${id}`,
+          url: `/engine-rest/new-building/project/attachments/${id}/archived_files`,
           responseType: 'arraybuffer',
         }).then(response => resolve(response))
           .catch(error => reject(error))

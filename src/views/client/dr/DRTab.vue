@@ -61,8 +61,8 @@
           <!-- sitting lady image -->
           <template #tabs-end>
             <b-img
-              fluid
-              :src="require('@/assets/images/illustration/faq-illustrations.svg')"
+              :src="require(`@/assets/images/illustration/${evaluationImage(evaluation)}`)"
+              height="150%"
               class="d-none d-md-block mt-auto"
             />
           </template>
@@ -108,6 +108,14 @@ export default {
   data() {
     return {
       criteriaKey: 0,
+      imageOptions: [
+        { value: 'ASD', text: 'faq-illustrations.svg' },
+        { value: 'EEC', text: 'marketing.svg' },
+        { value: 'WAC', text: 'personalization.svg' },
+        { value: 'MRC', text: 'pricing-Illustration.svg' },
+        { value: 'IHC', text: 'sales.svg' },
+        { value: 'BEM', text: 'marketing.svg' },
+      ],
     }
   },
   watch: {
@@ -165,6 +173,14 @@ export default {
             this.transactionFetch.value = undefined
           }
         })
+    },
+    evaluationImage(evaluation) {
+      // eslint-disable-next-line
+      const filtered = this.imageOptions.filter(f => { 
+        // eslint-disable-next-line
+        return f.value === evaluation.code
+      })
+      return filtered[0].text
     },
   },
 }

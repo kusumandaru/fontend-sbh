@@ -85,7 +85,7 @@
                   icon="EyeIcon"
                   size="16"
                   class="mx-1"
-                  @click="$router.push({ name: 'admin-project-preview', params: { id: props.row.id }})"
+                  @click="goToPreview(props.row.id)"
                 />
                 <b-tooltip
                   title="Preview Project"
@@ -172,6 +172,7 @@ import { VueGoodTable } from 'vue-good-table'
 import store from '@/store/index'
 import 'vue-good-table/dist/vue-good-table.css'
 import VueBpmn from '@/views/VueBpmn.vue'
+import router from '@/router'
 
 export default {
   components: {
@@ -231,6 +232,10 @@ export default {
             enabled: true,
             placeholder: 'Search Assignee',
           },
+        },
+        {
+          label: 'Read',
+          field: 'read',
         },
         {
           label: 'Created At',
@@ -300,16 +305,6 @@ export default {
       this.$http.get('engine-rest/new-building/tasks')
         .then(res => { this.rows = res.data })
     },
-    approveProject(taskId) {
-      this.$http.get(`/engine-rest/new-building/accept-register-project/${taskId}`)
-        .then(res => { this.claim = res.data })
-      this.$router.go(this.$router.currentRoute)
-    },
-    rejectProject(taskId) {
-      this.$http.get(`/engine-rest/new-building/reject-register-project/${taskId}`)
-        .then(res => { this.claim = res.data })
-      this.$router.go(this.$router.currentRoute)
-    },
     retrieveDiagrams(processDefinitionId, taskDefinitionKey) {
       this.$http.get(`engine-rest/process-definition/${processDefinitionId}/xml`)
         .then(res => {
@@ -328,6 +323,17 @@ export default {
         this.paymentProps.blank = false
         this.paymentProps.src = imageUrl
       }
+    },
+    goToPreview(id) {
+      const request = new FormData()
+      request.append('task_id', id)
+      const config = {
+        header: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+      this.$http.post('engine-rest/new-building/read-task', request, config)
+      router.push({ name: 'admin-project-preview', params: { id: id } })
     },
     /* eslint-enable object-shorthand */
 

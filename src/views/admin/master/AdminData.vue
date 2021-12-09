@@ -87,7 +87,7 @@
                     v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                     variant="flat-primary"
                     :disabled="isLoading"
-                    @click="downloadFile('registration_letter')"
+                    @click="downloadMasterFile('registration_letter')"
                   >
                     <b-spinner
                       v-show="isLoading"
@@ -111,7 +111,7 @@
                     v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                     variant="flat-primary"
                     :disabled="isLoading"
-                    @click="downloadFile('first_attachment')"
+                    @click="downloadMasterFile('first_attachment')"
                   >
                     <b-spinner
                       v-show="isLoading"
@@ -135,7 +135,7 @@
                     v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                     variant="flat-primary"
                     :disabled="isLoading"
-                    @click="downloadFile('second_attachment')"
+                    @click="downloadMasterFile('second_attachment')"
                   >
                     <b-spinner
                       v-show="isLoading"
@@ -159,7 +159,7 @@
                     v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                     variant="flat-primary"
                     :disabled="isLoading"
-                    @click="downloadFile('third_attachment')"
+                    @click="downloadMasterFile('third_attachment')"
                   >
                     <b-spinner
                       v-show="isLoading"
@@ -301,7 +301,7 @@ export default {
       if (store.hasModule(PROJECT_APP_STORE_MODULE_NAME)) store.unregisterModule(PROJECT_APP_STORE_MODULE_NAME)
     })
 
-    const downloadFile = fileName => {
+    const downloadMasterFile = fileName => {
       isLoading = true
       store.dispatch('app-project/downloadMasterLink', {
         filename: fileName,
@@ -326,7 +326,7 @@ export default {
     }
 
     return {
-      downloadFile,
+      downloadMasterFile,
       adminData,
       drTemplate,
       faTemplate,
