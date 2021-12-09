@@ -51,7 +51,7 @@
             variant="primary"
             class="mr-2"
             type="submit"
-            @click="rejectProject"
+            @click="rejectTask"
           >
             Submit
           </b-button>
@@ -94,8 +94,8 @@ export default {
     })
     const claim = ref(null)
 
-    const rejectProject = () => {
-      store.dispatch('app-project/rejectProject', { id: router.currentRoute.params.id, rejectionReason: rejectionData.value.rejectionNote })
+    const rejectTask = () => {
+      store.dispatch('app-project/rejectTask', { id: router.currentRoute.params.id, rejectionReason: rejectionData.value.rejectionNote })
         .then(response => {
           claim.value = response.data
         })
@@ -114,7 +114,7 @@ export default {
 
     return {
       rejectionData,
-      rejectProject,
+      rejectTask,
     }
   },
 }

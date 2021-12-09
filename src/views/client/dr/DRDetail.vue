@@ -185,9 +185,6 @@
                       {{ uploader.item.user.first_name }} {{ uploader.item.user.last_name }}
                     </template>
                     <template #cell(filename)="doc">
-                      <!-- <a :href="`${doc.item.link}`">
-                        {{ doc.value }}
-                      </a> -->
                       <b-link
                         class="font-weight-bold d-block text-nowrap"
                         @click="getAttachment(doc.item)"

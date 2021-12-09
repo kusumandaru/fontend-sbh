@@ -193,7 +193,71 @@
           <!-- Spacer -->
           <hr class="project-spacing">
 
+          <!-- Eligibility Document -->
           <b-card-body class="project-padding pb-0">
+            <b-card-title>Eligibility Document</b-card-title>
+            <b-card-sub-title>Eligibility Document for Project Registration</b-card-sub-title>
+            <p />
+            <b-row>
+
+              <!-- Col: Download Files -->
+              <b-col
+                cols="12"
+                md="12"
+                class="mt-md-0 mt-3"
+                order="2"
+                order-md="1"
+              >
+                <app-collapse>
+                  <app-collapse-item
+                    v-for="(attachments, name) in filteredAttachment(eligibilityAttachments)"
+                    :key="name"
+                    :title="toTitleCase(name)"
+                  >
+                    <b-table
+                      responsive
+                      :items="attachments"
+                      :fields="projectAttachmentFields"
+                      class="mb-0"
+                    >
+                      <template #cell(filename)="doc">
+                        <b-link
+                          class="font-weight-bold d-block text-nowrap"
+                          @click="downloadFileByAttachment(doc.item.id)"
+                        >
+                          {{ doc.value }}
+                        </b-link>
+                      </template>
+                    </b-table>
+                  </app-collapse-item>
+                </app-collapse>
+
+                <!-- Spacer -->
+                <hr class="project-spacing">
+
+                <b-card-text
+                  class="mb-0"
+                >
+                  <span class="font-weight-bold">Berkas : </span>
+                  <b-button
+                    variant="gradient-primary"
+                    @click="downloadAllFiles"
+                  >
+                    <feather-icon icon="ArchiveIcon" />
+                    Download Eligibility Document Archived
+                  </b-button>
+                </b-card-text>
+              </b-col>
+            </b-row>
+          </b-card-body>
+
+          <!-- Spacer -->
+          <hr class="project-spacing">
+
+          <!-- Registered Project Document -->
+          <b-card-body class="project-padding pb-0">
+            <b-card-title>Registered Project Document</b-card-title>
+            <p />
             <b-row>
 
               <!-- Col: Certification Type -->
@@ -204,133 +268,44 @@
                 order="2"
                 order-md="1"
               >
+                <app-collapse>
+                  <app-collapse-item
+                    v-for="(attachments, name) in filteredAttachment(registeredAttachments)"
+                    :key="name"
+                    :title="toTitleCase(name)"
+                  >
+                    <b-table
+                      responsive
+                      :items="attachments"
+                      :fields="projectAttachmentFields"
+                      class="mb-0"
+                    >
+                      <template #cell(filename)="doc">
+                        <b-link
+                          class="font-weight-bold d-block text-nowrap"
+                          @click="downloadFileByAttachment(doc.item.id)"
+                        >
+                          {{ doc.value }}
+                        </b-link>
+                      </template>
+                    </b-table>
+                  </app-collapse-item>
+                </app-collapse>
+
                 <b-card-text
-                  v-if="projectData.proof_of_payment"
+                  v-if="projectData.registered_project"
                   class="mb-0"
                 >
                   <b-button
                     v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                     variant="flat-primary"
-                    @click="downloadFile('proof_of_payment')"
+                    @click="registeredProject"
                   >
                     <feather-icon icon="ArchiveIcon" />
-                    Download Bukti Pembayaran
+                    Download Registered Project
                   </b-button>
                 </b-card-text>
 
-                <b-card-text
-                  v-if="projectData.building_plan"
-                  class="mb-0"
-                >
-                  <b-button
-                    v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-                    variant="flat-primary"
-                    @click="downloadFile('building_plan')"
-                  >
-                    <feather-icon icon="ArchiveIcon" />
-                    Download Gambar denah bangunan
-                  </b-button>
-                </b-card-text>
-
-                <b-card-text
-                  v-if="projectData.rt_rw"
-                  class="mb-0"
-                >
-                  <b-button
-                    v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-                    variant="flat-primary"
-                    @click="downloadFile('rt_rw')"
-                  >
-                    <feather-icon icon="ArchiveIcon" />
-                    Download Peta RT/RW
-                  </b-button>
-                </b-card-text>
-
-                <b-card-text
-                  v-if="projectData.upl_ukl"
-                  class="mb-0"
-                >
-                  <b-button
-                    v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-                    variant="flat-primary"
-                    @click="downloadFile('upl_ukl')"
-                  >
-                    <feather-icon icon="ArchiveIcon" />
-                    Download Salinan UPL/UKL
-                  </b-button>
-                </b-card-text>
-
-                <b-card-text
-                  v-if="projectData.earthquake_resistance"
-                  class="mb-0"
-                >
-                  <b-button
-                    v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-                    variant="flat-primary"
-                    @click="downloadFile('earthquake_resistance')"
-                  >
-                    <feather-icon icon="ArchiveIcon" />
-                    Download Syarat Tahan Gempa
-                  </b-button>
-                </b-card-text>
-
-                <b-card-text
-                  v-if="projectData.disability_friendly"
-                  class="mb-0"
-                >
-                  <b-button
-                    v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-                    variant="flat-primary"
-                    @click="downloadFile('disability_friendly')"
-                  >
-                    <feather-icon icon="ArchiveIcon" />
-                    Download Syarat Penyandang Cacat
-                  </b-button>
-                </b-card-text>
-
-                <b-card-text
-                  v-if="projectData.safety_and_fire_requirement"
-                  class="mb-0"
-                >
-                  <b-button
-                    v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-                    variant="flat-primary"
-                    @click="downloadFile('safety_and_fire_requirement')"
-                  >
-                    <feather-icon icon="ArchiveIcon" />
-                    Download Syarat Keselamatan dan Kebakaran
-                  </b-button>
-                </b-card-text>
-
-                <b-card-text
-                  v-if="projectData.study_case_readiness"
-                  class="mb-0"
-                >
-                  <b-button
-                    v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-                    variant="flat-primary"
-                    @click="downloadFile('study_case_readiness')"
-                  >
-                    <feather-icon icon="ArchiveIcon" />
-                    Download Pernyataan Bersedia Studi Kasus
-                  </b-button>
-                </b-card-text>
-
-                <!-- Spacer -->
-                <hr class="project-spacing">
-
-                <b-card-text
-                  class="mb-0"
-                >
-                  <span class="font-weight-bold">Semua berkas : </span>
-                  <b-button
-                    variant="gradient-primary"
-                    @click="downloadAllFiles"
-                  >
-                    <feather-icon icon="ArchiveIcon" />
-                    Download
-                  </b-button>
-                </b-card-text>
               </b-col>
             </b-row>
           </b-card-body>
@@ -417,6 +392,18 @@
             Upload Document Building
           </b-button>
 
+          <!-- Button: FirstPayment-->
+          <b-button
+            v-if="firstPaymentShow"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="success"
+            class="mb-75"
+            block
+            @click="firstPaymentTask"
+          >
+            First Payment
+          </b-button>
+
           <!-- Button: Design Recognition-->
           <b-button
             v-if="designRecognitionShow"
@@ -440,6 +427,15 @@
             Print
           </b-button>
         </b-card>
+        <b-card
+          v-if="agreementMessageShow"
+          class="mb-4"
+        >
+          <b-card-text>
+            Apabila telah mengisi draft perjanjian sertifikasi agar mengirim via email kepada admin@sertifikasibangunanhijau.com.
+            <br><br>Untuk proses selanjutnya agar menunggu pemberitahuan diterimanya perjanjian sertifikasi dari admin PT SBH
+          </b-card-text>
+        </b-card>
       </b-col>
     </b-row>
   </section>
@@ -452,8 +448,10 @@ import {
 import store from '@/store'
 import router from '@/router'
 import {
-  BRow, BCol, BCard, BCardBody, BCardText, BButton, BAlert, BLink, VBToggle,
+  BRow, BCol, BCard, BCardBody, BCardTitle, BCardSubTitle, BCardText, BButton, BAlert, BLink, VBToggle, BTable,
 } from 'bootstrap-vue'
+import AppCollapse from '@core/components/app-collapse/AppCollapse.vue'
+import AppCollapseItem from '@core/components/app-collapse/AppCollapseItem.vue'
 import Ripple from 'vue-ripple-directive'
 import projectStoreModule from '@/views/projectStoreModule'
 import fileDownload from 'js-file-download'
@@ -468,10 +466,24 @@ export default {
     BCol,
     BCard,
     BCardBody,
+    BCardTitle,
+    BCardSubTitle,
     BCardText,
     BButton,
     BAlert,
     BLink,
+    BTable,
+    AppCollapse,
+    AppCollapseItem,
+  },
+  data() {
+    return {
+      projectAttachmentFields: [
+        { key: 'filename', label: 'Document Name' },
+        { key: 'version', label: 'Version' },
+        { key: 'created_at', label: 'Created At' },
+      ],
+    }
   },
   computed: {
     editProjectShow() {
@@ -480,11 +492,14 @@ export default {
     uploadDocumentShow() {
       return ['fill-document-building'].includes(this.projectData.definition_key)
     },
+    draftRegistrationLetterShow() {
+      return ['agreement'].includes(this.projectData.definition_key)
+    },
+    firstPaymentShow() {
+      return ['first-payment'].includes(this.projectData.definition_key)
+    },
     eligibilityStatementShow() {
       return !(this.aboveCheckBuildingTasks.includes(this.projectData.definition_key))
-    },
-    draftRegistrationLetterShow() {
-      return ['agreement-and-first-payment'].includes(this.projectData.definition_key)
     },
     registrationLetterShow() {
       return !(this.aboveFirstPaymentTasks.includes(this.projectData.definition_key))
@@ -495,10 +510,50 @@ export default {
     designRecognitionShow() {
       return ['design-recognition-submission'].includes(this.projectData.definition_key)
     },
+    agreementMessageShow() {
+      return ['agreement-and-first-payment', 'agreement'].includes(this.projectData.definition_key)
+    },
   },
   setup() {
     const projectData = ref(null)
+    const proofOfPayments = ref(null)
+    const buildingPlan = ref(null)
+    const rtRw = ref(null)
+    const uplUkl = ref(null)
+    const earthquakeResistance = ref(null)
+    const disabilityFriendly = ref(null)
+    const safetyAndFireRequirement = ref(null)
+    const studyCaseReadiness = ref(null)
+    const firstPaymentDocument = ref(null)
+    const secondPaymentDocument = ref(null)
+    const thirdPaymentDocument = ref(null)
+    const attendanceDocument = ref(null)
+    const workshorReportDocument = ref(null)
+    const eligibilityStatement = ref(null)
+    const agreementLetterDocument = ref(null)
+
     const PROJECT_APP_STORE_MODULE_NAME = 'app-project'
+
+    const eligibilityAttachments = ref({
+      proof_of_payment: proofOfPayments,
+      building_plan: buildingPlan,
+      rt_rw: rtRw,
+      upl_ukl: uplUkl,
+      earthquake_resistance: earthquakeResistance,
+      disability_friendly: disabilityFriendly,
+      safety_and_fire_requirement: safetyAndFireRequirement,
+      study_case_readiness: studyCaseReadiness,
+    })
+
+    const registeredAttachments = ref({
+      first_payment_document: firstPaymentDocument,
+      second_payment_document: secondPaymentDocument,
+      third_payment_document: thirdPaymentDocument,
+      attendance_document: attendanceDocument,
+      workshop_report_document: workshorReportDocument,
+      eligibility_statement: eligibilityStatement,
+      agreement_letter_document: agreementLetterDocument,
+    })
 
     const paymentProps = reactive({
       center: true,
@@ -534,6 +589,36 @@ export default {
         }
       })
 
+    Object.keys(registeredAttachments.value).forEach(key => {
+      store.dispatch('app-project/getAttachmentsByType', { taskId: router.currentRoute.params.id, fileType: key })
+        .then(response => {
+          registeredAttachments.value[key] = response.data
+        })
+        .catch(error => {
+          if (error.response.status === 404) {
+            registeredAttachments.value[key] = undefined
+          }
+          if (error.response.status === 500) {
+            registeredAttachments.value[key] = undefined
+          }
+        })
+    })
+
+    Object.keys(eligibilityAttachments.value).forEach(key => {
+      store.dispatch('app-project/getAttachmentsByType', { taskId: router.currentRoute.params.id, fileType: key })
+        .then(response => {
+          eligibilityAttachments.value[key] = response.data
+        })
+        .catch(error => {
+          if (error.response.status === 404) {
+            eligibilityAttachments.value[key] = undefined
+          }
+          if (error.response.status === 500) {
+            eligibilityAttachments.value[key] = undefined
+          }
+        })
+    })
+
     const printProject = () => {
       window.print()
     }
@@ -542,14 +627,18 @@ export default {
       router.push({ name: 'client-project-edit', params: { id: router.currentRoute.params.id } })
     }
 
+    const firstPaymentTask = () => {
+      router.push({ name: 'client-project-first-payment', params: { id: router.currentRoute.params.id } })
+    }
+
     const uploadDocumentPage = () => {
       router.push({ name: 'client-project-upload-document', params: { id: router.currentRoute.params.id } })
     }
 
-    const downloadFile = fileName => {
-      store.dispatch('app-project/downloadLink', {
-        id: projectData.value.task_id,
-        filename: fileName,
+    const downloadFileByAttachment = attachmentId => {
+      store.dispatch('app-project/downloadLinkByAttachmentId', {
+        taskId: projectData.value.task_id,
+        attachmentId,
       })
         .then(response => {
           window.open(response.data.url)
@@ -660,15 +749,18 @@ export default {
     }
 
     const aboveCheckBuildingTasks = ['check-registration-project', 'fill-registration-project', 'fill-document-building', 'check-document-building']
-    const aboveFirstPaymentTasks = ['check-registration-project', 'fill-registration-project', 'fill-document-building', 'check-document-building', 'agreement-and-first-payment']
+    const aboveFirstPaymentTasks = ['check-registration-project', 'fill-registration-project', 'fill-document-building', 'check-document-building', 'agreement', 'first-payment']
 
     return {
       projectData,
+      eligibilityAttachments,
+      registeredAttachments,
       printProject,
       paymentProps,
       editProject,
+      firstPaymentTask,
       uploadDocumentPage,
-      downloadFile,
+      downloadFileByAttachment,
       downloadAllFiles,
       eligibleStatement,
       registeredProject,
@@ -678,6 +770,15 @@ export default {
       aboveCheckBuildingTasks,
       aboveFirstPaymentTasks,
     }
+  },
+  methods: {
+    toTitleCase(word) {
+      return word.split('_').map(item => item.charAt(0).toUpperCase() + item.substring(1)).join(' ')
+    },
+    filteredAttachment(attachment) {
+      // eslint-disable-next-line no-unused-vars
+      return Object.fromEntries(Object.entries(attachment).filter(([k, v]) => v != null && v.length > 0))
+    },
   },
 }
 </script>

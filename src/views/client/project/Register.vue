@@ -614,6 +614,8 @@ export default {
           request.append('city', this.selectedCity.id)
           request.append('building_address', this.buildingAddress)
           request.append('telephone', this.telephone)
+          request.append('handphone', this.handphone)
+          request.append('email', this.email)
           request.append('faximile', this.faximile)
           request.append('postal_code', this.postalCode)
           request.append('file', this.proofOfPayment)

@@ -21,9 +21,9 @@ export default [
     component: () => import('@/views/admin/project/Preview.vue'),
   },
   {
-    path: '/admin/project/first_payment/:id',
-    name: 'admin-project-first-payment',
-    component: () => import('@/views/admin/project/AgreementFirstPayment.vue'),
+    path: '/admin/project/agreement/:id',
+    name: 'admin-project-agreement',
+    component: () => import('@/views/admin/project/Agreement.vue'),
   },
   {
     path: '/admin/project/second_payment/:id',

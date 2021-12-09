@@ -1,186 +1,9 @@
 <template>
   <validation-observer ref="agreementFirstPaymentRules">
     <b-form @submit.prevent>
-      <b-row
-        v-if="projectData"
-        class="project-preview"
-      >
-        <!-- Col: Left (project Container) -->
-        <b-col
-          cols="12"
-          xl="12"
-          md="12"
-        >
-          <!-- Header -->
-          <b-card
-            no-body
-            class="project-preview-card"
-          >
-            <b-card-body class="project-padding pb-0">
-              <div class="d-flex justify-content-between flex-md-row flex-column project-spacing mt-0">
-                <!-- Header: Left Content -->
-                <div>
-                  <div class="logo-wrapper">
-                    <h3 class="text-primary project-logo">
-                      {{ projectData.building_name }}
-                    </h3>
-                  </div>
-                  <p class="card-text mb-25">
-                    {{ projectData.building_address }}
-                  </p>
-                  <p class="card-text mb-25">
-                    {{ projectData.city_name }}
-                  </p>
-                  <p class="card-text mb-25">
-                    {{ projectData.province_name }}
-                  </p>
-                  <p class="card-text mb-25">
-                    {{ projectData.postal_code }}
-                  </p>
-                  <p class="card-text mb-0">
-                    <feather-icon icon="PhoneIcon" />
-                    Telephone: {{ projectData.telephone }}
-                  </p>
-                  <p class="card-text mb-0">
-                    <feather-icon icon="PhoneIcon" />
-                    Handphone: {{ projectData.handphone }}
-                  </p>
-                  <p class="card-text mb-0">
-                    <feather-icon icon="MailIcon" />
-                    Email: {{ projectData.email }}
-                  </p>
-                  <p class="card-text mb-0">
-                    <feather-icon icon="PrinterIcon" />
-                    Faximile: {{ projectData.faximile }}
-                  </p>
-                </div>
+      <project-header :key="projectHeaderKey" />
 
-                <!-- Header: Right Content -->
-                <div class="mt-md-0 mt-2">
-                  <h4 class="project-title">
-                    Project ID
-                    <span class="project-number">#{{ projectData.task_id }}</span>
-                  </h4>
-                  <div class="project-date-wrapper">
-                    <p class="project-date-title">
-                      Date Created:
-                    </p>
-                    <p class="project-date">
-                      {{ projectData.created_at | moment("dddd, MMMM Do YYYY") }}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </b-card-body>
-          </b-card>
-        </b-col>
-      </b-row>
       <b-row>
-        <!-- first payment -->
-        <b-col cols="12">
-          <b-form-group
-            label="Pembayaran Pertama *"
-            label-for="firstPayment"
-          >
-            <validation-provider
-              #default="{ errors }"
-              name="First Payment"
-              rules="required"
-            >
-              <b-input-group class="input-group-merge">
-                <b-input-group class="input-group-merge">
-                  <b-form-checkbox
-                    v-model.lazy="projectData.first_payment"
-                    name="first-payment"
-                  >
-                    &nbsp;
-                    is paid
-                  </b-form-checkbox>
-                </b-input-group>
-              </b-input-group>
-              <small class="text-danger">{{ errors[0] }}</small>
-            </validation-provider>
-          </b-form-group>
-        </b-col>
-
-        <!--Agreement Number-->
-        <b-col md="6">
-          <b-form-group>
-            <label>Agreeement Letter Number</label>
-            <validation-provider
-              #default="{ errors }"
-              rules="required"
-              name="Agreement Letter Number"
-            >
-              <b-form-input
-                v-model.lazy="projectData.agreement_number"
-                :state="errors.length > 0 ? false:null"
-                placeholder="Enter Agreement Letter BNumber"
-                :raw="false"
-              />
-              <small class="text-danger">{{ errors[0] }}</small>
-            </validation-provider>
-          </b-form-group>
-        </b-col>
-
-        <!--Design Recognition-->
-        <b-col cols="12">
-          <b-form-group
-            label="Use Design Recognition Phase ?"
-            label-for="designRecognition"
-            description="Design Recognition adalah proses untuk memasukkan data design bangunan dan dilakukan penilaian sebelum final assesment"
-          >
-            <validation-provider
-              #default="{ errors }"
-              rules=""
-              name="Design Recogntion"
-            >
-              <v-select
-                id="certification_type"
-                v-model="selectedDesignRecognition"
-                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                label="name"
-                :options="designRecognitionOption"
-              />
-              <small class="text-danger">{{ errors[0] }}</small>
-            </validation-provider>
-          </b-form-group>
-        </b-col>
-
-        <!--Agreement Letter Document -->
-        <b-col md="12">
-          <b-form-group>
-            <label>Surat Perjanjian Kerjasama</label>
-            <validation-provider
-              #default="{ errors }"
-              name="Surat Perjanjian Kerjasama"
-            >
-              <b-form-file
-                v-model.lazy="agreementLetterDocument"
-                placeholder="(Optional) Upload perjanjian kerjasama bila diperlukan..."
-                drop-placeholder="Drop file here..."
-              />
-              <small class="text-danger">{{ errors[0] }}</small>
-              <b-card-text class="my-1">
-                Selected file: <strong>{{ agreementLetterDocument ? agreementLetterDocument.name : '' }}</strong>
-              </b-card-text>
-            </validation-provider>
-            <b-card-text
-              v-if="projectData.agreement_letter_document"
-              class="mb-0"
-            >
-              <b-button
-                v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-                variant="flat-primary"
-                @click="downloadFile('agreement_letter_document')"
-              >
-                <feather-icon icon="ArchiveIcon" />
-                Download Perjanjian Kerjasama
-              </b-button>
-            </b-card-text>
-          </b-form-group>
-        </b-col>
-
         <!--First Payment Proof Document -->
         <b-col md="12">
           <b-form-group>
@@ -190,26 +13,26 @@
               name="Bukti Pembayaran Pertama"
             >
               <b-form-file
-                v-model.lazy="firstPaymentDocument"
+                v-model.lazy="firstPaymentDocumentInput"
                 placeholder="(Optional) Upload bukti pembayaran pertama bila diperlukan..."
                 drop-placeholder="Drop file here..."
               />
               <small class="text-danger">{{ errors[0] }}</small>
               <b-card-text class="my-1">
-                Selected file: <strong>{{ firstPaymentDocument ? firstPaymentDocument.name : '' }}</strong>
+                Selected file: <strong>{{ firstPaymentDocumentInput ? firstPaymentDocumentInput.name : '' }}</strong>
               </b-card-text>
             </validation-provider>
             <b-card-text
-              v-if="projectData.first_payment_document"
+              v-if="firstPaymentDocument"
               class="mb-0"
             >
               <b-button
                 v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                 variant="flat-primary"
-                @click="downloadFile('first_payment_document')"
+                @click="downloadFileByAttachment(firstPaymentDocument.id)"
               >
                 <feather-icon icon="ArchiveIcon" />
-                Download Perjanjian Kerjasama
+                Download Pembayaran Pertama
               </b-button>
             </b-card-text>
           </b-form-group>
@@ -220,7 +43,7 @@
           <b-button
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             type="submit"
-            variant="secondary"
+            variant="primary"
             class="mr-1"
             :disabled="isLoading"
             @click="submitProject"
@@ -235,7 +58,7 @@
           <b-button
             v-ripple.400="'rgba(186, 191, 199, 0.15)'"
             type="reset"
-            variant="outline-secondary"
+            variant="outline-primary"
             @click="reset"
           >
             Reset
@@ -267,15 +90,10 @@
 import {
   BCardText,
   BRow,
-  BCard,
-  BCardBody,
   BCol,
-  BFormCheckbox,
   BFormFile,
   BFormGroup,
   BForm,
-  BFormInput,
-  BInputGroup,
   BButton,
   BModal,
   BSpinner,
@@ -286,41 +104,36 @@ import {
 import router from '@/router'
 import store from '@/store'
 import Ripple from 'vue-ripple-directive'
-import vSelect from 'vue-select'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import {
   required, email, confirmed, url, between, alpha, integer, password, min, digits, alphaDash, length,
 } from '@validations'
 import projectStoreModule from '@/views/projectStoreModule'
+import ProjectHeader from './ProjectHeader.vue'
 
 export default {
   components: {
     BCardText,
     BRow,
-    BCard,
-    BCardBody,
     BCol,
-    BFormCheckbox,
     BFormFile,
-    BFormInput,
     BFormGroup,
     BForm,
-    BInputGroup,
     BButton,
     BModal,
     BSpinner,
     ValidationObserver,
     ValidationProvider,
-    vSelect,
+    ProjectHeader,
   },
   directives: {
     Ripple,
   },
   data() {
     return {
-      agreementLetterDocument: null,
-      firstPaymentDocument: null,
+      projectHeaderKey: 0,
+      firstPaymentDocumentInput: null,
       maxChar: 200,
       successShow: false,
       result: {},
@@ -366,6 +179,8 @@ export default {
   },
   setup() {
     const projectData = ref({})
+    const firstPaymentDocument = ref({})
+
     const PROJECT_APP_STORE_MODULE_NAME = 'app-project'
     const selectedDesignRecognition = reactive({
       id: '',
@@ -399,10 +214,23 @@ export default {
         }
       })
 
-    const downloadFile = fileName => {
-      store.dispatch('app-project/downloadLink', {
-        id: projectData.value.task_id,
-        filename: fileName,
+    store.dispatch('app-project/getLatestAttachmentByType', { taskId: router.currentRoute.params.id, fileType: 'first_payment_document' })
+      .then(response => {
+        firstPaymentDocument.value = response.data
+      })
+      .catch(error => {
+        if (error.response.status === 404) {
+          firstPaymentDocument.value = undefined
+        }
+        if (error.response.status === 500) {
+          firstPaymentDocument.value = undefined
+        }
+      })
+
+    const downloadFileByAttachment = attachmentId => {
+      store.dispatch('app-project/downloadLinkByAttachmentId', {
+        taskId: projectData.value.task_id,
+        attachmentId,
       })
         .then(response => {
           window.open(response.data.url)
@@ -419,7 +247,8 @@ export default {
 
     return {
       projectData,
-      downloadFile,
+      firstPaymentDocument,
+      downloadFileByAttachment,
       selectedDesignRecognition,
       designRecognitionOption,
     }
@@ -450,12 +279,7 @@ export default {
           this.isLoading = true
           const request = new FormData()
           request.append('task_id', router.currentRoute.params.id)
-          request.append('agreement_letter_document', this.agreementLetterDocument)
-          request.append('first_payment_document', this.firstPaymentDocument)
-          request.append('first_payment', this.projectData.first_payment)
-          request.append('agreement_number', this.projectData.agreement_number)
-          request.append('design_recognition', this.stringToBoolean(this.selectedDesignRecognition.id))
-          request.append('gross_floor_area', this.projectData.gross_floor_area)
+          request.append('first_payment_document', this.firstPaymentDocumentInput)
 
           const config = {
             header: {
@@ -477,7 +301,7 @@ export default {
       })
     },
     gotoIndex() {
-      router.push({ name: 'admin-project-list' })
+      router.push({ name: 'client-project-list' })
     },
     stringToBoolean(value) {
       switch (value.toLowerCase().trim()) {

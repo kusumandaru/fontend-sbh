@@ -99,7 +99,7 @@
               <b-button
                 v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                 variant="flat-primary"
-                @click="downloadFile('manager_signature')"
+                @click="downloadMasterFile('manager_signature')"
               >
                 <feather-icon icon="ArchiveIcon" />
                 old file : {{ adminData.manager_signature }}
@@ -127,7 +127,7 @@
               <b-button
                 v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                 variant="flat-primary"
-                @click="downloadFile('registration_letter')"
+                @click="downloadMasterFile('registration_letter')"
               >
                 <feather-icon icon="ArchiveIcon" />
                 old file : {{ adminData.registration_letter }}
@@ -155,7 +155,7 @@
               <b-button
                 v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                 variant="flat-primary"
-                @click="downloadFile('first_attachment')"
+                @click="downloadMasterFile('first_attachment')"
               >
                 <feather-icon icon="ArchiveIcon" />
                 old file : {{ adminData.first_attachment }}
@@ -183,7 +183,7 @@
               <b-button
                 v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                 variant="flat-primary"
-                @click="downloadFile('second_attachment')"
+                @click="downloadMasterFile('second_attachment')"
               >
                 <feather-icon icon="ArchiveIcon" />
                 old file : {{ adminData.second_attachment }}
@@ -211,7 +211,7 @@
               <b-button
                 v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                 variant="flat-primary"
-                @click="downloadFile('third_attachment')"
+                @click="downloadMasterFile('third_attachment')"
               >
                 <feather-icon icon="ArchiveIcon" />
                 old file : {{ adminData.third_attachment }}
@@ -413,7 +413,7 @@ export default {
         }
       })
 
-    const downloadFile = fileName => {
+    const downloadMasterFile = fileName => {
       store.dispatch('app-project/downloadMasterLink', {
         filename: fileName,
       })
@@ -439,7 +439,7 @@ export default {
     }
 
     return {
-      downloadFile,
+      downloadMasterFile,
       adminData,
       drTemplateOptions,
       faTemplateOptions,
