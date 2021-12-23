@@ -1,39 +1,39 @@
 <template>
-  <validation-observer ref="agreementFirstPaymentRules">
+  <validation-observer ref="agreementSecondPaymentRules">
     <b-form @submit.prevent>
       <project-header :key="projectHeaderKey" />
 
       <b-row>
-        <!--First Payment Proof Document -->
+        <!--Second Payment Proof Document -->
         <b-col md="12">
           <b-form-group>
-            <label>Bukti Pembayaran Pertama</label>
+            <label>Bukti Pembayaran Kedua</label>
             <validation-provider
               #default="{ errors }"
-              name="Bukti Pembayaran Pertama"
+              name="Bukti Pembayaran Kedua"
               rules="required"
             >
               <b-form-file
-                v-model.lazy="firstPaymentDocumentInput"
-                placeholder="(Mandatory) Upload bukti pembayaran pertama bila diperlukan..."
+                v-model.lazy="secondPaymentDocumentInput"
+                placeholder="(Mandatory) Upload bukti pembayaran kedua bila diperlukan..."
                 drop-placeholder="Drop file here..."
               />
               <small class="text-danger">{{ errors[0] }}</small>
               <b-card-text class="my-1">
-                Selected file: <strong>{{ firstPaymentDocumentInput ? firstPaymentDocumentInput.name : '' }}</strong>
+                Selected file: <strong>{{ secondPaymentDocumentInput ? secondPaymentDocumentInput.name : '' }}</strong>
               </b-card-text>
             </validation-provider>
             <b-card-text
-              v-if="firstPaymentDocument"
+              v-if="secondPaymentDocument"
               class="mb-0"
             >
               <b-button
                 v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                 variant="flat-primary"
-                @click="downloadFileByAttachment(firstPaymentDocument.id)"
+                @click="downloadFileByAttachment(secondPaymentDocument.id)"
               >
                 <feather-icon icon="ArchiveIcon" />
-                Download Pembayaran Pertama
+                Download Pembayaran Kedua
               </b-button>
             </b-card-text>
           </b-form-group>
@@ -134,7 +134,7 @@ export default {
   data() {
     return {
       projectHeaderKey: 0,
-      firstPaymentDocumentInput: null,
+      secondPaymentDocumentInput: null,
       maxChar: 200,
       successShow: false,
       result: {},
@@ -180,7 +180,7 @@ export default {
   },
   setup() {
     const projectData = ref({})
-    const firstPaymentDocument = ref({})
+    const secondPaymentDocument = ref({})
 
     const PROJECT_APP_STORE_MODULE_NAME = 'app-project'
     const selectedDesignRecognition = reactive({
@@ -215,16 +215,16 @@ export default {
         }
       })
 
-    store.dispatch('app-project/getLatestAttachmentByType', { taskId: router.currentRoute.params.id, fileType: 'first_payment_document' })
+    store.dispatch('app-project/getLatestAttachmentByType', { taskId: router.currentRoute.params.id, fileType: 'second_payment_document' })
       .then(response => {
-        firstPaymentDocument.value = response.data
+        secondPaymentDocument.value = response.data
       })
       .catch(error => {
         if (error.response.status === 404) {
-          firstPaymentDocument.value = undefined
+          secondPaymentDocument.value = undefined
         }
         if (error.response.status === 500) {
-          firstPaymentDocument.value = undefined
+          secondPaymentDocument.value = undefined
         }
       })
 
@@ -248,7 +248,7 @@ export default {
 
     return {
       projectData,
-      firstPaymentDocument,
+      secondPaymentDocument,
       downloadFileByAttachment,
       selectedDesignRecognition,
       designRecognitionOption,
@@ -275,19 +275,19 @@ export default {
       })
     },
     submitProject() {
-      this.$refs.agreementFirstPaymentRules.validate().then(success => {
+      this.$refs.agreementSecondPaymentRules.validate().then(success => {
         if (success) {
           this.isLoading = true
           const request = new FormData()
           request.append('task_id', router.currentRoute.params.id)
-          request.append('first_payment_document', this.firstPaymentDocumentInput)
+          request.append('second_payment_document', this.secondPaymentDocumentInput)
 
           const config = {
             header: {
               'Content-Type': 'multipart/form-data',
             },
           }
-          this.$http.post('/engine-rest/new-building/first_payment', request, config).then(res => {
+          this.$http.post('/engine-rest/new-building/second_payment', request, config).then(res => {
             this.result = JSON.parse(JSON.stringify(res.data))
             this.successShow = true
             this.isLoading = false

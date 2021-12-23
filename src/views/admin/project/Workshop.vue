@@ -117,10 +117,11 @@
             <validation-provider
               #default="{ errors }"
               name="Laporan Workshop"
+              rules="required"
             >
               <b-form-file
                 v-model.lazy="workshopReportDocument"
-                placeholder="(Optional) Upload laporan workshop bila diperlukan..."
+                placeholder="(Mandatory) Upload laporan workshop bila diperlukan..."
                 drop-placeholder="Drop file here..."
               />
               <small class="text-danger">{{ errors[0] }}</small>

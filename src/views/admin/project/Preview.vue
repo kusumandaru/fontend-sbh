@@ -456,7 +456,7 @@ export default {
       return this.workshopTasks.includes(this.projectData.definition_key)
     },
     designRecognitionShow() {
-      return ['design-recognition-submission'].includes(this.projectData.definition_key)
+      return ['design-recognition-review'].includes(this.projectData.definition_key)
     },
   },
   setup() {
@@ -655,7 +655,7 @@ export default {
       router.push({ name: 'admin-project-dr-assessment', params: { id: router.currentRoute.params.id } })
     }
 
-    const adminTasks = ['check-registration-project', 'check-document-building', 'check-first-payment']
+    const adminTasks = ['check-registration-project', 'check-document-building', 'check-first-payment', 'check-second-payment', 'check-third-payment']
     const agreementTasks = ['agreement']
     const secondPaymentTasks = ['second-payment']
     const workshopTasks = ['workshop']

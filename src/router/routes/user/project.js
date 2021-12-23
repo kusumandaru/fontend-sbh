@@ -52,6 +52,16 @@ export default [
     component: () => import('@/views/client/project/FirstPayment.vue'),
   },
   {
+    path: '/client/project/second_payment/:id',
+    name: 'client-project-second-payment',
+    component: () => import('@/views/client/project/SecondPayment.vue'),
+  },
+  {
+    path: '/client/project/third_payment/:id',
+    name: 'client-project-third-payment',
+    component: () => import('@/views/client/project/ThirdPayment.vue'),
+  },
+  {
     path: '/client/project/dr/assesment/:id',
     name: 'client-project-dr-assessment',
     component: () => import('@/views/client/dr/DRList.vue'),

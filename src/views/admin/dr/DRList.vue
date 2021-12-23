@@ -101,6 +101,9 @@
         </b-card-body>
       </b-card>
     </section>
+    <!--/ review button -->
+    <eligible-review :key="eligibleReviewKey" />
+
     <!--/ project information section -->
     <card-statistic :key="cardStatisticKey" />
 
@@ -126,6 +129,7 @@ import DRTab from './DRTab.vue'
 import CardAnalyticGoalOverview from './CardAnalyticGoalOverview.vue'
 import CardStatistic from './CardStatistic.vue'
 import UploadAssessment from './UploadAssessment.vue'
+import EligibleReview from './EligibleReview.vue'
 
 export default {
   components: {
@@ -136,12 +140,14 @@ export default {
     CardAnalyticGoalOverview,
     CardStatistic,
     UploadAssessment,
+    EligibleReview,
   },
   directives: {
     Ripple,
   },
   data() {
     return {
+      eligibleReviewKey: 1,
       scoreKey: 0,
       cardStatisticKey: 0,
       uploadAssessmentKey: 0,
@@ -166,6 +172,7 @@ export default {
     forceRerenderScore() {
       this.scoreKey += 1
       this.cardStatisticKey += 1
+      this.eligibleReviewKey += 1
     },
     forceRerenderUploadAssessment() {
       this.uploadAssessmentKey += 1
@@ -205,4 +212,5 @@ export default {
 
 <style lang="scss">
 @import '@core/scss/vue/pages/page-faq.scss';
+@import '@core/scss/vue/pages/page-pricing.scss';
 </style>

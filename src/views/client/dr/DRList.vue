@@ -101,6 +101,10 @@
         </b-card-body>
       </b-card>
     </section>
+
+    <!--/ submit button -->
+    <eligible-submit :key="eligibleSubmitKey" />
+
     <!--/ project information section -->
     <card-statistic :key="cardStatisticKey" />
 
@@ -113,7 +117,9 @@
 
 <script>
 import {
-  BCard, BCardBody, BCardText,
+  BCard,
+  BCardBody,
+  BCardText,
 } from 'bootstrap-vue'
 import {
   ref, onUnmounted,
@@ -126,6 +132,7 @@ import DRTab from './DRTab.vue'
 import CardAnalyticGoalOverview from './CardAnalyticGoalOverview.vue'
 import CardStatistic from './CardStatistic.vue'
 import UploadAssessment from './UploadAssessment.vue'
+import EligibleSubmit from './EligibleSubmit.vue'
 
 export default {
   components: {
@@ -136,12 +143,14 @@ export default {
     CardAnalyticGoalOverview,
     CardStatistic,
     UploadAssessment,
+    EligibleSubmit,
   },
   directives: {
     Ripple,
   },
   data() {
     return {
+      eligibleSubmitKey: 1,
       scoreKey: 0,
       cardStatisticKey: 0,
       uploadAssessmentKey: 0,
@@ -166,9 +175,11 @@ export default {
     forceRerenderScore() {
       this.scoreKey += 1
       this.cardStatisticKey += 1
+      this.eligibleSubmitKey += 1
     },
     forceRerenderUploadAssessment() {
       this.uploadAssessmentKey += 1
+      this.eligibleSubmitKey += 1
     },
   },
   setup() {
@@ -205,4 +216,5 @@ export default {
 
 <style lang="scss">
 @import '@core/scss/vue/pages/page-faq.scss';
+@import '@core/scss/vue/pages/page-pricing.scss';
 </style>

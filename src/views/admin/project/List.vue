@@ -72,39 +72,35 @@
         </span>
 
         <!-- Column: Action -->
-        <span v-else-if="props.column.field === 'action'">
+        <span
+          v-else-if="props.column.field === 'action'"
+          class="text-nowrap"
+        >
           <span>
-            <b-dropdown
-              variant="link"
-              toggle-class="text-decoration-none"
-              no-caret
-            >
-              <template v-slot:button-content>
-                <feather-icon
-                  :id="`project-row-${props.row.id}-preview-icon`"
-                  icon="EyeIcon"
-                  size="16"
-                  class="mx-1"
-                  @click="goToPreview(props.row.id)"
-                />
-                <b-tooltip
-                  title="Preview Project"
-                  :target="`project-row-${props.row.id}-preview-icon`"
-                />
-
-                <feather-icon
-                  :id="`project-row-${props.row.id}-activity-icon`"
-                  icon="ActivityIcon"
-                  size="16"
-                  class="mx-1"
-                  @click="retrieveDiagrams(props.row.process_definition_id, props.row.task_definition_key)"
-                />
-                <b-tooltip
-                  title="Activity Process"
-                  :target="`project-row-${props.row.id}-activity-icon`"
-                />
-              </template>
-            </b-dropdown>
+            <div class="icon-wrapper">
+              <feather-icon
+                :id="`project-row-${props.row.id}-preview-icon`"
+                icon="EyeIcon"
+                size="16"
+                class="mx-1"
+                @click="goToPreview(props.row.id)"
+              />
+              <b-tooltip
+                title="Preview Project"
+                :target="`project-row-${props.row.id}-preview-icon`"
+              />
+              <feather-icon
+                :id="`project-row-${props.row.id}-activity-icon`"
+                icon="ActivityIcon"
+                size="16"
+                class="mx-1"
+                @click="retrieveDiagrams(props.row.process_definition_id, props.row.task_definition_key)"
+              />
+              <b-tooltip
+                title="Activity Process"
+                :target="`project-row-${props.row.id}-activity-icon`"
+              />
+            </div>
           </span>
         </span>
         <!-- Column: Common -->
@@ -166,7 +162,7 @@
 
 <script>
 import {
-  BAvatar, BBadge, BCardText, BPagination, BFormGroup, BFormInput, BFormSelect, BDropdown, BTooltip,
+  BAvatar, BBadge, BCardText, BPagination, BFormGroup, BFormInput, BFormSelect, BTooltip,
 } from 'bootstrap-vue'
 import { VueGoodTable } from 'vue-good-table'
 import store from '@/store/index'
@@ -185,7 +181,6 @@ export default {
     BFormGroup,
     BFormInput,
     BFormSelect,
-    BDropdown,
     BTooltip,
   },
   data() {
