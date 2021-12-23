@@ -30,6 +30,22 @@ export default {
           .catch(error => reject(error))
       })
     },
+    fetchProjectAttachments(ctx, { taskId }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/engine-rest/new-building/design_recognition/${taskId}/assessment_attachments`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    postDREligibleSubmission(ctx, { taskId }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/engine-rest/new-building/design_recognition/${taskId}/eligible_submit`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
     fetchMasterLevel() {
       return new Promise((resolve, reject) => {
         axios

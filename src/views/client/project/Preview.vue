@@ -336,7 +336,7 @@
           <b-button
             v-if="eligibilityStatementShow"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-            variant="success"
+            variant="secondary"
             class="mb-75"
             block
             @click="eligibleStatement"
@@ -348,7 +348,7 @@
           <b-button
             v-if="draftRegistrationLetterShow"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-            variant="success"
+            variant="secondary"
             class="mb-75"
             block
             @click="draftRegistrationLetter"
@@ -360,7 +360,7 @@
           <b-button
             v-if="registrationLetterShow"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-            variant="success"
+            variant="secondary"
             class="mb-75"
             block
             @click="registeredProject"
@@ -372,7 +372,7 @@
           <b-button
             v-if="registrationLetterAttachmentShow"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-            variant="success"
+            variant="secondary"
             class="mb-75"
             block
             @click="registeredProjectAttachment"
@@ -402,6 +402,30 @@
             @click="firstPaymentTask"
           >
             First Payment
+          </b-button>
+
+          <!-- Button: SecondPayment-->
+          <b-button
+            v-if="secondPaymentShow"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="success"
+            class="mb-75"
+            block
+            @click="secondPaymentTask"
+          >
+            Second Payment
+          </b-button>
+
+          <!-- Button: ThirdPayment-->
+          <b-button
+            v-if="thirdPaymentShow"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="success"
+            class="mb-75"
+            block
+            @click="thirdPaymentTask"
+          >
+            Third Payment
           </b-button>
 
           <!-- Button: Design Recognition-->
@@ -497,6 +521,12 @@ export default {
     },
     firstPaymentShow() {
       return ['first-payment'].includes(this.projectData.definition_key)
+    },
+    secondPaymentShow() {
+      return ['second-payment'].includes(this.projectData.definition_key)
+    },
+    thirdPaymentShow() {
+      return ['third-payment'].includes(this.projectData.definition_key)
     },
     eligibilityStatementShow() {
       return !(this.aboveCheckBuildingTasks.includes(this.projectData.definition_key))
@@ -631,6 +661,14 @@ export default {
       router.push({ name: 'client-project-first-payment', params: { id: router.currentRoute.params.id } })
     }
 
+    const secondPaymentTask = () => {
+      router.push({ name: 'client-project-second-payment', params: { id: router.currentRoute.params.id } })
+    }
+
+    const thirdPaymentTask = () => {
+      router.push({ name: 'client-project-third-payment', params: { id: router.currentRoute.params.id } })
+    }
+
     const uploadDocumentPage = () => {
       router.push({ name: 'client-project-upload-document', params: { id: router.currentRoute.params.id } })
     }
@@ -759,6 +797,8 @@ export default {
       paymentProps,
       editProject,
       firstPaymentTask,
+      secondPaymentTask,
+      thirdPaymentTask,
       uploadDocumentPage,
       downloadFileByAttachment,
       downloadAllFiles,

@@ -73,7 +73,7 @@
 
 <style>
   .vue-bpmn-diagram-container {
-    height: 900px;
-    width: 500px;
+    height: 1024px;
+    width: 900px;
   }
 </style>

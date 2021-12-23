@@ -26,11 +26,6 @@ export default [
     component: () => import('@/views/admin/project/Agreement.vue'),
   },
   {
-    path: '/admin/project/second_payment/:id',
-    name: 'admin-project-second-payment',
-    component: () => import('@/views/admin/project/SecondPayment.vue'),
-  },
-  {
     path: '/admin/project/workshop/:id',
     name: 'admin-project-workshop',
     component: () => import('@/views/admin/project/Workshop.vue'),

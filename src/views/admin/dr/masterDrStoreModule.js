@@ -78,5 +78,13 @@ export default {
           .catch(error => reject(error))
       })
     },
+    postDREligibleApprove(ctx, { taskId }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/engine-rest/new-building/design_recognition/${taskId}/eligible_approve`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
   },
 }

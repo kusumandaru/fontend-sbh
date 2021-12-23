@@ -3,34 +3,57 @@
   <b-col md="12">
     <b-form-group>
       <label>Upload Dokumen Penilaian (xls)</label>
-      <b-form-file
-        v-model="assessmentAttachment"
-        placeholder="Choose a file or drop it here..."
-        drop-placeholder="Drop file here..."
-      />
+      <b-input-group>
+        <b-form-file
+          v-model="files"
+          placeholder="Choose a file or drop it here..."
+          drop-placeholder="Drop file here..."
+          multiple
+        />
+        <b-input-group-append>
+          <b-button
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            type="submit"
+            variant="secondary"
+            class="mr-1"
+            @click="submitAssessment"
+          >
+            Submit
+          </b-button>
+        </b-input-group-append>
+      </b-input-group>
       <b-card-text
-        v-if="projectAssessment.assessment_attachment"
+        v-if="attachmentExist"
         class="mb-0"
       >
-        <b-button
-          v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-          variant="flat-primary"
-          @click="downloadAssessment"
-        >
-          <feather-icon icon="ArchiveIcon" />
-          Download Dokumen Penilaian
-        </b-button>
+        <b-card no-body>
+          <b-table
+            responsive
+            :items="projectAttachments"
+            :fields="attachmentFields"
+            class="mb-0"
+          >
+            <template #cell(filename)="doc">
+              <b-link
+                class="font-weight-bold d-block text-nowrap"
+                @click="getAttachment(doc.item)"
+              >
+                {{ doc.value }}
+              </b-link>
+            </template>
+            <template #cell(action)="drow">
+              <feather-icon
+                :id="`attachment-${drow.item.id}-delete-icon`"
+                icon="Trash2Icon"
+                size="16"
+                class="mx-1"
+                @click="deleteAttachment(drow.item)"
+              />
+            </template>
+          </b-table>
+        </b-card>
       </b-card-text>
     </b-form-group>
-    <b-button
-      v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-      type="submit"
-      variant="secondary"
-      class="mr-1"
-      @click="submitAssessment"
-    >
-      Submit
-    </b-button>
   </b-col>
 </template>
 
@@ -41,6 +64,11 @@ import {
   BFormFile,
   BFormGroup,
   BButton,
+  BInputGroup,
+  BInputGroupAppend,
+  BTable,
+  BLink,
+  BCard,
 } from 'bootstrap-vue'
 import {
   ref, onUnmounted,
@@ -58,6 +86,11 @@ export default {
     BFormFile,
     BFormGroup,
     BButton,
+    BInputGroup,
+    BInputGroupAppend,
+    BTable,
+    BLink,
+    BCard,
   },
   directives: {
     Ripple,
@@ -70,8 +103,19 @@ export default {
   },
   data() {
     return {
-      assessmentAttachment: null,
+      files: null,
+      isLoading: false,
+      attachmentFields: [
+        { key: 'filename', label: 'Document Name' },
+        { key: 'created_at', label: 'Created At' },
+        'action',
+      ],
     }
+  },
+  computed: {
+    attachmentExist() {
+      return Array.isArray(this.projectAttachments) && this.projectAttachments.length > 0
+    },
   },
   created() {
   },
@@ -85,6 +129,8 @@ export default {
       },
     }
     const projectAssessment = ref(JSON.parse(JSON.stringify(blankProjectAssessment)))
+
+    const projectAttachments = ref(JSON.parse('[]'))
 
     // Register module
     if (!store.hasModule(DR_APP_STORE_MODULE_NAME)) store.registerModule(DR_APP_STORE_MODULE_NAME, masterDrStoreModule)
@@ -105,27 +151,25 @@ export default {
         }
       })
 
-    const downloadAssessment = () => {
-      store.dispatch('app-dr/downloadLink', { taskId: router.currentRoute.params.id })
-        .then(response => {
-          window.open(response.data.url)
-        })
-        .catch(error => {
-          if (error.response.status === 404) {
-            console.error(error)
-          }
-          if (error.response.status === 500) {
-            console.error(error)
-          }
-        })
-    }
+    store.dispatch('app-dr/fetchProjectAttachments', { taskId: router.currentRoute.params.id })
+      .then(response => {
+        projectAttachments.value = response.data
+      })
+      .catch(error => {
+        if (error.response.status === 404) {
+          projectAttachments.value = undefined
+        }
+      })
 
     return {
       projectAssessment,
-      downloadAssessment,
+      projectAttachments,
     }
   },
   methods: {
+    rerenderAssessment() {
+      this.rerenderUploadAssessment()
+    },
     showToast(variant, titleToast, description) {
       this.$toast({
         component: ToastificationContent,
@@ -138,9 +182,15 @@ export default {
       })
     },
     submitAssessment() {
+      if (this.files === undefined) {
+        return
+      }
+
       this.isLoading = true
       const request = new FormData()
-      request.append('assessment_attachment', this.assessmentAttachment)
+      for (let i = 0; i < this.files.length; i += 1) {
+        request.append('files', this.files[i])
+      }
       const config = {
         header: {
           'Content-Type': 'multipart/form-data',
@@ -149,11 +199,33 @@ export default {
       this.$http.post(`/engine-rest/new-building/design_recognition/${router.currentRoute.params.id}/assessment_attachment`, request, config).then(res => {
         this.result = JSON.parse(JSON.stringify(res.data))
         this.isLoading = false
-        this.rerenderUploadAssessment()
+        this.rerenderAssessment()
         this.showToast('success', 'Saved', 'Assessment successfully submitted')
       }).catch(() => {
         this.isLoading = false
         this.showToast('danger', 'Cannot Save', 'There is error when submit data, contact administrator')
+      })
+    },
+    getAttachment(attachment) {
+      this.isLoading = true
+      this.$http.get(`/engine-rest/new-building/design_recognition/assessment_attachment/${attachment.id}`).then(response => {
+        window.open(response.data.url)
+        this.isLoading = false
+      }).catch(() => {
+        this.isLoading = false
+        this.showToast('danger', 'Cannot Load Attachment', 'There is error when load attachment, contact administrator')
+      })
+    },
+    deleteAttachment(attachment) {
+      this.isLoading = true
+      this.$http.delete(`/engine-rest/new-building/design_recognition/assessment_attachment/${attachment.id}`).then(() => {
+        this.isLoading = false
+        this.rerenderAssessment()
+        this.showToast('success', 'Deleted', 'Attachment successfully delete')
+      }).catch(() => {
+        this.isLoading = false
+        this.rerenderAssessment()
+        this.showToast('danger', 'Cannot Delete', 'There is error when delete attachment, contact administrator')
       })
     },
   },

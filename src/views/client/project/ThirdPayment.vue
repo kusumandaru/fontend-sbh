@@ -1,89 +1,39 @@
 <template>
-  <validation-observer ref="agreementSecondPaymentRules">
+  <validation-observer ref="agreementThirdPaymentRules">
     <b-form @submit.prevent>
       <project-header :key="projectHeaderKey" />
 
       <b-row>
-        <!-- second payment -->
-        <b-col cols="12">
-          <b-form-group
-            label="Pembayaran Kedua *"
-            label-for="secondPayment"
-          >
-            <validation-provider
-              #default="{ errors }"
-              name="Second Payment"
-              rules="required"
-            >
-              <b-input-group class="input-group-merge">
-                <b-input-group class="input-group-merge">
-                  <b-form-checkbox
-                    v-model.lazy="projectData.second_payment"
-                    name="second-payment"
-                  >
-                    &nbsp;
-                    is paid
-                  </b-form-checkbox>
-                </b-input-group>
-              </b-input-group>
-              <small class="text-danger">{{ errors[0] }}</small>
-            </validation-provider>
-          </b-form-group>
-        </b-col>
-
-        <!--Design Recognition-->
-        <b-col cols="12">
-          <b-form-group
-            label="Use Design Recognition Phase ?"
-            label-for="designRecognition"
-            description="Design Recognition adalah proses untuk memasukkan data design bangunan dan dilakukan penilaian sebelum final assesment"
-          >
-            <validation-provider
-              #default="{ errors }"
-              rules=""
-              name="Design Recogntion"
-            >
-              <v-select
-                id="certification_type"
-                v-model="selectedDesignRecognition"
-                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                label="name"
-                :options="designRecognitionOption"
-              />
-              <small class="text-danger">{{ errors[0] }}</small>
-            </validation-provider>
-          </b-form-group>
-        </b-col>
-
-        <!--Second Payment Proof Document -->
+        <!--Third Payment Proof Document -->
         <b-col md="12">
           <b-form-group>
-            <label>Bukti Pembayaran Kedua</label>
+            <label>Bukti Pembayaran Ketiga</label>
             <validation-provider
               #default="{ errors }"
-              name="Bukti Pembayaran Kedua"
+              name="Bukti Pembayaran Ketiga"
+              rules="required"
             >
               <b-form-file
-                v-model.lazy="secondPaymentDocumentInput"
-                placeholder="(Optional) Upload bukti pembayaran kedua bila diperlukan..."
+                v-model.lazy="thirdPaymentDocumentInput"
+                placeholder="(Mandatory) Upload bukti pembayaran ketiga bila diperlukan..."
                 drop-placeholder="Drop file here..."
               />
               <small class="text-danger">{{ errors[0] }}</small>
               <b-card-text class="my-1">
-                Selected file: <strong>{{ secondPaymentDocumentInput ? secondPaymentDocumentInput.name : '' }}</strong>
+                Selected file: <strong>{{ thirdPaymentDocumentInput ? thirdPaymentDocumentInput.name : '' }}</strong>
               </b-card-text>
             </validation-provider>
             <b-card-text
-              v-if="secondPaymentDocument"
+              v-if="thirdPaymentDocument"
               class="mb-0"
             >
               <b-button
                 v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                 variant="flat-primary"
-                @click="downloadFileByAttachment(secondPaymentDocument.id)"
+                @click="downloadFileByAttachment(thirdPaymentDocument.id)"
               >
                 <feather-icon icon="ArchiveIcon" />
-                Download Pembayaran Kedua
+                Download Pembayaran Ketiga
               </b-button>
             </b-card-text>
           </b-form-group>
@@ -94,7 +44,7 @@
           <b-button
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             type="submit"
-            variant="secondary"
+            variant="primary"
             class="mr-1"
             :disabled="isLoading"
             @click="submitProject"
@@ -109,7 +59,7 @@
           <b-button
             v-ripple.400="'rgba(186, 191, 199, 0.15)'"
             type="reset"
-            variant="outline-secondary"
+            variant="outline-primary"
             @click="reset"
           >
             Reset
@@ -142,11 +92,9 @@ import {
   BCardText,
   BRow,
   BCol,
-  BFormCheckbox,
   BFormFile,
   BFormGroup,
   BForm,
-  BInputGroup,
   BButton,
   BModal,
   BSpinner,
@@ -156,7 +104,6 @@ import {
 } from '@vue/composition-api'
 import router from '@/router'
 import store from '@/store'
-import vSelect from 'vue-select'
 import Ripple from 'vue-ripple-directive'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
@@ -171,17 +118,14 @@ export default {
     BCardText,
     BRow,
     BCol,
-    BFormCheckbox,
     BFormFile,
     BFormGroup,
     BForm,
-    BInputGroup,
     BButton,
     BModal,
     BSpinner,
     ValidationObserver,
     ValidationProvider,
-    vSelect,
     ProjectHeader,
   },
   directives: {
@@ -190,7 +134,7 @@ export default {
   data() {
     return {
       projectHeaderKey: 0,
-      secondPaymentDocumentInput: null,
+      thirdPaymentDocumentInput: null,
       maxChar: 200,
       successShow: false,
       result: {},
@@ -236,7 +180,9 @@ export default {
   },
   setup() {
     const projectData = ref({})
-    const secondPaymentDocument = ref({})
+    const thirdPaymentDocument = ref({})
+
+    const PROJECT_APP_STORE_MODULE_NAME = 'app-project'
     const selectedDesignRecognition = reactive({
       id: '',
       name: '',
@@ -245,8 +191,6 @@ export default {
       { id: 'true', name: 'Need Design Recognition' },
       { id: 'false', name: 'Skip Design Recognition' },
     ])
-
-    const PROJECT_APP_STORE_MODULE_NAME = 'app-project'
 
     // Register module
     if (!store.hasModule(PROJECT_APP_STORE_MODULE_NAME)) store.registerModule(PROJECT_APP_STORE_MODULE_NAME, projectStoreModule)
@@ -271,16 +215,16 @@ export default {
         }
       })
 
-    store.dispatch('app-project/getLatestAttachmentByType', { taskId: router.currentRoute.params.id, fileType: 'second_payment_document' })
+    store.dispatch('app-project/getLatestAttachmentByType', { taskId: router.currentRoute.params.id, fileType: 'third_payment_document' })
       .then(response => {
-        secondPaymentDocument.value = response.data
+        thirdPaymentDocument.value = response.data
       })
       .catch(error => {
         if (error.response.status === 404) {
-          secondPaymentDocument.value = undefined
+          thirdPaymentDocument.value = undefined
         }
         if (error.response.status === 500) {
-          secondPaymentDocument.value = undefined
+          thirdPaymentDocument.value = undefined
         }
       })
 
@@ -304,10 +248,10 @@ export default {
 
     return {
       projectData,
-      secondPaymentDocument,
+      thirdPaymentDocument,
+      downloadFileByAttachment,
       selectedDesignRecognition,
       designRecognitionOption,
-      downloadFileByAttachment,
     }
   },
   computed: {
@@ -331,21 +275,19 @@ export default {
       })
     },
     submitProject() {
-      this.$refs.agreementSecondPaymentRules.validate().then(success => {
+      this.$refs.agreementThirdPaymentRules.validate().then(success => {
         if (success) {
           this.isLoading = true
           const request = new FormData()
           request.append('task_id', router.currentRoute.params.id)
-          request.append('second_payment_document', this.secondPaymentDocumentInput)
-          request.append('second_payment', this.projectData.second_payment)
-          request.append('design_recognition', this.stringToBoolean(this.selectedDesignRecognition.id))
+          request.append('third_payment_document', this.thirdPaymentDocumentInput)
 
           const config = {
             header: {
               'Content-Type': 'multipart/form-data',
             },
           }
-          this.$http.post('/engine-rest/new-building/second_payment', request, config).then(res => {
+          this.$http.post('/engine-rest/new-building/third_payment', request, config).then(res => {
             this.result = JSON.parse(JSON.stringify(res.data))
             this.successShow = true
             this.isLoading = false
@@ -360,7 +302,7 @@ export default {
       })
     },
     gotoIndex() {
-      router.push({ name: 'admin-project-list' })
+      router.push({ name: 'client-project-list' })
     },
     stringToBoolean(value) {
       switch (value.toLowerCase().trim()) {
@@ -379,6 +321,7 @@ export default {
 </style>
 
 <style lang="scss">
+@import '@core/scss/vue/libs/vue-select.scss';
 @media print {
 
   // Global Styles
