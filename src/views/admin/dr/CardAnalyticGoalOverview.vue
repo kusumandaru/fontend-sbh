@@ -188,7 +188,10 @@ export default {
       .then(response => {
         // eslint-disable-next-line prefer-destructuring
         projectAssessment.value = response.data[0]
-        goalOverviewRadialBar.value.series = [Math.round(((projectAssessment.value.approved_score + projectAssessment.value.submitted_score) / projectAssessment.value.proposed_level.minimum_score) * 100)]
+        // goalOverviewRadialBar.value.series = [Math.round(((projectAssessment.value.approved_score + projectAssessment.value.submitted_score) / projectAssessment.value.proposed_level.minimum_score) * 100)]
+        let scoreSeries = Math.round(((projectAssessment.value.approved_score + projectAssessment.value.submitted_score) / projectAssessment.value.proposed_level.minimum_score) * 100)
+        scoreSeries = scoreSeries > 100.0 ? 100.0 : scoreSeries
+        goalOverviewRadialBar.value.series = [scoreSeries]
       })
       .catch(error => {
         if (error.response.status === 404) {
