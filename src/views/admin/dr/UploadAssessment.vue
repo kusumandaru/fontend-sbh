@@ -3,17 +3,26 @@
   <b-col md="12">
     <b-form-group>
       <b-card-text
-        v-if="projectAssessment.assessment_attachment"
+        v-if="attachmentExist"
         class="mb-0"
       >
-        <b-button
-          v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-          variant="flat-primary"
-          @click="downloadAssessment"
-        >
-          <feather-icon icon="ArchiveIcon" />
-          Download Dokumen Penilaian
-        </b-button>
+        <b-card no-body>
+          <b-table
+            responsive
+            :items="projectAttachments"
+            :fields="attachmentFields"
+            class="mb-0"
+          >
+            <template #cell(filename)="doc">
+              <b-link
+                class="font-weight-bold d-block text-nowrap"
+                @click="getAttachment(doc.item)"
+              >
+                {{ doc.value }}
+              </b-link>
+            </template>
+          </b-table>
+        </b-card>
       </b-card-text>
     </b-form-group>
   </b-col>
@@ -24,7 +33,9 @@ import {
   BCardText,
   BCol,
   BFormGroup,
-  BButton,
+  BTable,
+  BLink,
+  BCard,
 } from 'bootstrap-vue'
 import {
   ref, onUnmounted,
@@ -40,7 +51,9 @@ export default {
     BCardText,
     BCol,
     BFormGroup,
-    BButton,
+    BTable,
+    BLink,
+    BCard,
   },
   directives: {
     Ripple,
@@ -53,8 +66,18 @@ export default {
   },
   data() {
     return {
-      assessmentAttachment: null,
+      isLoading: false,
+      attachmentFields: [
+        { key: 'filename', label: 'Document Name' },
+        { key: 'version', label: 'Version' },
+        { key: 'created_at', label: 'Created At' },
+      ],
     }
+  },
+  computed: {
+    attachmentExist() {
+      return Array.isArray(this.projectAttachments) && this.projectAttachments.length > 0
+    },
   },
   created() {
   },
@@ -68,6 +91,7 @@ export default {
       },
     }
     const projectAssessment = ref(JSON.parse(JSON.stringify(blankProjectAssessment)))
+    const projectAttachments = ref(JSON.parse('[]'))
 
     // Register module
     if (!store.hasModule(DR_APP_STORE_MODULE_NAME)) store.registerModule(DR_APP_STORE_MODULE_NAME, masterDrStoreModule)
@@ -88,27 +112,25 @@ export default {
         }
       })
 
-    const downloadAssessment = () => {
-      store.dispatch('app-dr/downloadLink', { taskId: router.currentRoute.params.id })
-        .then(response => {
-          window.open(response.data.url)
-        })
-        .catch(error => {
-          if (error.response.status === 404) {
-            console.error(error)
-          }
-          if (error.response.status === 500) {
-            console.error(error)
-          }
-        })
-    }
+    store.dispatch('app-dr/fetchProjectAttachments', { taskId: router.currentRoute.params.id })
+      .then(response => {
+        projectAttachments.value = response.data
+      })
+      .catch(error => {
+        if (error.response.status === 404) {
+          projectAttachments.value = undefined
+        }
+      })
 
     return {
       projectAssessment,
-      downloadAssessment,
+      projectAttachments,
     }
   },
   methods: {
+    rerenderAssessment() {
+      this.rerenderUploadAssessment()
+    },
     showToast(variant, titleToast, description) {
       this.$toast({
         component: ToastificationContent,
@@ -118,6 +140,16 @@ export default {
           text: description,
           variant,
         },
+      })
+    },
+    getAttachment(attachment) {
+      this.isLoading = true
+      this.$http.get(`/engine-rest/new-building/design_recognition/assessment_attachment/${attachment.id}`).then(response => {
+        window.open(response.data.url)
+        this.isLoading = false
+      }).catch(() => {
+        this.isLoading = false
+        this.showToast('danger', 'Cannot Load Attachment', 'There is error when load attachment, contact administrator')
       })
     },
   },

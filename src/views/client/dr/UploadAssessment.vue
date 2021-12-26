@@ -129,7 +129,6 @@ export default {
       },
     }
     const projectAssessment = ref(JSON.parse(JSON.stringify(blankProjectAssessment)))
-
     const projectAttachments = ref(JSON.parse('[]'))
 
     // Register module
