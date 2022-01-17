@@ -170,6 +170,30 @@
                   </b-button>
                 </td>
               </tr>
+              <tr>
+                <th class="pb-50">
+                  <feather-icon
+                    icon="FileTextIcon"
+                    class="mr-75"
+                  />
+                  <span class="font-weight-bold">Form Penilaian</span>
+                </th>
+                <td class="pb-50">
+                  <b-button
+                    v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+                    variant="flat-primary"
+                    :disabled="isLoading"
+                    @click="downloadMasterFile('scoring_form')"
+                  >
+                    <b-spinner
+                      v-show="isLoading"
+                      small
+                    />
+                    <feather-icon icon="ArchiveIcon" />
+                    Download
+                  </b-button>
+                </td>
+              </tr>
             </table>
           </div>
         </b-card-body>

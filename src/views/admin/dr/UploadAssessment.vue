@@ -144,7 +144,7 @@ export default {
     },
     getAttachment(attachment) {
       this.isLoading = true
-      this.$http.get(`/engine-rest/new-building/design_recognition/assessment_attachment/${attachment.id}`).then(response => {
+      this.$http.get(`/engine-rest/new-building/assessment_attachment/${attachment.id}`).then(response => {
         window.open(response.data.url)
         this.isLoading = false
       }).catch(() => {

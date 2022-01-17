@@ -1,6 +1,6 @@
 <template>
   <b-tabs
-    id="d-r-tab"
+    id="f-a-tab"
     content-class="mt-1"
   >
 
@@ -25,7 +25,7 @@
       <!-- evaluation tabs pills -->
       <hr class="project-spacing">
 
-      <section id="dr-tabs">
+      <section id="fa-tabs">
         <b-tabs
           vertical
           content-class="col-12 col-md-8 col-lg-9"
@@ -86,7 +86,7 @@
                 />
               </div>
             </template>
-            <d-r-detail
+            <f-a-detail
               :key="criteriaKey"
               :exercise="exercise"
               :rerender-score-parent="rerenderScore"
@@ -129,8 +129,8 @@ import {
 } from '@vue/composition-api'
 import router from '@/router'
 import store from '@/store'
-import masterDrStoreModule from './masterDrStoreModule'
-import DRDetail from './DRDetail.vue'
+import masterFaStoreModule from './masterFaStoreModule'
+import FADetail from './FADetail.vue'
 
 export default {
   components: {
@@ -143,7 +143,7 @@ export default {
     BMedia,
     BMediaBody,
     BMediaAside,
-    DRDetail,
+    FADetail,
   },
   directives: {
     'b-tooltip': VBTooltip,
@@ -164,21 +164,21 @@ export default {
   created() {
   },
   setup() {
-    const DR_APP_STORE_MODULE_NAME = 'app-dr'
+    const FA_APP_STORE_MODULE_NAME = 'app-fa'
     const transactionFetch = ref(JSON.parse('{}'))
     const projectAssessments = ref(JSON.parse('{}'))
     const masterEvaluations = ref(JSON.parse('[]'))
-    const drData = ref(JSON.parse('{}'))
+    const faData = ref(JSON.parse('{}'))
 
     // Register module
-    if (!store.hasModule(DR_APP_STORE_MODULE_NAME)) store.registerModule(DR_APP_STORE_MODULE_NAME, masterDrStoreModule)
+    if (!store.hasModule(FA_APP_STORE_MODULE_NAME)) store.registerModule(FA_APP_STORE_MODULE_NAME, masterFaStoreModule)
 
     // UnRegister on leave
     onUnmounted(() => {
-      if (store.hasModule(DR_APP_STORE_MODULE_NAME)) store.unregisterModule(DR_APP_STORE_MODULE_NAME)
+      if (store.hasModule(FA_APP_STORE_MODULE_NAME)) store.unregisterModule(FA_APP_STORE_MODULE_NAME)
     })
 
-    store.dispatch('app-dr/fetchDesignRecognition', { taskId: router.currentRoute.params.id })
+    store.dispatch('app-fa/fetchFinalAssessment', { taskId: router.currentRoute.params.id })
       .then(response => {
         transactionFetch.value = response.data
         // eslint-disable-next-line prefer-destructuring
@@ -195,7 +195,7 @@ export default {
       transactionFetch,
       projectAssessments,
       masterEvaluations,
-      drData,
+      faData,
     }
   },
   methods: {
@@ -203,7 +203,7 @@ export default {
       this.rerenderScoreParent()
     },
     forceRerenderCriteria() {
-      this.$http.get(`/engine-rest/new-building/design_recognition/${router.currentRoute.params.id}`)
+      this.$http.get(`/engine-rest/new-building/final_assessment/${router.currentRoute.params.id}`)
         .then(response => {
           // eslint-disable-next-line prefer-destructuring
           this.masterEvaluations = response.data.projectAssessments[0].masterEvaluations

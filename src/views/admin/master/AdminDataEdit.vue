@@ -223,6 +223,34 @@
           </b-form-group>
         </b-col>
 
+        <!--Scoring Form -->
+        <b-col md="12">
+          <b-form-group>
+            <label>Form Penilaian</label>
+            <b-form-file
+              v-model="scoringForm"
+              placeholder="Choose a file or drop it here..."
+              drop-placeholder="Drop file here..."
+            />
+            <b-card-text
+              v-if="adminData.scoring_form"
+              class="mb-0"
+            >
+              <b-button
+                v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+                variant="flat-primary"
+                @click="downloadMasterFile('scoring_form')"
+              >
+                <feather-icon icon="ArchiveIcon" />
+                old file : {{ adminData.scoring_form }}
+              </b-button>
+            </b-card-text>
+            <b-card-text class="my-1">
+              Selected file: <strong>{{ scoringForm ? scoringForm.name : '' }}</strong>
+            </b-card-text>
+          </b-form-group>
+        </b-col>
+
         <!-- submit and reset -->
         <b-col>
           <b-button
@@ -291,10 +319,10 @@ import {
   BModal,
   BForm,
 } from 'bootstrap-vue'
-import vSelect from 'vue-select'
 import Ripple from 'vue-ripple-directive'
 import projectStoreModule from '@/views/projectStoreModule'
 import router from '@/router'
+import vSelect from 'vue-select'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import {
   required, confirmed,
@@ -330,6 +358,7 @@ export default {
       firstAttachment: null,
       secondAttachment: null,
       thirdAttachment: null,
+      scoringForm: null,
       successShow: false,
       result: {},
       resultId: null,
@@ -364,6 +393,7 @@ export default {
       first_attachment: '',
       second_attachment: '',
       third_attachment: '',
+      scoring_form: '',
       dr_template_id: '',
       fa_template_id: '',
     }
@@ -470,6 +500,7 @@ export default {
           request.append('first_attachment', this.firstAttachment)
           request.append('second_attachment', this.secondAttachment)
           request.append('third_attachment', this.thirdAttachment)
+          request.append('scoring_form', this.scoringForm)
           request.append('dr_template_id', this.adminData.dr_template_id)
           request.append('fa_template_id', this.adminData.fa_template_id)
 
@@ -499,4 +530,7 @@ export default {
 <style lang="scss" scoped>
 @import "~@core/scss/base/pages/app-project.scss";
 @import '~@core/scss/vue/libs/vue-select.scss';
+</style>
+<style lang="scss">
+@import '@core/scss/vue/libs/vue-select.scss';
 </style>

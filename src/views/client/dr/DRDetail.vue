@@ -108,7 +108,7 @@
                 :options="scoreDictionary(criteria)"
                 :reduce="val => val.value"
                 :clearable="false"
-                :disabled="criteria.approval_status != 1"
+                :disabled="criteria.approval_status == 2 || criteria.approval_status == 4"
                 label="text"
                 code="value"
               >
@@ -194,6 +194,7 @@
                     </template>
                     <template #cell(action)="drow">
                       <feather-icon
+                        v-if="drow.item.submitted_at == undefined"
                         :id="`master-row-${row.item.id}-delete-icon`"
                         icon="Trash2Icon"
                         size="16"
@@ -536,7 +537,7 @@ export default {
           'Content-Type': 'multipart/form-data',
         },
       }
-      this.$http.post('/engine-rest/new-building/design_recognition/attachments', request, config).then(() => {
+      this.$http.post('/engine-rest/new-building/attachments', request, config).then(() => {
         this.isLoading = false
         this.rerenderCriteria()
         this.showToast('success', 'Saved', 'Attachment successfully saved')
@@ -547,7 +548,7 @@ export default {
     },
     getAttachment(attachment) {
       this.isLoading = true
-      this.$http.get(`/engine-rest/new-building/design_recognition/attachments/${attachment.id}`).then(response => {
+      this.$http.get(`/engine-rest/new-building/attachments/${attachment.id}`).then(response => {
         window.open(response.data.url)
         this.isLoading = false
       }).catch(() => {
@@ -557,7 +558,7 @@ export default {
     },
     deleteAttachment(attachment) {
       this.isLoading = true
-      this.$http.delete(`/engine-rest/new-building/design_recognition/attachments/${attachment.id}`).then(() => {
+      this.$http.delete(`/engine-rest/new-building/attachments/${attachment.id}`).then(() => {
         this.isLoading = false
         this.rerenderCriteria()
         this.showToast('success', 'Deleted', 'Attachment successfully delete')
@@ -576,7 +577,7 @@ export default {
       // eslint-disable-next-line
       const criteriaScoringData = ref(JSON.parse(JSON.stringify(initCriteriaScoringData)))
 
-      this.$http.post(`/engine-rest/new-building/design_recognition/${criteria.id}/take_score`, criteriaScoringData.value).then(() => {
+      this.$http.post(`/engine-rest/new-building/criteria_scoring/${criteria.id}/take_score`, criteriaScoringData.value).then(() => {
         this.isLoading = false
         this.rerenderCriteria()
         this.rerenderScoreParent()
@@ -588,7 +589,7 @@ export default {
     },
     untakeScore(criteria) {
       this.isLoading = true
-      this.$http.post(`/engine-rest/new-building/design_recognition/${criteria.id}/untake_score`).then(() => {
+      this.$http.post(`/engine-rest/new-building/criteria_scoring/${criteria.id}/untake_score`).then(() => {
         this.isLoading = false
         this.rerenderCriteria()
         this.rerenderScoreParent()

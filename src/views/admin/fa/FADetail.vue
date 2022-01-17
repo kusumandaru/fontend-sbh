@@ -42,7 +42,7 @@
 
       <!-- collapse -->
       <app-collapse
-        id="d-r-detail"
+        id="f-a-detail"
         accordion
         type="margin"
         class="mt-2"
@@ -395,7 +395,7 @@ import { quillEditor } from 'vue-quill-editor'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 import AppCollapse from '@core/components/app-collapse/AppCollapse.vue'
 import AppCollapseItem from '@core/components/app-collapse/AppCollapseItemCustom.vue'
-import masterDrStoreModule from './masterDrStoreModule'
+import masterFaStoreModule from './masterFaStoreModule'
 import { codeFormatterCallback, codeRowDetailsSupport } from './code'
 
 export default {
@@ -518,14 +518,14 @@ export default {
   computed: {
   },
   setup() {
-    const DR_APP_STORE_MODULE_NAME = 'app-dr'
+    const FA_APP_STORE_MODULE_NAME = 'app-fa'
 
     // Register module
-    if (!store.hasModule(DR_APP_STORE_MODULE_NAME)) store.registerModule(DR_APP_STORE_MODULE_NAME, masterDrStoreModule)
+    if (!store.hasModule(FA_APP_STORE_MODULE_NAME)) store.registerModule(FA_APP_STORE_MODULE_NAME, masterFaStoreModule)
 
     // UnRegister on leave
     onUnmounted(() => {
-      if (store.hasModule(DR_APP_STORE_MODULE_NAME)) store.unregisterModule(DR_APP_STORE_MODULE_NAME)
+      if (store.hasModule(FA_APP_STORE_MODULE_NAME)) store.unregisterModule(FA_APP_STORE_MODULE_NAME)
     })
   },
   methods: {

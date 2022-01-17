@@ -2,26 +2,6 @@
 <template>
   <b-col md="12">
     <b-form-group>
-      <label>Upload Dokumen Penilaian (xls)</label>
-      <b-input-group>
-        <b-form-file
-          v-model="files"
-          placeholder="Choose a file or drop it here..."
-          drop-placeholder="Drop file here..."
-          multiple
-        />
-        <b-input-group-append>
-          <b-button
-            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-            type="submit"
-            variant="secondary"
-            class="mr-1"
-            @click="submitAssessment"
-          >
-            Submit
-          </b-button>
-        </b-input-group-append>
-      </b-input-group>
       <b-card-text
         v-if="attachmentExist"
         class="mb-0"
@@ -41,15 +21,6 @@
                 {{ doc.value }}
               </b-link>
             </template>
-            <template #cell(action)="drow">
-              <feather-icon
-                :id="`attachment-${drow.item.id}-delete-icon`"
-                icon="Trash2Icon"
-                size="16"
-                class="mx-1"
-                @click="deleteAttachment(drow.item)"
-              />
-            </template>
           </b-table>
         </b-card>
       </b-card-text>
@@ -61,11 +32,7 @@
 import {
   BCardText,
   BCol,
-  BFormFile,
   BFormGroup,
-  BButton,
-  BInputGroup,
-  BInputGroupAppend,
   BTable,
   BLink,
   BCard,
@@ -77,17 +44,13 @@ import router from '@/router'
 import store from '@/store'
 import Ripple from 'vue-ripple-directive'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
-import masterDrStoreModule from './masterDrStoreModule'
+import masterFaStoreModule from './masterFaStoreModule'
 
 export default {
   components: {
     BCardText,
     BCol,
-    BFormFile,
     BFormGroup,
-    BButton,
-    BInputGroup,
-    BInputGroupAppend,
     BTable,
     BLink,
     BCard,
@@ -103,12 +66,11 @@ export default {
   },
   data() {
     return {
-      files: null,
       isLoading: false,
       attachmentFields: [
         { key: 'filename', label: 'Document Name' },
+        { key: 'version', label: 'Version' },
         { key: 'created_at', label: 'Created At' },
-        'action',
       ],
     }
   },
@@ -120,7 +82,7 @@ export default {
   created() {
   },
   setup() {
-    const DR_APP_STORE_MODULE_NAME = 'app-dr'
+    const FA_APP_STORE_MODULE_NAME = 'app-fa'
     const blankProjectAssessment = {
       temporary_score: 0,
       potential_score: 0,
@@ -132,14 +94,14 @@ export default {
     const projectAttachments = ref(JSON.parse('[]'))
 
     // Register module
-    if (!store.hasModule(DR_APP_STORE_MODULE_NAME)) store.registerModule(DR_APP_STORE_MODULE_NAME, masterDrStoreModule)
+    if (!store.hasModule(FA_APP_STORE_MODULE_NAME)) store.registerModule(FA_APP_STORE_MODULE_NAME, masterFaStoreModule)
 
     // UnRegister on leave
     onUnmounted(() => {
-      if (store.hasModule(DR_APP_STORE_MODULE_NAME)) store.unregisterModule(DR_APP_STORE_MODULE_NAME)
+      if (store.hasModule(FA_APP_STORE_MODULE_NAME)) store.unregisterModule(FA_APP_STORE_MODULE_NAME)
     })
 
-    store.dispatch('app-dr/fetchProjectAssessment', { taskId: router.currentRoute.params.id })
+    store.dispatch('app-fa/fetchProjectAssessment', { taskId: router.currentRoute.params.id })
       .then(response => {
         // eslint-disable-next-line prefer-destructuring
         projectAssessment.value = response.data[0]
@@ -150,7 +112,7 @@ export default {
         }
       })
 
-    store.dispatch('app-dr/fetchProjectAttachments', { taskId: router.currentRoute.params.id })
+    store.dispatch('app-fa/fetchProjectAttachments', { taskId: router.currentRoute.params.id })
       .then(response => {
         projectAttachments.value = response.data
       })
@@ -180,31 +142,6 @@ export default {
         },
       })
     },
-    submitAssessment() {
-      if (this.files === undefined) {
-        return
-      }
-
-      this.isLoading = true
-      const request = new FormData()
-      for (let i = 0; i < this.files.length; i += 1) {
-        request.append('files', this.files[i])
-      }
-      const config = {
-        header: {
-          'Content-Type': 'multipart/form-data',
-        },
-      }
-      this.$http.post(`/engine-rest/new-building/design_recognition/${router.currentRoute.params.id}/assessment_attachment`, request, config).then(res => {
-        this.result = JSON.parse(JSON.stringify(res.data))
-        this.isLoading = false
-        this.rerenderAssessment()
-        this.showToast('success', 'Saved', 'Assessment successfully submitted')
-      }).catch(() => {
-        this.isLoading = false
-        this.showToast('danger', 'Cannot Save', 'There is error when submit data, contact administrator')
-      })
-    },
     getAttachment(attachment) {
       this.isLoading = true
       this.$http.get(`/engine-rest/new-building/assessment_attachment/${attachment.id}`).then(response => {
@@ -213,18 +150,6 @@ export default {
       }).catch(() => {
         this.isLoading = false
         this.showToast('danger', 'Cannot Load Attachment', 'There is error when load attachment, contact administrator')
-      })
-    },
-    deleteAttachment(attachment) {
-      this.isLoading = true
-      this.$http.delete(`/engine-rest/new-building/assessment_attachment/${attachment.id}`).then(() => {
-        this.isLoading = false
-        this.rerenderAssessment()
-        this.showToast('success', 'Deleted', 'Attachment successfully delete')
-      }).catch(() => {
-        this.isLoading = false
-        this.rerenderAssessment()
-        this.showToast('danger', 'Cannot Delete', 'There is error when delete attachment, contact administrator')
       })
     },
   },

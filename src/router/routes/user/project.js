@@ -52,6 +52,16 @@ export default [
     component: () => import('@/views/client/project/FirstPayment.vue'),
   },
   {
+    path: '/client/project/dr_revision_submission/:id',
+    name: 'client-project-dr-revision-submission',
+    component: () => import('@/views/client/project/DRRevisionSubmission.vue'),
+  },
+  {
+    path: '/client/project/fa_revision_submission/:id',
+    name: 'client-project-fa-revision-submission',
+    component: () => import('@/views/client/project/FARevisionSubmission.vue'),
+  },
+  {
     path: '/client/project/second_payment/:id',
     name: 'client-project-second-payment',
     component: () => import('@/views/client/project/SecondPayment.vue'),
@@ -65,5 +75,10 @@ export default [
     path: '/client/project/dr/assesment/:id',
     name: 'client-project-dr-assessment',
     component: () => import('@/views/client/dr/DRList.vue'),
+  },
+  {
+    path: '/client/project/fa/assesment/:id',
+    name: 'client-project-fa-assessment',
+    component: () => import('@/views/client/fa/FAList.vue'),
   },
 ]
