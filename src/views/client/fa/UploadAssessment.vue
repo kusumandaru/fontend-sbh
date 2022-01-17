@@ -77,7 +77,7 @@ import router from '@/router'
 import store from '@/store'
 import Ripple from 'vue-ripple-directive'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
-import masterDrStoreModule from './masterDrStoreModule'
+import masterFaStoreModule from './masterFaStoreModule'
 
 export default {
   components: {
@@ -120,7 +120,7 @@ export default {
   created() {
   },
   setup() {
-    const DR_APP_STORE_MODULE_NAME = 'app-dr'
+    const FA_APP_STORE_MODULE_NAME = 'app-fa'
     const blankProjectAssessment = {
       temporary_score: 0,
       potential_score: 0,
@@ -132,14 +132,14 @@ export default {
     const projectAttachments = ref(JSON.parse('[]'))
 
     // Register module
-    if (!store.hasModule(DR_APP_STORE_MODULE_NAME)) store.registerModule(DR_APP_STORE_MODULE_NAME, masterDrStoreModule)
+    if (!store.hasModule(FA_APP_STORE_MODULE_NAME)) store.registerModule(FA_APP_STORE_MODULE_NAME, masterFaStoreModule)
 
     // UnRegister on leave
     onUnmounted(() => {
-      if (store.hasModule(DR_APP_STORE_MODULE_NAME)) store.unregisterModule(DR_APP_STORE_MODULE_NAME)
+      if (store.hasModule(FA_APP_STORE_MODULE_NAME)) store.unregisterModule(FA_APP_STORE_MODULE_NAME)
     })
 
-    store.dispatch('app-dr/fetchProjectAssessment', { taskId: router.currentRoute.params.id })
+    store.dispatch('app-fa/fetchProjectAssessment', { taskId: router.currentRoute.params.id })
       .then(response => {
         // eslint-disable-next-line prefer-destructuring
         projectAssessment.value = response.data[0]
@@ -150,7 +150,7 @@ export default {
         }
       })
 
-    store.dispatch('app-dr/fetchProjectAttachments', { taskId: router.currentRoute.params.id })
+    store.dispatch('app-fa/fetchProjectAttachments', { taskId: router.currentRoute.params.id })
       .then(response => {
         projectAttachments.value = response.data
       })
@@ -195,7 +195,7 @@ export default {
           'Content-Type': 'multipart/form-data',
         },
       }
-      this.$http.post(`/engine-rest/new-building/design_recognition/${router.currentRoute.params.id}/assessment_attachment`, request, config).then(res => {
+      this.$http.post(`/engine-rest/new-building/final_assessment/${router.currentRoute.params.id}/assessment_attachment`, request, config).then(res => {
         this.result = JSON.parse(JSON.stringify(res.data))
         this.isLoading = false
         this.rerenderAssessment()
@@ -207,7 +207,7 @@ export default {
     },
     getAttachment(attachment) {
       this.isLoading = true
-      this.$http.get(`/engine-rest/new-building/assessment_attachment/${attachment.id}`).then(response => {
+      this.$http.get(`/engine-rest/new-building/final_assessment/assessment_attachment/${attachment.id}`).then(response => {
         window.open(response.data.url)
         this.isLoading = false
       }).catch(() => {

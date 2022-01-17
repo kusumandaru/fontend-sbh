@@ -1,6 +1,6 @@
 <template>
   <b-tabs
-    id="d-r-tab"
+    id="f-a-tab"
     content-class="mt-1"
   >
 
@@ -25,7 +25,7 @@
       <!-- evaluation tabs pills -->
       <hr class="project-spacing">
 
-      <section id="dr-tabs">
+      <section id="fa-tabs">
         <b-tabs
           vertical
           content-class="col-12 col-md-8 col-lg-9"
@@ -43,50 +43,13 @@
             <!-- title -->
             <!-- :icon="exercise.icon" -->
             <template #title>
-              <b-media no-body>
-                <b-media-aside>
-                  <b-badge variant="light-secondary">
-                    {{ exercise.submitted_score + exercise.approved_score }}
-                  </b-badge>
-                </b-media-aside>
-                <b-media-body>
-                  <span class="   font-weight-bold">{{ exercise.exercise.code }} - {{ exercise.exercise.name }}</span>
-                </b-media-body>
-              </b-media>
-              <div
-                class="font-weight-bolder"
-                style="margin-left: auto; margin-right: 0"
-              >
-                <b-avatar
-                  v-if="exerciseCount(exercise, 2) > 0"
-                  size="sm"
-                  v-b-tooltip.hover
-                  class="pull-up"
-                  title="Under Review"
-                  :text="exerciseCountString(exercise, 2)"
-                  variant="info"
-                />
-                <b-avatar
-                  v-if="exerciseCount(exercise, 4) > 0"
-                  size="sm"
-                  v-b-tooltip.hover
-                  class="pull-up"
-                  title="Approved"
-                  :text="exerciseCountString(exercise, 4)"
-                  variant="success"
-                />
-                <b-avatar
-                  v-if="exerciseCount(exercise, 3) > 0"
-                  size="sm"
-                  v-b-tooltip.hover
-                  class="pull-up"
-                  title="Rejected"
-                  :text="exerciseCountString(exercise, 3)"
-                  variant="danger"
-                />
-              </div>
+              <b-badge variant="light-secondary">
+                {{ exercise.submitted_score + exercise.approved_score }}
+              </b-badge>
+              &nbsp;
+              <span class="font-weight-bold">{{ exercise.exercise.code }} - {{ exercise.exercise.name }}</span>
             </template>
-            <d-r-detail
+            <f-a-detail
               :key="criteriaKey"
               :exercise="exercise"
               :rerender-score-parent="rerenderScore"
@@ -98,8 +61,8 @@
           <!-- sitting lady image -->
           <template #tabs-end>
             <b-img
-              fluid
-              :src="require('@/assets/images/illustration/faq-illustrations.svg')"
+              :src="require(`@/assets/images/illustration/${evaluationImage(evaluation)}`)"
+              height="150%"
               class="d-none d-md-block mt-auto"
             />
           </template>
@@ -113,40 +76,28 @@
 
 <script>
 import {
-  BAvatar,
   BTabs,
   BTab,
   BAlert,
   BImg,
   BBadge,
-  BMedia,
-  BMediaBody,
-  BMediaAside,
-  VBTooltip,
 } from 'bootstrap-vue'
 import {
   ref, onUnmounted,
 } from '@vue/composition-api'
 import router from '@/router'
 import store from '@/store'
-import masterDrStoreModule from './masterDrStoreModule'
-import DRDetail from './DRDetail.vue'
+import masterFaStoreModule from './masterFaStoreModule'
+import FADetail from './FADetail.vue'
 
 export default {
   components: {
-    BAvatar,
     BTabs,
     BTab,
     BAlert,
     BImg,
     BBadge,
-    BMedia,
-    BMediaBody,
-    BMediaAside,
-    DRDetail,
-  },
-  directives: {
-    'b-tooltip': VBTooltip,
+    FADetail,
   },
   props: {
     rerenderScoreParent: {
@@ -157,6 +108,14 @@ export default {
   data() {
     return {
       criteriaKey: 0,
+      imageOptions: [
+        { value: 'ASD', text: 'faq-illustrations.svg' },
+        { value: 'EEC', text: 'marketing.svg' },
+        { value: 'WAC', text: 'personalization.svg' },
+        { value: 'MRC', text: 'pricing-Illustration.svg' },
+        { value: 'IHC', text: 'sales.svg' },
+        { value: 'BEM', text: 'marketing.svg' },
+      ],
     }
   },
   watch: {
@@ -164,21 +123,21 @@ export default {
   created() {
   },
   setup() {
-    const DR_APP_STORE_MODULE_NAME = 'app-dr'
+    const FA_APP_STORE_MODULE_NAME = 'app-fa'
     const transactionFetch = ref(JSON.parse('{}'))
     const projectAssessments = ref(JSON.parse('{}'))
     const masterEvaluations = ref(JSON.parse('[]'))
-    const drData = ref(JSON.parse('{}'))
+    const faData = ref(JSON.parse('{}'))
 
     // Register module
-    if (!store.hasModule(DR_APP_STORE_MODULE_NAME)) store.registerModule(DR_APP_STORE_MODULE_NAME, masterDrStoreModule)
+    if (!store.hasModule(FA_APP_STORE_MODULE_NAME)) store.registerModule(FA_APP_STORE_MODULE_NAME, masterFaStoreModule)
 
     // UnRegister on leave
     onUnmounted(() => {
-      if (store.hasModule(DR_APP_STORE_MODULE_NAME)) store.unregisterModule(DR_APP_STORE_MODULE_NAME)
+      if (store.hasModule(FA_APP_STORE_MODULE_NAME)) store.unregisterModule(FA_APP_STORE_MODULE_NAME)
     })
 
-    store.dispatch('app-dr/fetchDesignRecognition', { taskId: router.currentRoute.params.id })
+    store.dispatch('app-fa/fetchFinalAssesment', { taskId: router.currentRoute.params.id })
       .then(response => {
         transactionFetch.value = response.data
         // eslint-disable-next-line prefer-destructuring
@@ -195,7 +154,7 @@ export default {
       transactionFetch,
       projectAssessments,
       masterEvaluations,
-      drData,
+      faData,
     }
   },
   methods: {
@@ -203,7 +162,7 @@ export default {
       this.rerenderScoreParent()
     },
     forceRerenderCriteria() {
-      this.$http.get(`/engine-rest/new-building/design_recognition/${router.currentRoute.params.id}`)
+      this.$http.get(`/engine-rest/new-building/final_assessment/${router.currentRoute.params.id}`)
         .then(response => {
           // eslint-disable-next-line prefer-destructuring
           this.masterEvaluations = response.data.projectAssessments[0].masterEvaluations
@@ -215,16 +174,13 @@ export default {
           }
         })
     },
-    exerciseCount(exercise, approvalStatus) {
-      // eslint-disable-next-line arrow-body-style
-      const underReviews = exercise.criterias.filter(c => {
+    evaluationImage(evaluation) {
+      // eslint-disable-next-line
+      const filtered = this.imageOptions.filter(f => { 
         // eslint-disable-next-line
-        return c.approval_status === approvalStatus
+        return f.value === evaluation.code
       })
-      return underReviews.length
-    },
-    exerciseCountString(exercise, approvalStatus) {
-      return this.exerciseCount(exercise, approvalStatus).toString()
+      return filtered[0].text
     },
   },
 }

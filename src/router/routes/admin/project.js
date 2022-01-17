@@ -35,4 +35,9 @@ export default [
     name: 'admin-project-dr-assessment',
     component: () => import('@/views/admin/dr/DRList.vue'),
   },
+  {
+    path: '/admin/project/fa/assesment/:id',
+    name: 'admin-project-fa-assessment',
+    component: () => import('@/views/admin/fa/FAList.vue'),
+  },
 ]

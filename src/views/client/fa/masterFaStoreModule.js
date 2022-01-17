@@ -6,10 +6,10 @@ export default {
   getters: {},
   mutations: {},
   actions: {
-    fetchDesignRecognition(ctx, { taskId }) {
+    fetchFinalAssesment(ctx, { taskId }) {
       return new Promise((resolve, reject) => {
         axios
-          .get(`/engine-rest/new-building/design_recognition/${taskId}`)
+          .get(`/engine-rest/new-building/final_assessment/${taskId}`)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })
@@ -17,7 +17,7 @@ export default {
     submitCriteria(ctx, { criteriaScoringId }) {
       return new Promise((resolve, reject) => {
         axios
-          .post(`/engine-rest/new-building/design_recognition/criteria_submission/${criteriaScoringId}`)
+          .post(`/engine-rest/new-building/final_assessment/criteria_submission/${criteriaScoringId}`)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })
@@ -25,7 +25,7 @@ export default {
     fetchProjectAssessment(ctx, { taskId }) {
       return new Promise((resolve, reject) => {
         axios
-          .get(`/engine-rest/new-building/design_recognition/${taskId}/project_assessment`)
+          .get(`/engine-rest/new-building/final_assessment/${taskId}/project_assessment`)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })
@@ -33,7 +33,7 @@ export default {
     fetchProjectAttachments(ctx, { taskId }) {
       return new Promise((resolve, reject) => {
         axios
-          .get(`/engine-rest/new-building/design_recognition/${taskId}/assessment_attachments`)
+          .get(`/engine-rest/new-building/final_assessment/${taskId}/assessment_attachments`)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })
@@ -46,10 +46,10 @@ export default {
           .catch(error => reject(error))
       })
     },
-    postDREligibleSubmission(ctx, { taskId }) {
+    postFAEligibleSubmission(ctx, { taskId }) {
       return new Promise((resolve, reject) => {
         axios
-          .get(`/engine-rest/new-building/design_recognition/${taskId}/eligible_submit`)
+          .get(`/engine-rest/new-building/final_assessment/${taskId}/eligible_submit`)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })
@@ -65,7 +65,7 @@ export default {
     fetchMasterEvaluation(ctx, { taskId }) {
       return new Promise((resolve, reject) => {
         axios
-          .get(`/engine-rest/new-building/design_recognition/${taskId}/evaluations`)
+          .get(`/engine-rest/new-building/final_assessment/${taskId}/evaluations`)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })
@@ -113,7 +113,7 @@ export default {
     downloadLink(ctx, { taskId }) {
       return new Promise((resolve, reject) => {
         axios
-          .get(`/engine-rest/new-building/design_recognition/${taskId}/assessment_attachment`)
+          .get(`/engine-rest/new-building/final_assessment/${taskId}/assessment_attachment`)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })

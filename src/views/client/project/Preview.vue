@@ -119,75 +119,70 @@
           <!-- Spacer -->
           <hr class="project-spacing">
 
-          <!-- project Client -->
+          <!-- project Client and Description -->
           <b-card-body
             v-if="projectData.owner"
             class="project-padding pt-0"
           >
-            <b-row class="project-spacing">
-
-              <!-- Col: project To -->
-              <b-col
-                cols="12"
-                xl="6"
-                class="p-0"
-              >
-                <h6 class="mb-2">
-                  project To:
-                </h6>
-                <h6 class="mb-25">
-                  {{ projectData.owner }}
-                </h6>
-                <p class="card-text mb-25">
-                  {{ projectData.building_name }}
-                </p>
-                <p class="card-text mb-25">
-                  {{ projectData.building_address }}, {{ projectData.postal_code }}
-                </p>
-                <p class="card-text mb-25">
-                  {{ projectData.phone }}
-                </p>
-                <p class="card-text mb-0">
-                  {{ projectData.email }}
-                </p>
-              </b-col>
-            </b-row>
-          </b-card-body>
-
-          <!-- project Description -->
-          <b-card-body class="project-padding pb-0">
-            <b-row>
-
-              <!-- Col: Certification Type -->
-              <b-col
-                cols="12"
-                md="6"
-                class="mt-md-0 mt-3"
-                order="2"
-                order-md="1"
-              >
-                <b-card-text class="mb-0">
-                  <span class="font-weight-bold">Certification Type:</span>
-                  <span class="ml-75">{{ projectData.certification_type }}</span>
-                </b-card-text>
-                <b-card-text class="mb-0">
-                  <span class="font-weight-bold">Building Type:</span>
-                  <span class="ml-75">{{ projectData.building_type_name }}</span>
-                </b-card-text>
-                <b-card-text class="mb-0">
-                  <span class="font-weight-bold">Owner:</span>
-                  <span class="ml-75">{{ projectData.owner }}</span>
-                </b-card-text>
-                <b-card-text class="mb-0">
-                  <span class="font-weight-bold">Design Recognition:</span>
-                  <span class="ml-75">{{ projectData.design_recognition }}</span>
-                </b-card-text>
-                <b-card-text class="mb-0">
-                  <span class="font-weight-bold">Gross Floor Area:</span>
-                  <span class="ml-75">{{ projectData.gross_floor_area }}</span>
-                </b-card-text>
-              </b-col>
-            </b-row>
+            <b-form class="mt-2">
+              <b-row>
+                <b-col md="6">
+                  <b-card-body class="project-padding pb-0">
+                    <b-card-title>Project To:</b-card-title>
+                    <h6 class="mb-25">
+                      {{ projectData.owner }}
+                    </h6>
+                    <p class="card-text mb-25">
+                      {{ projectData.building_name }}
+                    </p>
+                    <p class="card-text mb-25">
+                      {{ projectData.building_address }}, {{ projectData.postal_code }}
+                    </p>
+                    <p class="card-text mb-25">
+                      {{ projectData.phone }}
+                    </p>
+                    <p class="card-text mb-0">
+                      {{ projectData.email }}
+                    </p>
+                  </b-card-body>
+                </b-col>
+                <b-col md="6">
+                  <b-card-body class="project-padding pb-0">
+                    <b-card-title>Project Detail:</b-card-title>
+                    <b-row>
+                      <b-card-text class="mb-0">
+                        <span class="font-weight-bold">Certification Type:</span>
+                        <span class="ml-75">{{ projectData.certification_type }}</span>
+                      </b-card-text>
+                    </b-row>
+                    <b-row>
+                      <b-card-text class="mb-0">
+                        <span class="font-weight-bold">Building Type:</span>
+                        <span class="ml-75">{{ projectData.building_type_name }}</span>
+                      </b-card-text>
+                    </b-row>
+                    <b-row>
+                      <b-card-text class="mb-0">
+                        <span class="font-weight-bold">Owner:</span>
+                        <span class="ml-75">{{ projectData.owner }}</span>
+                      </b-card-text>
+                    </b-row>
+                    <b-row>
+                      <b-card-text class="mb-0">
+                        <span class="font-weight-bold">Design Recognition:</span>
+                        <span class="ml-75">{{ projectData.design_recognition }}</span>
+                      </b-card-text>
+                    </b-row>
+                    <b-row>
+                      <b-card-text class="mb-0">
+                        <span class="font-weight-bold">Gross Floor Area:</span>
+                        <span class="ml-75">{{ projectData.gross_floor_area }}</span>
+                      </b-card-text>
+                    </b-row>
+                  </b-card-body>
+                </b-col>
+              </b-row>
+            </b-form>
           </b-card-body>
 
           <!-- Spacer -->
@@ -309,6 +304,65 @@
               </b-col>
             </b-row>
           </b-card-body>
+
+          <!-- Spacer -->
+          <hr class="project-spacing">
+
+          <!-- Revision Project Document -->
+          <b-card-body class="project-padding pb-0">
+            <b-card-title>Revision Project Document</b-card-title>
+            <p />
+            <b-row>
+
+              <!-- Col: Document Type -->
+              <b-col
+                cols="12"
+                md="12"
+                class="mt-md-0 mt-3"
+                order="2"
+                order-md="1"
+              >
+                <app-collapse>
+                  <app-collapse-item
+                    v-for="(attachments, name) in filteredAttachment(revisionAttachments)"
+                    :key="name"
+                    :title="toTitleCase(name)"
+                  >
+                    <b-table
+                      responsive
+                      :items="attachments"
+                      :fields="projectAttachmentFields"
+                      class="mb-0"
+                    >
+                      <template #cell(filename)="doc">
+                        <b-link
+                          class="font-weight-bold d-block text-nowrap"
+                          @click="downloadFileByAttachment(doc.item.id)"
+                        >
+                          {{ doc.value }}
+                        </b-link>
+                      </template>
+                    </b-table>
+                  </app-collapse-item>
+                </app-collapse>
+
+                <b-card-text
+                  v-if="projectData.registered_project"
+                  class="mb-0"
+                >
+                  <b-button
+                    v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+                    variant="flat-primary"
+                    @click="registeredProject"
+                  >
+                    <feather-icon icon="ArchiveIcon" />
+                    Download Registered Project
+                  </b-button>
+                </b-card-text>
+
+              </b-col>
+            </b-row>
+          </b-card-body>
         </b-card>
       </b-col>
 
@@ -319,6 +373,14 @@
         xl="3"
         class="project-actions"
       >
+        <b-card bg-variant="secondary" text-variant="white">
+          <b-card-title class="text-white text-center">
+            {{ this.projectData.task_name }}
+          </b-card-title>
+          <b-card-text class="text-center">
+            <span>{{ this.taskDescriptionBody }}</span>
+          </b-card-text>
+        </b-card>
         <b-card>
           <!-- Button: Edit Project-->
           <b-button
@@ -378,6 +440,42 @@
             @click="registeredProjectAttachment"
           >
             Panduan Registered Project Declaration
+          </b-button>
+
+          <!-- Button: Scoring Form-->
+          <b-button
+            v-if="scoringFormAttachmentShow"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="secondary"
+            class="mb-75"
+            block
+            @click="scoringFormAttachment"
+          >
+            Form Penilaian
+          </b-button>
+
+          <!-- Button: DR Revision-->
+          <b-button
+            v-if="drRevisionShow"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="success"
+            class="mb-75"
+            block
+            @click="drRevisionSubmissionTask"
+          >
+            Revisi Design Recognition
+          </b-button>
+
+          <!-- Button: FA Revision-->
+          <b-button
+            v-if="faRevisionShow"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="success"
+            class="mb-75"
+            block
+            @click="faRevisionSubmissionTask"
+          >
+            Revisi Final Assessment
           </b-button>
 
           <!-- Button: Upload Document Building-->
@@ -440,6 +538,18 @@
             Design Recognition Submission
           </b-button>
 
+          <!-- Button: Final Assessment-->
+          <b-button
+            v-if="finalAssessmentShow"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="success"
+            class="mb-75"
+            block
+            @click="finalAssessmentSubmission"
+          >
+            Final Assessment Submission
+          </b-button>
+
           <!-- Button: Print -->
           <b-button
             v-ripple.400="'rgba(186, 191, 199, 0.15)'"
@@ -460,6 +570,34 @@
             <br><br>Untuk proses selanjutnya agar menunggu pemberitahuan diterimanya perjanjian sertifikasi dari admin PT SBH
           </b-card-text>
         </b-card>
+
+        <b-card
+          v-if="workshopMessageShow"
+          class="mb-4"
+        >
+          <b-card-text>
+            Proses selanjutnya hasil workshop dapat diunduh setelah pelaksanaan workshop selesai
+          </b-card-text>
+        </b-card>
+
+        <b-card
+          v-if="trialMessageShow"
+          class="mb-4"
+        >
+          <b-card-text>
+            Proses selanjutnya, jadwal sidang akan diinfo melalui email admin@sertifikasibangunanhijau.com
+          </b-card-text>
+        </b-card>
+
+        <b-card
+          v-if="finalMessageShow"
+          class="mb-4"
+        >
+          <b-card-text>
+            Proses sudah selesai dan proyek ini dinyatakan lulus dalam sertifikasi Greenship NB.
+            <br><br>PT. Sertifikasi Bangunan Hijau akan merekomendasikan kepada GBCIndonesia untuk proyek ini mendapatkan sertifikat
+          </b-card-text>
+        </b-card>
       </b-col>
     </b-row>
   </section>
@@ -472,7 +610,7 @@ import {
 import store from '@/store'
 import router from '@/router'
 import {
-  BRow, BCol, BCard, BCardBody, BCardTitle, BCardSubTitle, BCardText, BButton, BAlert, BLink, VBToggle, BTable,
+  BRow, BCol, BCard, BCardBody, BCardTitle, BCardSubTitle, BCardText, BButton, BAlert, BLink, VBToggle, BTable, BForm,
 } from 'bootstrap-vue'
 import AppCollapse from '@core/components/app-collapse/AppCollapse.vue'
 import AppCollapseItem from '@core/components/app-collapse/AppCollapseItem.vue'
@@ -497,6 +635,7 @@ export default {
     BAlert,
     BLink,
     BTable,
+    BForm,
     AppCollapse,
     AppCollapseItem,
   },
@@ -506,6 +645,10 @@ export default {
         { key: 'filename', label: 'Document Name' },
         { key: 'version', label: 'Version' },
         { key: 'created_at', label: 'Created At' },
+      ],
+      taskDescription: [
+        { task: 'design-recognition-trial', role: 'admin', title: 'Proses approval DR' },
+        { task: 'design-recognition-trial-revision', role: 'client', title: 'Revisi DR setelah sidang' },
       ],
     }
   },
@@ -526,7 +669,7 @@ export default {
       return ['second-payment'].includes(this.projectData.definition_key)
     },
     thirdPaymentShow() {
-      return ['third-payment'].includes(this.projectData.definition_key)
+      return ['third-payment', 'third-payment-fa'].includes(this.projectData.definition_key)
     },
     eligibilityStatementShow() {
       return !(this.aboveCheckBuildingTasks.includes(this.projectData.definition_key))
@@ -537,11 +680,43 @@ export default {
     registrationLetterAttachmentShow() {
       return !(this.aboveFirstPaymentTasks.includes(this.projectData.definition_key))
     },
+    scoringFormAttachmentShow() {
+      return !(this.aboveFirstPaymentTasks.includes(this.projectData.definition_key))
+    },
+    drRevisionShow() {
+      return ['design-recognition-trial-revision'].includes(this.projectData.definition_key)
+    },
+    faRevisionShow() {
+      return ['final-assessment-trial-revision'].includes(this.projectData.definition_key)
+    },
     designRecognitionShow() {
       return ['design-recognition-submission'].includes(this.projectData.definition_key)
     },
+    finalAssessmentShow() {
+      return ['final-assessment-submission'].includes(this.projectData.definition_key)
+    },
     agreementMessageShow() {
       return ['agreement-and-first-payment', 'agreement'].includes(this.projectData.definition_key)
+    },
+    workshopMessageShow() {
+      return ['workshop'].includes(this.projectData.definition_key)
+    },
+    trialMessageShow() {
+      return ['design-recognition-trial', 'final-assessment-trial'].includes(this.projectData.definition_key)
+    },
+    finalMessageShow() {
+      return ['final-assessment-letter'].includes(this.projectData.definition_key)
+    },
+    taskDescriptionBody() {
+      // eslint-disable-next-line
+      const filtered = this.taskDescription.filter(f => { 
+        // eslint-disable-next-line
+        return f.task === this.projectData.definition_key
+      })
+      if (filtered[0] !== undefined) {
+        return filtered[0].title
+      }
+      return ''
     },
   },
   setup() {
@@ -561,6 +736,8 @@ export default {
     const workshorReportDocument = ref(null)
     const eligibilityStatement = ref(null)
     const agreementLetterDocument = ref(null)
+    const drRevisionDocument = ref(null)
+    const faRevisionDocument = ref(null)
 
     const PROJECT_APP_STORE_MODULE_NAME = 'app-project'
 
@@ -583,6 +760,11 @@ export default {
       workshop_report_document: workshorReportDocument,
       eligibility_statement: eligibilityStatement,
       agreement_letter_document: agreementLetterDocument,
+    })
+
+    const revisionAttachments = ref({
+      dr_revision_submission: drRevisionDocument,
+      fa_revision_submission: faRevisionDocument,
     })
 
     const paymentProps = reactive({
@@ -649,6 +831,21 @@ export default {
         })
     })
 
+    Object.keys(revisionAttachments.value).forEach(key => {
+      store.dispatch('app-project/getAttachmentsByType', { taskId: router.currentRoute.params.id, fileType: key })
+        .then(response => {
+          revisionAttachments.value[key] = response.data
+        })
+        .catch(error => {
+          if (error.response.status === 404) {
+            revisionAttachments.value[key] = undefined
+          }
+          if (error.response.status === 500) {
+            revisionAttachments.value[key] = undefined
+          }
+        })
+    })
+
     const printProject = () => {
       window.print()
     }
@@ -659,6 +856,14 @@ export default {
 
     const firstPaymentTask = () => {
       router.push({ name: 'client-project-first-payment', params: { id: router.currentRoute.params.id } })
+    }
+
+    const drRevisionSubmissionTask = () => {
+      router.push({ name: 'client-project-dr-revision-submission', params: { id: router.currentRoute.params.id } })
+    }
+
+    const faRevisionSubmissionTask = () => {
+      router.push({ name: 'client-project-fa-revision-submission', params: { id: router.currentRoute.params.id } })
     }
 
     const secondPaymentTask = () => {
@@ -725,6 +930,23 @@ export default {
         })
     }
 
+    const scoringFormAttachment = () => {
+      store.dispatch('app-project/downloadMasterLink', {
+        filename: 'scoring_form',
+      })
+        .then(response => {
+          window.open(response.data.url)
+        })
+        .catch(error => {
+          if (error.response.status === 404) {
+            console.error(error)
+          }
+          if (error.response.status === 500) {
+            console.error(error)
+          }
+        })
+    }
+
     const registeredProjectAttachment = () => {
       store.dispatch('app-project/downloadRegisteredProjectAttachment', {
         id: projectData.value.task_id,
@@ -747,6 +969,10 @@ export default {
 
     const designRecognitionSubmission = () => {
       router.push({ name: 'client-project-dr-assessment', params: { id: router.currentRoute.params.id } })
+    }
+
+    const finalAssessmentSubmission = () => {
+      router.push({ name: 'client-project-fa-assessment', params: { id: router.currentRoute.params.id } })
     }
 
     const draftRegistrationLetter = () => {
@@ -793,19 +1019,24 @@ export default {
       projectData,
       eligibilityAttachments,
       registeredAttachments,
+      revisionAttachments,
       printProject,
       paymentProps,
       editProject,
       firstPaymentTask,
       secondPaymentTask,
       thirdPaymentTask,
+      drRevisionSubmissionTask,
+      faRevisionSubmissionTask,
       uploadDocumentPage,
       downloadFileByAttachment,
       downloadAllFiles,
       eligibleStatement,
       registeredProject,
+      scoringFormAttachment,
       registeredProjectAttachment,
       designRecognitionSubmission,
+      finalAssessmentSubmission,
       draftRegistrationLetter,
       aboveCheckBuildingTasks,
       aboveFirstPaymentTasks,

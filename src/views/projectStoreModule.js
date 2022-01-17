@@ -150,5 +150,13 @@ export default {
           .catch(error => reject(error))
       })
     },
+    fetchProjectAttachmentsByFileType(ctx, { taskId, fileType }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/engine-rest/new-building/project_attachments/${taskId}/file_type/${fileType}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
   },
 }

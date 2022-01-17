@@ -42,7 +42,7 @@
 
       <!-- collapse -->
       <app-collapse
-        id="d-r-detail"
+        id="f-a-detail"
         accordion
         type="margin"
         class="mt-2"
@@ -52,7 +52,7 @@
           :key="idx"
           :title="criteria.criteria.code"
           :subtitle="translateStatus(criteria)"
-          :header-bg-variant="criteria.criteria.not_available || criteria.approval_status == 1 ? 'warning' : 'primary'"
+          :header-bg-variant="criteria.criteria.not_available ? 'warning' : 'primary'"
         >
           <p v-html="criteria.criteria.description" />
 
@@ -90,7 +90,7 @@
             <b-form-group
               label-cols="4"
               label-cols-lg="2"
-              :label="criteria.criteria.exercise_type == 'score' ? 'Nilai' : 'Nilai yang dipilih *'"
+              :label="criteria.criteria.exercise_type == 'score' ? 'Nilai' : 'Nilai yang dipilih'"
               label-for="input-default"
             >
               <!-- score -->
@@ -103,12 +103,12 @@
 
               <v-select
                 v-if="criteria.criteria.exercise_type == 'max_score'"
-                v-model="criteria.approved_score"
+                v-model="criteria.submitted_score"
                 :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
                 :options="scoreDictionary(criteria)"
                 :reduce="val => val.value"
                 :clearable="false"
-                :disabled="criteria.approval_status != 2"
+                :disabled="criteria.approval_status == 2 || criteria.approval_status == 4"
                 label="text"
                 code="value"
               >
@@ -119,47 +119,35 @@
             </b-form-group>
           </div>
           <!-- scoring -->
-          <!-- status -->
-          <p />
-          <b-col md="6">
-            <h6>Approval</h6>
-            <b-form-group>
-              <v-select
-                v-model="criteria.approval_status"
-                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                :options="statusOptions"
-                :reduce="val => val.value"
-                :clearable="false"
-                :disabled="criteria.approval_status == 1"
-                input-id="approval-status"
-                label="text"
-                code="value"
-              >
-                <template #option="{ text, icon }">
-                  <feather-icon
-                    :icon="icon"
-                    size="16"
-                    class="align-middle mr-50"
-                  />
-                  <span> {{ text }}</span>
-                </template>
-              </v-select>
-            </b-form-group>
-          </b-col>
-          <!-- status -->
 
-          <!-- save button -->
+          <!-- take score -->
           <p />
           <b-col cols="12">
             <b-button
+              v-if="[1,3].includes(criteria.approval_status)"
               v-ripple.400="'rgba(255, 255, 255, 0.15)'"
               variant="primary"
-              @click="reviewCriteria(criteria)"
+              @click="takeScore(criteria)"
             >
-              Save Review
+              Take Point
             </b-button>
           </b-col>
-          <!-- save button -->
+          <!-- take score -->
+
+          <!-- untake score -->
+          <p />
+          <b-col cols="12">
+            <b-button
+              v-if="[2].includes(criteria.approval_status)"
+              v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+              variant="danger"
+              @click="untakeScore(criteria)"
+            >
+              Cancel Take
+            </b-button>
+          </b-col>
+          <!-- untake score -->
+
           <p />
 
           <!-- Spacer -->
@@ -204,13 +192,14 @@
                         {{ doc.value }}
                       </b-link>
                     </template>
-                    <template #cell(action)="rowc">
+                    <template #cell(action)="drow">
                       <feather-icon
-                        :id="`master-row-${rowc.item.id}-delete-icon`"
+                        v-if="drow.item.submitted_at == undefined"
+                        :id="`master-row-${row.item.id}-delete-icon`"
                         icon="Trash2Icon"
                         size="16"
                         class="mx-1"
-                        @click="deleteAttachment(rowc.item)"
+                        @click="deleteAttachment(drow.item)"
                       />
                     </template>
                   </b-table>
@@ -395,7 +384,7 @@ import { quillEditor } from 'vue-quill-editor'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 import AppCollapse from '@core/components/app-collapse/AppCollapse.vue'
 import AppCollapseItem from '@core/components/app-collapse/AppCollapseItemCustom.vue'
-import masterDrStoreModule from './masterDrStoreModule'
+import masterFaStoreModule from './masterFaStoreModule'
 import { codeFormatterCallback, codeRowDetailsSupport } from './code'
 
 export default {
@@ -469,43 +458,14 @@ export default {
         },
       ],
       statusOptions: [
-        // {
-        //   value: 1,
-        //   text: 'Idle',
-        //   icon: 'SearchIcon',
-        //   disabled: true,
-        // },
-        {
-          value: 2,
-          text: 'Under Review',
-          icon: 'SearchIcon',
-          disabled: true,
-        },
-        {
-          value: 3,
-          text: 'Rejected',
-          icon: 'SlashIcon',
-          disabled: false,
-        },
-        {
-          value: 4,
-          text: 'Accepted',
-          icon: 'CheckCircleIcon',
-          disabled: false,
-        },
+        { value: 1, text: 'Idle', icon: 'SearchIcon' },
+        { value: 2, text: 'Under Review', icon: 'SearchIcon' },
+        { value: 3, text: 'Rejected', icon: 'SlashIcon' },
+        { value: 4, text: 'Accepted', icon: 'CheckCircleIcon' },
       ],
       exerciseTypeOptions: [
         { value: 'score', text: 'Max Score' },
         { value: 'prequisite', text: 'Prequisite' },
-      ],
-      comments: [
-        {
-          avatar: '',
-          userFullName: 'Chad Alexander',
-          commentedAt: 'May 24, 2020',
-          commentText:
-            'Telah dilakukan pengamatan pada remote audit site. kriteria dapat diterima, video dapat dilihat di https://drive.google.com/drive/folders/1zasdasdhes',
-        },
       ],
       codeFormatterCallback,
       codeRowDetailsSupport,
@@ -518,14 +478,14 @@ export default {
   computed: {
   },
   setup() {
-    const DR_APP_STORE_MODULE_NAME = 'app-dr'
+    const FA_APP_STORE_MODULE_NAME = 'app-fa'
 
     // Register module
-    if (!store.hasModule(DR_APP_STORE_MODULE_NAME)) store.registerModule(DR_APP_STORE_MODULE_NAME, masterDrStoreModule)
+    if (!store.hasModule(FA_APP_STORE_MODULE_NAME)) store.registerModule(FA_APP_STORE_MODULE_NAME, masterFaStoreModule)
 
     // UnRegister on leave
     onUnmounted(() => {
-      if (store.hasModule(DR_APP_STORE_MODULE_NAME)) store.unregisterModule(DR_APP_STORE_MODULE_NAME)
+      if (store.hasModule(FA_APP_STORE_MODULE_NAME)) store.unregisterModule(FA_APP_STORE_MODULE_NAME)
     })
   },
   methods: {
@@ -607,26 +567,36 @@ export default {
         this.showToast('danger', 'Cannot Delete', 'There is error when delete attachment, contact administrator')
       })
     },
-    reviewCriteria(criteria) {
+    takeScore(criteria) {
       this.isLoading = true
-      const request = new FormData()
-      request.append('task_id', router.currentRoute.params.id)
-      request.append('approval_status', criteria.approval_status)
-      request.append('approved_score', criteria.approved_score)
 
-      const config = {
-        header: {
-          'Content-Type': 'multipart/form-data',
-        },
+      const initCriteriaScoringData = {
+        submittedScore: criteria.submitted_score,
       }
-      this.$http.post(`/engine-rest/new-building/criteria_scoring/${criteria.id}/review`, request, config).then(() => {
+
+      // eslint-disable-next-line
+      const criteriaScoringData = ref(JSON.parse(JSON.stringify(initCriteriaScoringData)))
+
+      this.$http.post(`/engine-rest/new-building/criteria_scoring/${criteria.id}/take_score`, criteriaScoringData.value).then(() => {
         this.isLoading = false
         this.rerenderCriteria()
         this.rerenderScoreParent()
-        this.showToast('success', 'Saved', 'Review successfully')
+        this.showToast('success', 'Saved', 'Take score successfully')
       }).catch(error => {
         this.isLoading = false
-        this.showToast('danger', 'Cannot review', error.response.data.message)
+        this.showToast('danger', 'Cannot Take Score', error.response.data.message)
+      })
+    },
+    untakeScore(criteria) {
+      this.isLoading = true
+      this.$http.post(`/engine-rest/new-building/criteria_scoring/${criteria.id}/untake_score`).then(() => {
+        this.isLoading = false
+        this.rerenderCriteria()
+        this.rerenderScoreParent()
+        this.showToast('success', 'Saved', 'Untake score successfully')
+      }).catch(error => {
+        this.isLoading = false
+        this.showToast('danger', 'Cannot Untake Score', error.response.data.message)
       })
     },
     rerenderScore() {
@@ -644,9 +614,6 @@ export default {
         // eslint-disable-next-line
         return f.value === criteria.approval_status
       })
-      if (filtered[0] === undefined) {
-        return 'Idle'
-      }
       return filtered[0].text
     },
     translateExerciseType(exercise) {
