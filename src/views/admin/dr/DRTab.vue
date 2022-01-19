@@ -45,7 +45,10 @@
             <template #title>
               <b-media no-body>
                 <b-media-aside>
-                  <b-badge variant="light-secondary">
+                  <b-badge
+                    v-b-tooltip.hover
+                    title="Taken Score"
+                    variant="light-secondary">
                     {{ exercise.submitted_score + exercise.approved_score }}
                   </b-badge>
                 </b-media-aside>

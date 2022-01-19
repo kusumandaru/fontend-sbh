@@ -43,12 +43,54 @@
             <!-- title -->
             <!-- :icon="exercise.icon" -->
             <template #title>
-              <b-badge variant="light-secondary">
-                {{ exercise.submitted_score + exercise.approved_score }}
-              </b-badge>
-              &nbsp;
-              <span class="font-weight-bold">{{ exercise.exercise.code }} - {{ exercise.exercise.name }}</span>
+              <b-media no-body>
+                <b-media-aside>
+                  <b-badge
+                    v-b-tooltip.hover
+                    title="Taken Score"
+                    variant="light-secondary"
+                  >
+                    {{ exercise.submitted_score + exercise.approved_score }}
+                  </b-badge>
+                </b-media-aside>
+                <b-media-body>
+                  <span class="   font-weight-bold">{{ exercise.exercise.code }} - {{ exercise.exercise.name }}</span>
+                </b-media-body>
+              </b-media>
+              <div
+                class="font-weight-bolder"
+                style="margin-left: auto; margin-right: 0"
+              >
+                <b-avatar
+                  v-if="exerciseCount(exercise, 2) > 0"
+                  v-b-tooltip.hover
+                  class="pull-up"
+                  size="sm"
+                  title="Under Review"
+                  :text="exerciseCountString(exercise, 2)"
+                  variant="info"
+                />
+                <b-avatar
+                  v-if="exerciseCount(exercise, 4) > 0"
+                  v-b-tooltip.hover
+                  class="pull-up"
+                  size="sm"
+                  title="Approved"
+                  :text="exerciseCountString(exercise, 4)"
+                  variant="success"
+                />
+                <b-avatar
+                  v-if="exerciseCount(exercise, 3) > 0"
+                  v-b-tooltip.hover
+                  class="pull-up"
+                  size="sm"
+                  title="Rejected"
+                  :text="exerciseCountString(exercise, 3)"
+                  variant="danger"
+                />
+              </div>
             </template>
+
             <d-r-detail
               :key="criteriaKey"
               :exercise="exercise"
@@ -81,6 +123,11 @@ import {
   BAlert,
   BImg,
   BBadge,
+  BMedia,
+  BMediaAside,
+  BMediaBody,
+  BAvatar,
+  VBTooltip,
 } from 'bootstrap-vue'
 import {
   ref, onUnmounted,
@@ -97,7 +144,14 @@ export default {
     BAlert,
     BImg,
     BBadge,
+    BMedia,
+    BMediaAside,
+    BMediaBody,
+    BAvatar,
     DRDetail,
+  },
+  directives: {
+    'b-tooltip': VBTooltip,
   },
   props: {
     rerenderScoreParent: {
@@ -181,6 +235,17 @@ export default {
         return f.value === evaluation.code
       })
       return filtered[0].text
+    },
+    exerciseCount(exercise, approvalStatus) {
+      // eslint-disable-next-line arrow-body-style
+      const underReviews = exercise.criterias.filter(c => {
+        // eslint-disable-next-line
+        return c.approval_status === approvalStatus
+      })
+      return underReviews.length
+    },
+    exerciseCountString(exercise, approvalStatus) {
+      return this.exerciseCount(exercise, approvalStatus).toString()
     },
   },
 }
