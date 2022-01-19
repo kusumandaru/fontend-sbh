@@ -48,7 +48,8 @@
                   <b-badge
                     v-b-tooltip.hover
                     title="Taken Score"
-                    variant="light-secondary">
+                    variant="light-secondary"
+                  >
                     {{ exercise.submitted_score + exercise.approved_score }}
                   </b-badge>
                 </b-media-aside>
@@ -62,8 +63,8 @@
               >
                 <b-avatar
                   v-if="exerciseCount(exercise, 2) > 0"
-                  size="sm"
                   v-b-tooltip.hover
+                  size="sm"
                   class="pull-up"
                   title="Under Review"
                   :text="exerciseCountString(exercise, 2)"
@@ -71,8 +72,8 @@
                 />
                 <b-avatar
                   v-if="exerciseCount(exercise, 4) > 0"
-                  size="sm"
                   v-b-tooltip.hover
+                  size="sm"
                   class="pull-up"
                   title="Approved"
                   :text="exerciseCountString(exercise, 4)"
@@ -80,8 +81,8 @@
                 />
                 <b-avatar
                   v-if="exerciseCount(exercise, 3) > 0"
-                  size="sm"
                   v-b-tooltip.hover
+                  size="sm"
                   class="pull-up"
                   title="Rejected"
                   :text="exerciseCountString(exercise, 3)"

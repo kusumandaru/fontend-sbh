@@ -352,7 +352,10 @@
         xl="3"
         class="project-actions"
       >
-        <b-card bg-variant="secondary" text-variant="white">
+        <b-card
+          bg-variant="secondary"
+          text-variant="white"
+        >
           <b-card-title class="text-white text-center">
             {{ this.projectData.task_name }}
           </b-card-title>
@@ -466,7 +469,7 @@
             block
             @click="finalAssessmentEvaluationAssessment"
           >
-           Final Assessment Evaluation Assessment
+            Final Assessment Evaluation Assessment
           </b-button>
 
           <!-- Button: Print -->
