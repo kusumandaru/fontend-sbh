@@ -45,7 +45,11 @@
             <template #title>
               <b-media no-body>
                 <b-media-aside>
-                  <b-badge variant="light-secondary">
+                  <b-badge
+                    v-b-tooltip.hover
+                    title="Taken Score"
+                    variant="light-secondary"
+                  >
                     {{ exercise.submitted_score + exercise.approved_score }}
                   </b-badge>
                 </b-media-aside>
@@ -59,28 +63,28 @@
               >
                 <b-avatar
                   v-if="exerciseCount(exercise, 2) > 0"
-                  size="sm"
                   v-b-tooltip.hover
                   class="pull-up"
+                  size="sm"
                   title="Under Review"
                   :text="exerciseCountString(exercise, 2)"
                   variant="info"
                 />
                 <b-avatar
                   v-if="exerciseCount(exercise, 4) > 0"
-                  size="sm"
                   v-b-tooltip.hover
                   class="pull-up"
+                  size="sm"
                   title="Approved"
                   :text="exerciseCountString(exercise, 4)"
                   variant="success"
                 />
                 <b-avatar
                   v-if="exerciseCount(exercise, 3) > 0"
-                  size="sm"
                   v-b-tooltip.hover
                   class="pull-up"
                   title="Rejected"
+                  size="sm"
                   :text="exerciseCountString(exercise, 3)"
                   variant="danger"
                 />

@@ -40,4 +40,14 @@ export default [
     name: 'admin-project-fa-assessment',
     component: () => import('@/views/admin/fa/FAList.vue'),
   },
+  {
+    path: '/admin/project/dr_evaluation_assessment/:id',
+    name: 'admin-project-dr-evaluation-assessment',
+    component: () => import('@/views/admin/project/DREvaluationAssessment.vue'),
+  },
+  {
+    path: '/admin/project/fa_evaluation_assessment/:id',
+    name: 'admin-project-fa-evaluation-assessment',
+    component: () => import('@/views/admin/project/FAEvaluationAssessment.vue'),
+  },
 ]

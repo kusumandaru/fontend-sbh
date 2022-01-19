@@ -738,6 +738,8 @@ export default {
     const agreementLetterDocument = ref(null)
     const drRevisionDocument = ref(null)
     const faRevisionDocument = ref(null)
+    const drEvaluationDocument = ref(null)
+    const faEvaluationDocument = ref(null)
 
     const PROJECT_APP_STORE_MODULE_NAME = 'app-project'
 
@@ -765,6 +767,8 @@ export default {
     const revisionAttachments = ref({
       dr_revision_submission: drRevisionDocument,
       fa_revision_submission: faRevisionDocument,
+      dr_evaluation_assessment: drEvaluationDocument,
+      fa_evaluation_assessment: faEvaluationDocument,
     })
 
     const paymentProps = reactive({

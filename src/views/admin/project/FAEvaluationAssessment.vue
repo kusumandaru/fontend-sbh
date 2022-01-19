@@ -1,146 +1,47 @@
 <template>
-  <validation-observer ref="agreementFirstPaymentRules">
+  <validation-observer ref="faEvaluationAssessmentRules">
     <b-form @submit.prevent>
-      <b-row
-        v-if="projectData"
-        class="project-preview"
-      >
-        <!-- Col: Left (project Container) -->
-        <b-col
-          cols="12"
-          xl="12"
-          md="12"
-        >
-          <!-- Header -->
-          <b-card
-            no-body
-            class="project-preview-card"
-          >
-            <b-card-body class="project-padding pb-0">
-              <div class="d-flex justify-content-between flex-md-row flex-column project-spacing mt-0">
-                <!-- Header: Left Content -->
-                <div>
-                  <div class="logo-wrapper">
-                    <h3 class="text-primary project-logo">
-                      {{ projectData.building_name }}
-                    </h3>
-                  </div>
-                  <p class="card-text mb-25">
-                    {{ projectData.building_address }}
-                  </p>
-                  <p class="card-text mb-25">
-                    {{ projectData.city_name }}
-                  </p>
-                  <p class="card-text mb-25">
-                    {{ projectData.province_name }}
-                  </p>
-                  <p class="card-text mb-25">
-                    {{ projectData.postal_code }}
-                  </p>
-                  <p class="card-text mb-0">
-                    <feather-icon icon="PhoneIcon" />
-                    Telephone: {{ projectData.telephone }}
-                  </p>
-                  <p class="card-text mb-0">
-                    <feather-icon icon="PhoneIcon" />
-                    Handphone: {{ projectData.handphone }}
-                  </p>
-                  <p class="card-text mb-0">
-                    <feather-icon icon="MailIcon" />
-                    Email: {{ projectData.email }}
-                  </p>
-                  <p class="card-text mb-0">
-                    <feather-icon icon="PrinterIcon" />
-                    Faximile: {{ projectData.faximile }}
-                  </p>
-                </div>
+      <project-header :key="projectHeaderKey" />
 
-                <!-- Header: Right Content -->
-                <div class="mt-md-0 mt-2">
-                  <h4 class="project-title">
-                    Project ID
-                    <span class="project-number">#{{ projectData.task_id }}</span>
-                  </h4>
-                  <div class="project-date-wrapper">
-                    <p class="project-date-title">
-                      Date Created:
-                    </p>
-                    <p class="project-date">
-                      {{ projectData.created_at | moment("dddd, MMMM Do YYYY") }}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </b-card-body>
-          </b-card>
-        </b-col>
-      </b-row>
       <b-row>
-        <!--Attendance Document -->
+        <!--FA Evaluation Assessment Document -->
         <b-col md="12">
           <b-form-group>
-            <label>Laporan Kehadiran / Absensi</label>
+            <label>Berita Acara Sidang Evaluasi Final Assessment</label>
             <validation-provider
               #default="{ errors }"
-              name="Laporan Kehadiran"
-            >
-              <b-form-file
-                v-model.lazy="attendanceDocument"
-                placeholder="(Optional) Upload data absensi bila diperlukan..."
-                drop-placeholder="Drop file here..."
-              />
-              <small class="text-danger">{{ errors[0] }}</small>
-              <b-card-text class="my-1">
-                Selected file: <strong>{{ attendanceDocument ? attendanceDocument.name : '' }}</strong>
-              </b-card-text>
-            </validation-provider>
-            <b-card-text
-              v-if="projectData.attendance_document"
-              class="mb-0"
-            >
-              <b-button
-                v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-                variant="flat-primary"
-                @click="downloadFile('attendance_document')"
-              >
-                <feather-icon icon="ArchiveIcon" />
-                Download Laporan Kehadiran / Absensi
-              </b-button>
-            </b-card-text>
-          </b-form-group>
-        </b-col>
-
-        <!--Workshop Report Document -->
-        <b-col md="12">
-          <b-form-group>
-            <label>Laporan Workshop</label>
-            <validation-provider
-              #default="{ errors }"
-              name="Laporan Workshop"
+              name="Berita Acara Sidang Evaluasi Final Assessment"
               rules="required"
             >
               <b-form-file
-                v-model.lazy="workshopReportDocument"
-                placeholder="(Mandatory) Upload laporan workshop bila diperlukan..."
+                v-model="files"
+                placeholder="(Mandatory) Upload dokumen..."
                 drop-placeholder="Drop file here..."
+                multiple
               />
               <small class="text-danger">{{ errors[0] }}</small>
-              <b-card-text class="my-1">
-                Selected file: <strong>{{ workshopReportDocument ? workshopReportDocument.name : '' }}</strong>
-              </b-card-text>
             </validation-provider>
             <b-card-text
-              v-if="projectData.workshop_report_document"
+              v-if="attachmentExist"
               class="mb-0"
             >
-              <b-button
-                v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-                variant="flat-primary"
-                @click="downloadFile('workshop_report_document')"
-              >
-                <feather-icon icon="ArchiveIcon" />
-                Download Perjanjian Kerjasama
-              </b-button>
+              <b-card no-body>
+                <b-table
+                  responsive
+                  :items="projectAttachments"
+                  :fields="attachmentFields"
+                  class="mb-0"
+                >
+                  <template #cell(filename)="doc">
+                    <b-link
+                      class="font-weight-bold d-block text-nowrap"
+                      @click="getAttachment(doc.item)"
+                    >
+                      {{ doc.value }}
+                    </b-link>
+                  </template>
+                </b-table>
+              </b-card>
             </b-card-text>
           </b-form-group>
         </b-col>
@@ -150,7 +51,7 @@
           <b-button
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             type="submit"
-            variant="secondary"
+            variant="primary"
             class="mr-1"
             :disabled="isLoading"
             @click="submitProject"
@@ -165,7 +66,7 @@
           <b-button
             v-ripple.400="'rgba(186, 191, 199, 0.15)'"
             type="reset"
-            variant="outline-secondary"
+            variant="outline-primary"
             @click="reset"
           >
             Reset
@@ -197,18 +98,19 @@
 import {
   BCardText,
   BRow,
-  BCard,
-  BCardBody,
   BCol,
   BFormFile,
-  BForm,
   BFormGroup,
+  BForm,
   BButton,
   BModal,
   BSpinner,
+  BTable,
+  BLink,
+  BCard,
 } from 'bootstrap-vue'
 import {
-  ref, onUnmounted,
+  ref, onUnmounted, reactive,
 } from '@vue/composition-api'
 import router from '@/router'
 import store from '@/store'
@@ -219,35 +121,38 @@ import {
   required, email, confirmed, url, between, alpha, integer, password, min, digits, alphaDash, length,
 } from '@validations'
 import projectStoreModule from '@/views/projectStoreModule'
+import ProjectHeader from './ProjectHeader.vue'
 
 export default {
   components: {
     BCardText,
     BRow,
-    BCard,
-    BCardBody,
     BCol,
     BFormFile,
-    BForm,
     BFormGroup,
+    BForm,
     BButton,
     BModal,
     BSpinner,
+    BTable,
+    BLink,
+    BCard,
     ValidationObserver,
     ValidationProvider,
+    ProjectHeader,
   },
   directives: {
     Ripple,
   },
   data() {
     return {
-      attendanceDocument: null,
-      workshopReportDocument: null,
+      isLoading: false,
+      files: null,
+      projectHeaderKey: 0,
       maxChar: 200,
       successShow: false,
       result: {},
       resultId: null,
-      isLoading: false,
       options: {
         number: {
           numeral: true,
@@ -284,11 +189,27 @@ export default {
         length,
         alphaDash,
       },
+      attachmentFields: [
+        { key: 'filename', label: 'Document Name' },
+        { key: 'created_at', label: 'Created At' },
+        'action',
+      ],
     }
   },
   setup() {
     const projectData = ref({})
+    const faEvaluationAssessmentDocument = ref({})
+    const projectAttachments = ref(JSON.parse('[]'))
+
     const PROJECT_APP_STORE_MODULE_NAME = 'app-project'
+    const selectedDesignRecognition = reactive({
+      id: '',
+      name: '',
+    })
+    const designRecognitionOption = reactive([
+      { id: 'true', name: 'Need Final Assessment' },
+      { id: 'false', name: 'Skip Final Assessment' },
+    ])
 
     // Register module
     if (!store.hasModule(PROJECT_APP_STORE_MODULE_NAME)) store.registerModule(PROJECT_APP_STORE_MODULE_NAME, projectStoreModule)
@@ -301,6 +222,8 @@ export default {
     store.dispatch('app-project/fetchProject', { id: router.currentRoute.params.id })
       .then(response => {
         projectData.value = response.data
+        selectedDesignRecognition.id = response.data.design_recognition.toString()
+        selectedDesignRecognition.name = response.data.design_recognition ? 'Need Final Assessment' : 'Skip Final Assessment'
       })
       .catch(error => {
         if (error.response.status === 404) {
@@ -311,10 +234,20 @@ export default {
         }
       })
 
-    const downloadFile = fileName => {
-      store.dispatch('app-project/downloadLink', {
-        id: projectData.value.task_id,
-        filename: fileName,
+    store.dispatch('app-project/fetchProjectAttachmentsByFileType', { taskId: router.currentRoute.params.id, fileType: 'fa_evaluation_assessment' })
+      .then(response => {
+        projectAttachments.value = response.data
+      })
+      .catch(error => {
+        if (error.response.status === 404) {
+          projectAttachments.value = undefined
+        }
+      })
+
+    const downloadFileByAttachment = attachmentId => {
+      store.dispatch('app-project/downloadLinkByAttachmentId', {
+        taskId: projectData.value.task_id,
+        attachmentId,
       })
         .then(response => {
           window.open(response.data.url)
@@ -331,10 +264,20 @@ export default {
 
     return {
       projectData,
-      downloadFile,
+      faEvaluationAssessmentDocument,
+      downloadFileByAttachment,
+      selectedDesignRecognition,
+      designRecognitionOption,
+      projectAttachments,
     }
   },
   computed: {
+    validationAgreementLetter() {
+      return this.projectData.agreement_letter !== undefined
+    },
+    attachmentExist() {
+      return Array.isArray(this.projectAttachments) && this.projectAttachments.length > 0
+    },
   },
   methods: {
     reset() {
@@ -352,20 +295,24 @@ export default {
       })
     },
     submitProject() {
-      this.$refs.agreementFirstPaymentRules.validate().then(success => {
+      this.$refs.faEvaluationAssessmentRules.validate().then(success => {
         if (success) {
+          if (this.files === undefined) {
+            return
+          }
+
           this.isLoading = true
           const request = new FormData()
+          for (let i = 0; i < this.files.length; i += 1) {
+            request.append('files', this.files[i])
+          }
           request.append('task_id', router.currentRoute.params.id)
-          request.append('attendance_document', this.attendanceDocument)
-          request.append('workshop_report_document', this.workshopReportDocument)
-
           const config = {
             header: {
               'Content-Type': 'multipart/form-data',
             },
           }
-          this.$http.post('/engine-rest/new-building/workshop', request, config).then(res => {
+          this.$http.post('/engine-rest/new-building/fa_evaluation_assessment', request, config).then(res => {
             this.result = JSON.parse(JSON.stringify(res.data))
             this.successShow = true
             this.isLoading = false
@@ -379,8 +326,25 @@ export default {
         }
       })
     },
+    getAttachment(attachment) {
+      this.isLoading = true
+      this.$http.get(`/engine-rest/new-building/assessment_attachment/${attachment.id}`).then(response => {
+        window.open(response.data.url)
+        this.isLoading = false
+      }).catch(() => {
+        this.isLoading = false
+        this.showToast('danger', 'Cannot Load Attachment', 'There is error when load attachment, contact administrator')
+      })
+    },
     gotoIndex() {
       router.push({ name: 'admin-project-list' })
+    },
+    stringToBoolean(value) {
+      switch (value.toLowerCase().trim()) {
+        case 'true': case 'yes': case '1': return true
+        case 'false': case 'no': case '0': case null: return false
+        default: return Boolean(value)
+      }
     },
   },
 }
@@ -392,6 +356,7 @@ export default {
 </style>
 
 <style lang="scss">
+@import '@core/scss/vue/libs/vue-select.scss';
 @media print {
 
   // Global Styles

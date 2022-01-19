@@ -421,9 +421,9 @@
             Workshop and Consultation Submission
           </b-button>
 
-          <!-- Button: Design Recognition-->
+          <!-- Button: Design Recognition Review-->
           <b-button
-            v-if="designRecognitionShow"
+            v-if="designRecognitionReviewShow"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             variant="success"
             class="mb-75"
@@ -433,9 +433,21 @@
             Design Recognition Review
           </b-button>
 
-          <!-- Button: Final Assessment-->
+          <!-- Button: Design Recognition Evaluation Assessment-->
           <b-button
-            v-if="finalAssessmentShow"
+            v-if="designRecognitionEvaluationAssessmentShow"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="success"
+            class="mb-75"
+            block
+            @click="designRecognitionEvaluationAssessment"
+          >
+            Design Recognition Evaluation Assessment
+          </b-button>
+
+          <!-- Button: Final Assessment Review-->
+          <b-button
+            v-if="finalAssessmentReviewShow"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             variant="success"
             class="mb-75"
@@ -443,6 +455,18 @@
             @click="finalAssessmentReview"
           >
             Final Assessment Review
+          </b-button>
+
+          <!-- Button:Final Assessment Evaluation Assessment-->
+          <b-button
+            v-if="finalAssessmentEvaluationAssessmentShow"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="success"
+            class="mb-75"
+            block
+            @click="finalAssessmentEvaluationAssessment"
+          >
+           Final Assessment Evaluation Assessment
           </b-button>
 
           <!-- Button: Print -->
@@ -533,11 +557,17 @@ export default {
     workshopShow() {
       return this.workshopTasks.includes(this.projectData.definition_key)
     },
-    designRecognitionShow() {
+    designRecognitionReviewShow() {
       return ['design-recognition-review'].includes(this.projectData.definition_key)
     },
-    finalAssessmentShow() {
+    designRecognitionEvaluationAssessmentShow() {
+      return ['design-recognition-evaluation-assessment'].includes(this.projectData.definition_key)
+    },
+    finalAssessmentReviewShow() {
       return ['final-assessment-review'].includes(this.projectData.definition_key)
+    },
+    finalAssessmentEvaluationAssessmentShow() {
+      return ['final-assessment-evaluation-assessment'].includes(this.projectData.definition_key)
     },
     taskDescriptionBody() {
       // eslint-disable-next-line
@@ -570,6 +600,8 @@ export default {
     const agreementLetterDocument = ref(null)
     const drRevisionDocument = ref(null)
     const faRevisionDocument = ref(null)
+    const drEvaluationDocument = ref(null)
+    const faEvaluationDocument = ref(null)
     const claim = ref(null)
     const PROJECT_APP_STORE_MODULE_NAME = 'app-project'
 
@@ -597,6 +629,8 @@ export default {
     const revisionAttachments = ref({
       dr_revision_submission: drRevisionDocument,
       fa_revision_submission: faRevisionDocument,
+      dr_evaluation_assessment: drEvaluationDocument,
+      fa_evaluation_assessment: faEvaluationDocument,
     })
 
     const paymentProps = reactive({
@@ -767,8 +801,16 @@ export default {
       router.push({ name: 'admin-project-dr-assessment', params: { id: router.currentRoute.params.id } })
     }
 
+    const designRecognitionEvaluationAssessment = () => {
+      router.push({ name: 'admin-project-dr-evaluation-assessment', params: { id: router.currentRoute.params.id } })
+    }
+
     const finalAssessmentReview = () => {
       router.push({ name: 'admin-project-fa-assessment', params: { id: router.currentRoute.params.id } })
+    }
+
+    const finalAssessmentEvaluationAssessment = () => {
+      router.push({ name: 'admin-project-fa-evaluation-assessment', params: { id: router.currentRoute.params.id } })
     }
 
     const adminTasks = ['check-registration-project', 'check-document-building', 'check-first-payment', 'check-second-payment', 'check-third-payment', 'check-third-fa', 'design-recognition-trial', 'design-recognition-revision-review', 'final-assessment-trial', 'final-assessment-revision-review']
@@ -792,7 +834,9 @@ export default {
       downloadAllFiles,
       registeredProject,
       designRecognitionReview,
+      designRecognitionEvaluationAssessment,
       finalAssessmentReview,
+      finalAssessmentEvaluationAssessment,
     }
   },
   methods: {
