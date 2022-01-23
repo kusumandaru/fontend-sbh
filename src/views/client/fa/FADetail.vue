@@ -107,10 +107,10 @@
                 :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
                 :options="scoreDictionary(criteria)"
                 :reduce="val => val.value"
-                :clearable="false"
                 :disabled="criteria.approval_status == 2 || criteria.approval_status == 4"
                 label="text"
                 code="value"
+                :clearable="false"
               >
                 <template #option="{ text }">
                   <span> {{ text }}</span>

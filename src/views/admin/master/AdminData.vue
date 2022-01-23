@@ -58,6 +58,30 @@
               <tr>
                 <th class="pb-50">
                   <feather-icon
+                    icon="UserIcon"
+                    class="mr-75"
+                  />
+                  <span class="font-weight-bold">Default Design Recognition Level</span>
+                </th>
+                <td class="pb-50">
+                  {{ drLevel.name }}
+                </td>
+              </tr>
+              <tr>
+                <th class="pb-50">
+                  <feather-icon
+                    icon="UserIcon"
+                    class="mr-75"
+                  />
+                  <span class="font-weight-bold">Default Final Assessment Level</span>
+                </th>
+                <td class="pb-50">
+                  {{ faLevel.name }}
+                </td>
+              </tr>
+              <tr>
+                <th class="pb-50">
+                  <feather-icon
                     icon="UserCheckIcon"
                     class="mr-75"
                   />
@@ -307,6 +331,17 @@ export default {
       master_vendor_id: '',
     }
     const drTemplate = ref(JSON.parse(JSON.stringify(blankDrTemplate)))
+
+    const blankDrLevel = {
+      name: '',
+    }
+    const blankFaLevel = {
+      name: '',
+    }
+
+    const drLevel = ref(JSON.parse(JSON.stringify(blankDrLevel)))
+    const faLevel = ref(JSON.parse(JSON.stringify(blankFaLevel)))
+
     const blankFaTemplate = {
       project_version: '',
       project_type: '',
@@ -354,6 +389,8 @@ export default {
       adminData,
       drTemplate,
       faTemplate,
+      drLevel,
+      faLevel,
       signatureImage,
       isLoading,
       updateAdminData,
@@ -366,6 +403,8 @@ export default {
           this.adminData = res.data
           this.retrieveFaTemplate()
           this.retrieveDrTemplate()
+          this.retrieveFaLevel()
+          this.retrieveDrLevel()
         })
     },
 
@@ -386,6 +425,18 @@ export default {
       this.$http.get(`engine-rest/master-project/templates/${this.adminData.dr_template_id}`)
         .then(res => {
           this.drTemplate = res.data
+        })
+    },
+    retrieveFaLevel() {
+      this.$http.get(`engine-rest/master-project/levels/${this.adminData.default_fa_level}`)
+        .then(res => {
+          this.faLevel = res.data
+        })
+    },
+    retrieveDrLevel() {
+      this.$http.get(`engine-rest/master-project/levels/${this.adminData.default_dr_level}`)
+        .then(res => {
+          this.drLevel = res.data
         })
     },
     /* eslint-disable object-shorthand */
