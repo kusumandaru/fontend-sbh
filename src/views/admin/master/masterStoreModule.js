@@ -134,6 +134,14 @@ export default {
           .catch(error => reject(error))
       })
     },
+    fetchLevels() {
+      return new Promise((resolve, reject) => {
+        axios
+          .get('/engine-rest/master-project/levels')
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
     addTemplate(ctx, templateData) {
       return new Promise((resolve, reject) => {
         axios

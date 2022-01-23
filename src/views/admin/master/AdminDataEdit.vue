@@ -83,6 +83,60 @@
           </b-form-group>
         </b-col>
 
+        <!-- design recognition level -->
+        <b-col cols="12">
+          <b-form-group
+            label="Design Recognition Default Level"
+            label-for="design_recognition_level"
+          >
+            <validation-provider
+              #default="{ errors }"
+              name="Design Recognition DefaultLevel"
+              rules="required"
+            >
+              <v-select
+                v-model="adminData.default_dr_level"
+                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                :options="levelOptions"
+                :reduce="val => val.id"
+                :clearable="false"
+                :required="!adminData.default_dr_level"
+                input-id="dr-level"
+                label="name"
+                code="id"
+              />
+              <small class="text-danger">{{ errors[0] }}</small>
+            </validation-provider>
+          </b-form-group>
+        </b-col>
+
+        <!-- final assessment level -->
+        <b-col cols="12">
+          <b-form-group
+            label="Final Assessment Defailt Level"
+            label-for="final)assessment_level"
+          >
+            <validation-provider
+              #default="{ errors }"
+              name="Final Assessment Default Level"
+              rules="required"
+            >
+              <v-select
+                v-model="adminData.default_fa_level"
+                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                :options="levelOptions"
+                :reduce="val => val.id"
+                :clearable="false"
+                :required="!adminData.default_fa_level"
+                input-id="fa-level"
+                label="name"
+                code="id"
+              />
+              <small class="text-danger">{{ errors[0] }}</small>
+            </validation-provider>
+          </b-form-group>
+        </b-col>
+
         <!--Manager Signature -->
         <b-col md="12">
           <b-form-group>
@@ -396,10 +450,13 @@ export default {
       scoring_form: '',
       dr_template_id: '',
       fa_template_id: '',
+      default_dr_level: '',
+      default_fa_level: '',
     }
     const adminData = ref(JSON.parse(JSON.stringify(blankAdminData)))
     const drTemplateOptions = ref(JSON.parse('[]'))
     const faTemplateOptions = ref(JSON.parse('[]'))
+    const levelOptions = ref(JSON.parse('[]'))
     const PROJECT_APP_STORE_MODULE_NAME = 'app-project'
 
     // Register module
@@ -443,6 +500,16 @@ export default {
         }
       })
 
+    store.dispatch('app-project/fetchLevels')
+      .then(response => {
+        levelOptions.value = response.data
+      })
+      .catch(error => {
+        if (error.response.status === 404) {
+          levelOptions.value = undefined
+        }
+      })
+
     const downloadMasterFile = fileName => {
       store.dispatch('app-project/downloadMasterLink', {
         filename: fileName,
@@ -473,6 +540,7 @@ export default {
       adminData,
       drTemplateOptions,
       faTemplateOptions,
+      levelOptions,
       updateAdminData,
       showAdminData,
     }
@@ -503,6 +571,8 @@ export default {
           request.append('scoring_form', this.scoringForm)
           request.append('dr_template_id', this.adminData.dr_template_id)
           request.append('fa_template_id', this.adminData.fa_template_id)
+          request.append('default_dr_level', this.adminData.default_dr_level)
+          request.append('default_fa_level', this.adminData.default_fa_level)
 
           const config = {
             header: {

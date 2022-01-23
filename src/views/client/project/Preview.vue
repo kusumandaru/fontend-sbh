@@ -378,10 +378,10 @@
           text-variant="white"
         >
           <b-card-title class="text-white text-center">
-            {{ this.projectData.task_name }}
+            {{ projectData.task_name }}
           </b-card-title>
           <b-card-text class="text-center">
-            <span>{{ this.taskDescriptionBody }}</span>
+            <span>{{ taskDescriptionBody }}</span>
           </b-card-text>
         </b-card>
         <b-card>

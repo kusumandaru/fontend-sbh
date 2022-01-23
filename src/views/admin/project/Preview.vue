@@ -357,10 +357,10 @@
           text-variant="white"
         >
           <b-card-title class="text-white text-center">
-            {{ this.projectData.task_name }}
+            {{ projectData.task_name }}
           </b-card-title>
           <b-card-text class="text-center">
-            <span>{{ this.taskDescriptionBody }}</span>
+            <span>{{ taskDescriptionBody }}</span>
           </b-card-text>
         </b-card>
         <b-card>
@@ -816,7 +816,7 @@ export default {
       router.push({ name: 'admin-project-fa-evaluation-assessment', params: { id: router.currentRoute.params.id } })
     }
 
-    const adminTasks = ['check-registration-project', 'check-document-building', 'check-first-payment', 'check-second-payment', 'check-third-payment', 'check-third-fa', 'design-recognition-trial', 'design-recognition-revision-review', 'final-assessment-trial', 'final-assessment-revision-review']
+    const adminTasks = ['check-registration-project', 'check-document-building', 'check-first-payment', 'check-second-payment', 'check-third-payment', 'check-third-payment-fa', 'design-recognition-trial', 'design-recognition-revision-review', 'final-assessment-trial', 'final-assessment-revision-review']
     const agreementTasks = ['agreement']
     const workshopTasks = ['workshop']
 
