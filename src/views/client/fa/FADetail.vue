@@ -203,8 +203,8 @@
                       />
                     </template>
                   </b-table>
-                  <b-row>
-                    <b-col md="10">
+                  <b-row v-if="criteria.approval_status !== 4">
+                    <b-col md="9">
                       <b-form-file
                         v-model="row.item.files"
                         placeholder="Choose a file or drop it here..."
@@ -299,6 +299,7 @@
 
           <!-- Leave a Blog Comment -->
           <b-col
+            v-if="criteria.approval_status !== 4"
             cols="12"
             class="mt-2"
           >
