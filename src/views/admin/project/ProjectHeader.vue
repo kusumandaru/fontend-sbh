@@ -9,6 +9,18 @@
       xl="12"
       md="12"
     >
+      <!-- Project Name -->
+      <b-card
+        bg-variant="primary"
+        text-variant="white"
+      >
+        <b-card-title class="text-white text-center">
+          {{ projectData.task_name }}
+        </b-card-title>
+        <b-card-text class="text-center">
+          <span>{{ taskDescriptionBody }}</span>
+        </b-card-text>
+      </b-card>
       <!-- Header -->
       <b-card
         no-body
@@ -79,6 +91,8 @@
 import {
   BCard,
   BCardBody,
+  BCardTitle,
+  BCardText,
   BRow,
   BCol,
 } from 'bootstrap-vue'
@@ -94,6 +108,8 @@ export default {
   components: {
     BCard,
     BCardBody,
+    BCardTitle,
+    BCardText,
     BRow,
     BCol,
   },
@@ -110,7 +126,24 @@ export default {
       result: {},
       resultId: null,
       isLoading: false,
+      taskDescription: [
+        { task: 'design-recognition-trial', role: 'admin', title: 'Proses approval DR' },
+        { task: 'design-recognition-trial-revision', role: 'client', title: 'Revisi DR setelah sidang' },
+      ],
     }
+  },
+  computed: {
+    taskDescriptionBody() {
+      // eslint-disable-next-line
+      const filtered = this.taskDescription.filter(f => { 
+        // eslint-disable-next-line
+        return f.task === this.projectData.definition_key
+      })
+      if (filtered[0] !== undefined) {
+        return filtered[0].title
+      }
+      return ''
+    },
   },
   setup() {
     const projectData = ref({})
