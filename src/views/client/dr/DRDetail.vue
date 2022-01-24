@@ -299,9 +299,9 @@
 
           <!-- Leave a Blog Comment -->
           <b-col
+            v-if="criteria.approval_status !== 4"
             cols="12"
             class="mt-2"
-            v-if="criteria.approval_status !== 4"
           >
             <h6 class="section-label">
               Leave a Comment
