@@ -64,6 +64,18 @@
           <span class="text-nowrap">{{ props.row.fullName }}</span>
         </div>
 
+        <!-- Column: Role -->
+        <span v-else-if="props.column.field === 'role'">
+          <b-badge :variant="roleVariant(props.row.task_definition_key)">
+            {{ roleByTaskID(props.row.task_definition_key) }}
+          </b-badge>
+        </span>
+
+        <!-- Column: Read -->
+        <span v-else-if="props.column.field === 'read'">
+          <feather-icon :icon="readIcon(props.row.read)" class="mr-25" />
+        </span>
+
         <!-- Column: Status -->
         <span v-else-if="props.column.field === 'status'">
           <b-badge :variant="statusVariant(props.row.status)">
@@ -189,6 +201,10 @@ export default {
       dir: false,
       columns: [
         {
+          label: 'Role',
+          field: 'role',
+        },
+        {
           label: 'Process Name',
           field: 'name',
           filterOptions: {
@@ -290,6 +306,86 @@ export default {
       // eslint-disable-next-line vue/no-side-effects-in-computed-properties
       this.dir = false
       return this.dir
+    },
+    readIcon() {
+      const statusIcon = {
+        /* eslint-disable key-spacing */
+        true: 'CheckSquareIcon',
+        false: 'SquareIcon',
+        /* eslint-enable key-spacing */
+      }
+
+      return icon => statusIcon[icon]
+    },
+    roleByTaskID() {
+      const roleTask = {
+        /* eslint-disable key-spacing */
+        'fill-registration-project': 'client',
+        'check-registration-project': 'admin',
+        'fill-document-building': 'client',
+        'check-document-building': 'admin',
+        agreement: 'admin',
+        'first-payment': 'client',
+        'check-first-payment': 'admin',
+        workshop: 'admin',
+        'second-payment': 'client',
+        'check-second-payment': 'admin',
+        'design-recognition-submission': 'client',
+        'third-payment': 'client',
+        'check-third-payment': 'client',
+        'design-recognition-review': 'admin',
+        'design-recognition-evaluation-assessment': 'admin',
+        'design-recognition-trial': 'admin',
+        'design-recognition-trial-revision': 'client',
+        'design-recognition-revision-review': 'admin',
+        'design-recognition-letter': 'admin',
+        'final-assessment-submission': 'client',
+        'third-payment-fa': 'client',
+        'check-third-payment-fa': 'admin',
+        'final-assessment-review': 'admin',
+        'final-assessment-evaluation-assessment': 'admin',
+        'final-assessment-trial-revision': 'client',
+        'final-assessment-revision-review': 'admin',
+        'final-assessment-letter': 'client',
+        /* eslint-enable key-spacing */
+      }
+
+      return taskId => roleTask[taskId]
+    },
+    roleVariant() {
+      const roleColor = {
+        /* eslint-disable key-spacing */
+        'fill-registration-project': 'primary',
+        'check-registration-project': 'secondary',
+        'fill-document-building': 'primary',
+        'check-document-building': 'secondary',
+        agreement: 'secondary',
+        'first-payment': 'primary',
+        'check-first-payment': 'secondary',
+        workshop: 'secondary',
+        'second-payment': 'primary',
+        'check-second-payment': 'secondary',
+        'design-recognition-submission': 'primary',
+        'third-payment': 'primary',
+        'check-third-payment': 'primary',
+        'design-recognition-review': 'secondary',
+        'design-recognition-evaluation-assessment': 'secondary',
+        'design-recognition-trial': 'secondary',
+        'design-recognition-trial-revision': 'primary',
+        'design-recognition-revision-review': 'secondary',
+        'design-recognition-letter': 'secondary',
+        'final-assessment-submission': 'primary',
+        'third-payment-fa': 'primary',
+        'check-third-payment-fa': 'secondary',
+        'final-assessment-review': 'secondary',
+        'final-assessment-evaluation-assessment': 'secondary',
+        'final-assessment-trial-revision': 'primary',
+        'final-assessment-revision-review': 'secondary',
+        'final-assessment-letter': 'primary',
+        /* eslint-enable key-spacing */
+      }
+
+      return role => roleColor[role]
     },
   },
   created() {
