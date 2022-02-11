@@ -187,6 +187,7 @@
                     v-for="(attachments, name) in filteredAttachment(eligibilityAttachments)"
                     :key="name"
                     :title="toTitleCase(name)"
+                    :isVisible="true"
                   >
                     <b-table
                       responsive
@@ -247,6 +248,7 @@
                     v-for="(attachments, name) in filteredAttachment(registeredAttachments)"
                     :key="name"
                     :title="toTitleCase(name)"
+                    :isVisible="true"
                   >
                     <b-table
                       responsive
@@ -306,6 +308,7 @@
                     v-for="(attachments, name) in filteredAttachment(revisionAttachments)"
                     :key="name"
                     :title="toTitleCase(name)"
+                    :isVisible="true"
                   >
                     <b-table
                       responsive
@@ -743,7 +746,14 @@ export default {
         attachmentId,
       })
         .then(response => {
-          window.open(response.data.url)
+          // window.open(response.data.url)
+          const downloadLink = document.createElement('a')
+          downloadLink.href = response.data.url
+          downloadLink.download = response.data.filename
+
+          document.body.appendChild(downloadLink)
+          downloadLink.click()
+          document.body.removeChild(downloadLink)
         })
         .catch(error => {
           if (error.response.status === 404) {
