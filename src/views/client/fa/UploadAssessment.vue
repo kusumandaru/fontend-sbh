@@ -2,7 +2,7 @@
 <template>
   <b-col md="12">
     <b-form-group>
-      <label>Upload Dokumen Penilaian (xls)</label>
+      <label>Upload Dokumen Penilaian</label>
       <b-input-group>
         <b-form-file
           v-model="files"

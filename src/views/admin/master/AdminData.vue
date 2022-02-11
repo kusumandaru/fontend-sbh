@@ -104,7 +104,7 @@
                     icon="FileTextIcon"
                     class="mr-75"
                   />
-                  <span class="font-weight-bold">Registration Letter</span>
+                  <span class="font-weight-bold">Perjanjian Sertifikasi Greenship</span>
                 </th>
                 <td class="pb-50">
                   <b-button

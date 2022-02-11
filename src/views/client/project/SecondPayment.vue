@@ -15,7 +15,7 @@
             >
               <b-form-file
                 v-model.lazy="secondPaymentDocumentInput"
-                placeholder="(Mandatory) Upload bukti pembayaran kedua bila diperlukan..."
+                placeholder="(Mandatory) Upload bukti pembayaran kedua..."
                 drop-placeholder="Drop file here..."
               />
               <small class="text-danger">{{ errors[0] }}</small>

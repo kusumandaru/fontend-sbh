@@ -121,7 +121,7 @@
             >
               <b-form-file
                 v-model.lazy="workshopReportDocument"
-                placeholder="(Mandatory) Upload laporan workshop bila diperlukan..."
+                placeholder="(Mandatory) Upload laporan workshop..."
                 drop-placeholder="Drop file here..."
               />
               <small class="text-danger">{{ errors[0] }}</small>
