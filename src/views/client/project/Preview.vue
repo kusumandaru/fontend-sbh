@@ -208,6 +208,7 @@
                     v-for="(attachments, name) in filteredAttachment(eligibilityAttachments)"
                     :key="name"
                     :title="toTitleCase(name)"
+                    :isVisible="true"
                   >
                     <b-table
                       responsive
@@ -268,6 +269,7 @@
                     v-for="(attachments, name) in filteredAttachment(registeredAttachments)"
                     :key="name"
                     :title="toTitleCase(name)"
+                    :isVisible="true"
                   >
                     <b-table
                       responsive
@@ -327,6 +329,7 @@
                     v-for="(attachments, name) in filteredAttachment(revisionAttachments)"
                     :key="name"
                     :title="toTitleCase(name)"
+                    :isVisible="true"
                   >
                     <b-table
                       responsive
@@ -409,7 +412,7 @@
             Eligibility Statement
           </b-button>
 
-          <!-- Button: Draft Registration Letter-->
+          <!-- Button: Draft Perjanjian Sertifikasi Greenship-->
           <b-button
             v-if="draftRegistrationLetterShow"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
@@ -418,10 +421,10 @@
             block
             @click="draftRegistrationLetter"
           >
-            Draft Registration Letter
+            Draft Perjanjian Sertifikasi Greenship
           </b-button>
 
-          <!-- Button: Registration Letter-->
+          <!-- Button: Perjanjian Sertifikasi Greenship-->
           <b-button
             v-if="registrationLetterShow"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
@@ -430,10 +433,10 @@
             block
             @click="registeredProject"
           >
-            Registration Letter
+            Perjanjian Sertifikasi Greenship
           </b-button>
 
-          <!-- Button: Registration Letter Attachment-->
+          <!-- Button: Perjanjian Sertifikasi Greenship Attachment-->
           <b-button
             v-if="registrationLetterAttachmentShow"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
@@ -891,7 +894,14 @@ export default {
         attachmentId,
       })
         .then(response => {
-          window.open(response.data.url)
+          // window.open(response.data.url)
+          const downloadLink = document.createElement('a')
+          downloadLink.href = response.data.url
+          downloadLink.download = response.data.filename
+
+          document.body.appendChild(downloadLink)
+          downloadLink.click()
+          document.body.removeChild(downloadLink)
         })
         .catch(error => {
           if (error.response.status === 404) {
