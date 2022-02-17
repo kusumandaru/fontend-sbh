@@ -73,7 +73,10 @@
 
         <!-- Column: Read -->
         <span v-else-if="props.column.field === 'read'">
-          <feather-icon :icon="readIcon(props.row.read)" class="mr-25" />
+          <feather-icon
+            :icon="readIcon(props.row.read)"
+            class="mr-25"
+          />
         </span>
 
         <!-- Column: Status -->

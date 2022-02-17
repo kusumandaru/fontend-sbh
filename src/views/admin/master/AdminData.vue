@@ -367,7 +367,14 @@ export default {
       })
         .then(response => {
           isLoading = false
-          window.open(response.data.url)
+          // window.open(response.data.url)
+          const downloadLink = document.createElement('a')
+          downloadLink.href = response.data.url
+          downloadLink.download = response.data.filename
+
+          document.body.appendChild(downloadLink)
+          downloadLink.click()
+          document.body.removeChild(downloadLink)
         })
         .catch(error => {
           isLoading = false

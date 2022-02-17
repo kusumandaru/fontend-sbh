@@ -187,7 +187,7 @@
                     v-for="(attachments, name) in filteredAttachment(eligibilityAttachments)"
                     :key="name"
                     :title="toTitleCase(name)"
-                    :isVisible="true"
+                    :is-visible="true"
                   >
                     <b-table
                       responsive
@@ -206,22 +206,6 @@
                     </b-table>
                   </app-collapse-item>
                 </app-collapse>
-
-                <!-- Spacer -->
-                <hr class="project-spacing">
-
-                <b-card-text
-                  class="mb-0"
-                >
-                  <span class="font-weight-bold">Berkas : </span>
-                  <b-button
-                    variant="gradient-primary"
-                    @click="downloadAllFiles"
-                  >
-                    <feather-icon icon="ArchiveIcon" />
-                    Download Eligibility Document Archived
-                  </b-button>
-                </b-card-text>
               </b-col>
             </b-row>
           </b-card-body>
@@ -248,7 +232,7 @@
                     v-for="(attachments, name) in filteredAttachment(registeredAttachments)"
                     :key="name"
                     :title="toTitleCase(name)"
-                    :isVisible="true"
+                    :is-visible="true"
                   >
                     <b-table
                       responsive
@@ -308,7 +292,7 @@
                     v-for="(attachments, name) in filteredAttachment(revisionAttachments)"
                     :key="name"
                     :title="toTitleCase(name)"
-                    :isVisible="true"
+                    :is-visible="true"
                   >
                     <b-table
                       responsive
@@ -344,6 +328,30 @@
 
               </b-col>
             </b-row>
+          </b-card-body>
+
+          <!-- Spacer -->
+          <hr class="project-spacing">
+
+          <b-card-body class="project-padding pb-0">
+            <b-card-text
+              class="mb-0"
+            >
+              <span class="font-weight-bold">Berkas : </span>
+              <b-button
+                variant="gradient-primary"
+                :disabled="isLoading"
+                @click="downloadAllFiles"
+              >
+                <feather-icon icon="ArchiveIcon" />
+                Download All Archived Document
+                <b-spinner
+                  v-if="isLoading"
+                  small
+                  type="grow"
+                />
+              </b-button>
+            </b-card-text>
           </b-card-body>
         </b-card>
       </b-col>
@@ -500,7 +508,7 @@ import {
 import store from '@/store'
 import router from '@/router'
 import {
-  BRow, BCol, BCard, BCardBody, BCardText, BButton, BAlert, BLink, VBToggle, BCardTitle, BCardSubTitle, BTable, BForm,
+  BRow, BCol, BCard, BCardBody, BCardText, BButton, BAlert, BLink, VBToggle, BCardTitle, BCardSubTitle, BTable, BForm, BSpinner,
 } from 'bootstrap-vue'
 import AppCollapse from '@core/components/app-collapse/AppCollapse.vue'
 import AppCollapseItem from '@core/components/app-collapse/AppCollapseItem.vue'
@@ -528,6 +536,7 @@ export default {
     BLink,
     BTable,
     BForm,
+    BSpinner,
     AppCollapse,
     AppCollapseItem,
 
@@ -545,6 +554,7 @@ export default {
         { task: 'design-recognition-trial', role: 'admin', title: 'Apabila diapprove akan langsung ke Design Recognition Letter, bila direject akan masuk ke revisi DR' },
         { task: 'design-recognition-trial-revision', role: 'client', title: 'Revisi DR oleh client' },
       ],
+      isLoading: false,
     }
   },
   computed: {
@@ -765,25 +775,36 @@ export default {
         })
     }
 
-    const downloadAllFiles = () => {
-      store.dispatch('app-project/downloadAllFiles', {
-        id: projectData.value.task_id,
-      })
-        .then(response => {
-          const blob = new Blob([response.data], { type: 'application/zip' })
-          const url = window.URL.createObjectURL(blob)
+    // const downloadAllFiles = () => {
+    //   this.isLoading = true
 
-          window.open(url)
-        })
-        .catch(error => {
-          if (error.response.status === 404) {
-            console.error(error)
-          }
-          if (error.response.status === 500) {
-            console.error(error)
-          }
-        })
-    }
+    //   store.dispatch('app-project/downloadAllFiles', {
+    //     id: projectData.value.task_id,
+    //   })
+    //     .then(response => {
+    //       this.isLoading = false
+    //       const blob = new Blob([response.data], { type: 'application/zip' })
+    //       const url = window.URL.createObjectURL(blob)
+
+    //       // window.open(url)
+    //       const downloadLink = document.createElement('a')
+    //       downloadLink.href = url
+
+    //       document.body.appendChild(downloadLink)
+    //       downloadLink.click()
+    //       document.body.removeChild(downloadLink)
+    //     })
+    //     .catch(error => {
+    //       this.isLoading = false
+
+    //       if (error.response.status === 404) {
+    //         console.error(error)
+    //       }
+    //       if (error.response.status === 500) {
+    //         console.error(error)
+    //       }
+    //     })
+    // }
 
     const registeredProject = () => {
       store.dispatch('app-project/downloadRegisteredProject', {
@@ -844,7 +865,7 @@ export default {
       paymentProps,
       approveTask,
       downloadFileByAttachment,
-      downloadAllFiles,
+      // downloadAllFiles,
       registeredProject,
       designRecognitionReview,
       designRecognitionEvaluationAssessment,
@@ -859,6 +880,35 @@ export default {
     filteredAttachment(attachment) {
       // eslint-disable-next-line no-unused-vars
       return Object.fromEntries(Object.entries(attachment).filter(([k, v]) => v != null && v.length > 0))
+    },
+    downloadAllFiles() {
+      this.isLoading = true
+
+      this.$http.get(`/engine-rest/new-building/project/attachments/${router.currentRoute.params.id}/archived_files`)
+        .then(response => {
+          this.isLoading = false
+
+          const blob = new Blob([response.data], { type: 'application/zip' })
+          const url = window.URL.createObjectURL(blob)
+
+          // window.open(url)
+          const downloadLink = document.createElement('a')
+          downloadLink.href = url
+
+          document.body.appendChild(downloadLink)
+          downloadLink.click()
+          document.body.removeChild(downloadLink)
+        })
+        .catch(error => {
+          this.isLoading = false
+
+          if (error.response.status === 404) {
+            console.error(error)
+          }
+          if (error.response.status === 500) {
+            console.error(error)
+          }
+        })
     },
   },
 }
