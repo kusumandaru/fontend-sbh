@@ -208,7 +208,15 @@ export default {
     getAttachment(attachment) {
       this.isLoading = true
       this.$http.get(`/engine-rest/new-building/final_assessment/assessment_attachment/${attachment.id}`).then(response => {
-        window.open(response.data.url)
+        // window.open(response.data.url)
+        const downloadLink = document.createElement('a')
+        downloadLink.href = response.data.url
+        downloadLink.download = response.data.filename
+
+        document.body.appendChild(downloadLink)
+        downloadLink.click()
+        document.body.removeChild(downloadLink)
+
         this.isLoading = false
       }).catch(() => {
         this.isLoading = false
