@@ -554,7 +554,6 @@ export default {
         { task: 'design-recognition-trial', role: 'admin', title: 'Apabila diapprove akan langsung ke Design Recognition Letter, bila direject akan masuk ke revisi DR' },
         { task: 'design-recognition-trial-revision', role: 'client', title: 'Revisi DR oleh client' },
       ],
-      isLoading: false,
     }
   },
   computed: {
@@ -620,6 +619,7 @@ export default {
     const faEvaluationDocument = ref(null)
     const claim = ref(null)
     const PROJECT_APP_STORE_MODULE_NAME = 'app-project'
+    const isLoading = ref(null)
 
     const eligibilityAttachments = ref({
       proof_of_payment: proofOfPayments,
@@ -775,36 +775,36 @@ export default {
         })
     }
 
-    // const downloadAllFiles = () => {
-    //   this.isLoading = true
+    const downloadAllFiles = () => {
+      isLoading.value = true
 
-    //   store.dispatch('app-project/downloadAllFiles', {
-    //     id: projectData.value.task_id,
-    //   })
-    //     .then(response => {
-    //       this.isLoading = false
-    //       const blob = new Blob([response.data], { type: 'application/zip' })
-    //       const url = window.URL.createObjectURL(blob)
+      store.dispatch('app-project/downloadAllFiles', {
+        id: projectData.value.task_id,
+      })
+        .then(response => {
+          isLoading.value = false
+          const blob = new Blob([response.data], { type: 'application/zip' })
+          const url = window.URL.createObjectURL(blob)
 
-    //       // window.open(url)
-    //       const downloadLink = document.createElement('a')
-    //       downloadLink.href = url
+          // window.open(url)
+          const downloadLink = document.createElement('a')
+          downloadLink.href = url
 
-    //       document.body.appendChild(downloadLink)
-    //       downloadLink.click()
-    //       document.body.removeChild(downloadLink)
-    //     })
-    //     .catch(error => {
-    //       this.isLoading = false
+          document.body.appendChild(downloadLink)
+          downloadLink.click()
+          document.body.removeChild(downloadLink)
+        })
+        .catch(error => {
+          isLoading.value = false
 
-    //       if (error.response.status === 404) {
-    //         console.error(error)
-    //       }
-    //       if (error.response.status === 500) {
-    //         console.error(error)
-    //       }
-    //     })
-    // }
+          if (error.response.status === 404) {
+            console.error(error)
+          }
+          if (error.response.status === 500) {
+            console.error(error)
+          }
+        })
+    }
 
     const registeredProject = () => {
       store.dispatch('app-project/downloadRegisteredProject', {
@@ -865,12 +865,14 @@ export default {
       paymentProps,
       approveTask,
       downloadFileByAttachment,
-      // downloadAllFiles,
+      downloadAllFiles,
       registeredProject,
       designRecognitionReview,
       designRecognitionEvaluationAssessment,
       finalAssessmentReview,
       finalAssessmentEvaluationAssessment,
+      isLoading,
+
     }
   },
   methods: {
@@ -880,35 +882,6 @@ export default {
     filteredAttachment(attachment) {
       // eslint-disable-next-line no-unused-vars
       return Object.fromEntries(Object.entries(attachment).filter(([k, v]) => v != null && v.length > 0))
-    },
-    downloadAllFiles() {
-      this.isLoading = true
-
-      this.$http.get(`/engine-rest/new-building/project/attachments/${router.currentRoute.params.id}/archived_files`)
-        .then(response => {
-          this.isLoading = false
-
-          const blob = new Blob([response.data], { type: 'application/zip' })
-          const url = window.URL.createObjectURL(blob)
-
-          // window.open(url)
-          const downloadLink = document.createElement('a')
-          downloadLink.href = url
-
-          document.body.appendChild(downloadLink)
-          downloadLink.click()
-          document.body.removeChild(downloadLink)
-        })
-        .catch(error => {
-          this.isLoading = false
-
-          if (error.response.status === 404) {
-            console.error(error)
-          }
-          if (error.response.status === 500) {
-            console.error(error)
-          }
-        })
     },
   },
 }

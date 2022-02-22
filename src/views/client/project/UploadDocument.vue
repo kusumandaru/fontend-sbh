@@ -1,253 +1,69 @@
 <template>
   <validation-observer ref="uploadDocumentRules">
     <b-form @submit.prevent>
-      <project-header :key="projectHeaderKey" />
+      <project-header />
+      <alert />
 
       <b-row>
-        <!--Building Plan -->
-        <b-col md="12">
+        <!-- Iteration -->
+        <b-col
+          v-for="(document, index) in buildingDocumentData"
+          :key="index"
+          md="12"
+          lazy
+        >
           <b-form-group>
-            <label>Gambar denah bangunan</label>
+            <label>{{ document.name }}</label>
             <validation-provider
               #default="{ errors }"
-              name="Gambar Denah Bangunan"
-              :rules="validationBuildingPlan ? '' : 'required'"
+              :name="document.name"
+              :rules="document.mandatory && validationNotRejected ? 'required' : ''"
             >
               <b-form-file
-                v-model.lazy="buildingPlan"
-                placeholder="Choose a file or drop it here..."
+                v-model.lazy="buildingDocuments[document.code]"
+                :placeholder="document.placeholder"
                 drop-placeholder="Drop file here..."
               />
               <small class="text-danger">{{ errors[0] }}</small>
-              <b-card-text class="my-1">
-                Selected file: <strong>{{ buildingPlan ? buildingPlan.name : '' }}</strong>
+              <b-card-text
+                v-if="buildingDocuments[document.code]"
+                class="my-1"
+              >
+                Selected file: <strong>{{ buildingDocuments[document.code] ? buildingDocuments[document.code].name : '' }}</strong>
               </b-card-text>
             </validation-provider>
-            <b-card-text
-              v-if="projectData.building_plan"
+            <b-table
+              v-if="filteredProjectAttachments(document.code)"
+              responsive
+              :items="filteredProjectAttachments(document.code)"
+              :fields="projectAttachmentFields"
+              class="mb-0"
+            >
+              <template #cell(filename)="doc">
+                <b-link
+                  class="font-weight-bold d-block text-nowrap"
+                  @click="downloadFileByAttachment(doc.item.id)"
+                >
+                  {{ doc.value }}
+                </b-link>
+              </template>
+            </b-table>
+            <!-- <b-card-text
+              v-if="filteredProjectAttachments(document.code)"
               class="mb-0"
             >
               <b-button
                 v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                 variant="flat-primary"
-                @click="downloadFile('building_plan')"
+                @click="downloadFile(document.code)"
               >
                 <feather-icon icon="ArchiveIcon" />
-                Download Gambar denah bangunan
+                 {{ "Download Gambar " + document.name }}
               </b-button>
-            </b-card-text>
+            </b-card-text> -->
           </b-form-group>
         </b-col>
-
-        <!--RT / RW -->
-        <b-col md="12">
-          <b-form-group>
-            <label>Peta RT/RW</label>
-            <validation-provider
-              #default="{ errors }"
-              name="Peta RT/RW"
-              :rules="validationRtRw ? '' : 'required'"
-            >
-              <b-form-file
-                v-model.lazy="rtRw"
-                placeholder="Choose a file or drop it here..."
-                drop-placeholder="Drop file here..."
-              />
-              <small class="text-danger">{{ errors[0] }}</small>
-              <b-card-text class="my-1">
-                Selected file: <strong>{{ rtRw ? rtRw.name : '' }}</strong>
-              </b-card-text>
-            </validation-provider>
-            <b-card-text
-              v-if="projectData.rt_rw"
-              class="mb-0"
-            >
-              <b-button
-                v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-                variant="flat-primary"
-                @click="downloadFile('rt_rw')"
-              >
-                <feather-icon icon="ArchiveIcon" />
-                Download Peta RT/RW
-              </b-button>
-            </b-card-text>
-          </b-form-group>
-        </b-col>
-
-        <!--UPL dan UKL -->
-        <b-col md="12">
-          <b-form-group>
-            <label>Salinan UPL/UKL</label>
-            <validation-provider
-              #default="{ errors }"
-              name="Salinan UPL/UKL"
-              :rules="validationUplUkl ? '' : 'required'"
-            >
-              <b-form-file
-                v-model.lazy="uplUkl"
-                placeholder="Choose a file or drop it here..."
-                drop-placeholder="Drop file here..."
-              />
-              <small class="text-danger">{{ errors[0] }}</small>
-              <b-card-text class="my-1">
-                Selected file: <strong>{{ uplUkl ? uplUkl.name : '' }}</strong>
-              </b-card-text>
-            </validation-provider>
-            <b-card-text
-              v-if="projectData.upl_ukl"
-              class="mb-0"
-            >
-              <b-button
-                v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-                variant="flat-primary"
-                @click="downloadFile('upl_ukl')"
-              >
-                <feather-icon icon="ArchiveIcon" />
-                Download Salinan UPL/UKL
-              </b-button>
-            </b-card-text>
-          </b-form-group>
-        </b-col>
-
-        <!--Syarat tahan gempa -->
-        <b-col md="12">
-          <b-form-group>
-            <label>Syarat Tahan Gempa</label>
-            <validation-provider
-              #default="{ errors }"
-              name="Syarat tahan gempa"
-              :rules="validationEarthquakeResistance ? '' : 'required'"
-            >
-              <b-form-file
-                v-model.lazy="earthquakeResistance"
-                placeholder="Choose a file or drop it here..."
-                drop-placeholder="Drop file here..."
-              />
-              <small class="text-danger">{{ errors[0] }}</small>
-              <b-card-text class="my-1">
-                Selected file: <strong>{{ earthquakeResistance ? earthquakeResistance.name : '' }}</strong>
-              </b-card-text>
-            </validation-provider>
-            <b-card-text
-              v-if="projectData.earthquake_resistance"
-              class="mb-0"
-            >
-              <b-button
-                v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-                variant="flat-primary"
-                @click="downloadFile('earthquake_resistance')"
-              >
-                <feather-icon icon="ArchiveIcon" />
-                Download Syarat Tahan Gempa
-              </b-button>
-            </b-card-text>
-          </b-form-group>
-        </b-col>
-
-        <!--Syarat Penyandang Cacat -->
-        <b-col md="12">
-          <b-form-group>
-            <label>Syarat Penyandang Cacat</label>
-            <validation-provider
-              #default="{ errors }"
-              name="Syarat penyandang cacat"
-              :rules="validationDisabilityFriendly ? '' : 'required'"
-            >
-              <b-form-file
-                v-model.lazy="disabilityFriendly"
-                placeholder="Choose a file or drop it here..."
-                drop-placeholder="Drop file here..."
-              />
-              <small class="text-danger">{{ errors[0] }}</small>
-              <b-card-text class="my-1">
-                Selected file: <strong>{{ disabilityFriendly ? disabilityFriendly.name : '' }}</strong>
-              </b-card-text>
-            </validation-provider>
-            <b-card-text
-              v-if="projectData.disability_friendly"
-              class="mb-0"
-            >
-              <b-button
-                v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-                variant="flat-primary"
-                @click="downloadFile('disability_friendly')"
-              >
-                <feather-icon icon="ArchiveIcon" />
-                Download Syarat Penyandang Cacat
-              </b-button>
-            </b-card-text>
-          </b-form-group>
-        </b-col>
-
-        <!--Syarat Keselamatan dan Kebakaran -->
-        <b-col md="12">
-          <b-form-group>
-            <label>Syarat Keselamatan dan Kebakaran</label>
-            <validation-provider
-              #default="{ errors }"
-              name="Syarat Keselamatan dan kebakaran"
-              :rules="validationSafetyAndFireRequirement ? '' : 'required'"
-            >
-              <b-form-file
-                v-model.lazy="safetyAndFireRequirement"
-                placeholder="Choose a file or drop it here..."
-                drop-placeholder="Drop file here..."
-              />
-              <small class="text-danger">{{ errors[0] }}</small>
-              <b-card-text class="my-1">
-                Selected file: <strong>{{ safetyAndFireRequirement ? safetyAndFireRequirement.name : '' }}</strong>
-              </b-card-text>
-            </validation-provider>
-            <b-card-text
-              v-if="projectData.safety_and_fire_requirement"
-              class="mb-0"
-            >
-              <b-button
-                v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-                variant="flat-primary"
-                @click="downloadFile('safety_and_fire_requirement')"
-              >
-                <feather-icon icon="ArchiveIcon" />
-                Download Syarat Keselamatan dan Kebakaran
-              </b-button>
-            </b-card-text>
-          </b-form-group>
-        </b-col>
-
-        <!--Pernyataan Bersedia Studi Kasus -->
-        <b-col md="12">
-          <b-form-group>
-            <label>Pernyataan Bersedia Studi Kasus</label>
-            <validation-provider
-              #default="{ errors }"
-              name="Pernyataan bersedia studi kasus"
-              :rules="validationStudyCaseReadiness ? '' : 'required'"
-            >
-              <b-form-file
-                v-model.lazy="studyCaseReadiness"
-                placeholder="Choose a file or drop it here..."
-                drop-placeholder="Drop file here..."
-              />
-              <small class="text-danger">{{ errors[0] }}</small>
-              <b-card-text class="my-1">
-                Selected file: <strong>{{ studyCaseReadiness ? studyCaseReadiness.name : '' }}</strong>
-              </b-card-text>
-            </validation-provider>
-            <b-card-text
-              v-if="projectData.study_case_readiness"
-              class="mb-0"
-            >
-              <b-button
-                v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-                variant="flat-primary"
-                @click="downloadFile('study_case_readiness')"
-              >
-                <feather-icon icon="ArchiveIcon" />
-                Download Pernyataan Bersedia Studi Kasus
-              </b-button>
-            </b-card-text>
-          </b-form-group>
-        </b-col>
+        <!-- End of Iteration -->
 
         <!-- submit and reset -->
         <b-col>
@@ -257,7 +73,7 @@
             variant="secondary"
             class="mr-1"
             :disabled="isLoading"
-            @click="submitProject"
+            @click="submitProject()"
           >
             <b-spinner
               v-if="isLoading"
@@ -308,6 +124,8 @@ import {
   BButton,
   BModal,
   BSpinner,
+  BTable,
+  BLink,
 } from 'bootstrap-vue'
 import {
   ref, onUnmounted, reactive,
@@ -322,6 +140,7 @@ import {
 } from '@validations'
 import projectStoreModule from '@/views/projectStoreModule'
 import ProjectHeader from './ProjectHeader.vue'
+import Alert from './Alert.vue'
 
 export default {
   components: {
@@ -334,9 +153,12 @@ export default {
     BButton,
     BModal,
     BSpinner,
+    BTable,
+    BLink,
     ValidationObserver,
     ValidationProvider,
     ProjectHeader,
+    Alert,
   },
   directives: {
     Ripple,
@@ -344,13 +166,7 @@ export default {
   data() {
     return {
       projectHeaderKey: 0,
-      buildingPlan: null,
-      rtRw: null,
-      uplUkl: null,
-      earthquakeResistance: null,
-      disabilityFriendly: null,
-      safetyAndFireRequirement: null,
-      studyCaseReadiness: null,
+      alertKey: 0,
       maxChar: 200,
       successShow: false,
       result: {},
@@ -392,12 +208,34 @@ export default {
         length,
         alphaDash,
       },
+      projectAttachmentFields: [
+        { key: 'filename', label: 'Document Name' },
+        { key: 'version', label: 'Version' },
+        { key: 'created_at', label: 'Created At' },
+      ],
     }
   },
   setup() {
     const projectData = ref({})
     const PROJECT_APP_STORE_MODULE_NAME = 'app-project'
+    const blankAdminData = {
+      manager_name: '',
+      manager_signature: '',
+      registration_letter: '',
+      first_attachment: '',
+      second_attachment: '',
+      third_attachment: '',
+      scoring_form: '',
+      dr_template_id: '',
+      fa_template_id: '',
+      default_dr_level: '',
+      default_fa_level: '',
+    }
+    const adminData = ref(JSON.parse(JSON.stringify(blankAdminData)))
 
+    const buildingDocumentData = ref(JSON.parse('[]'))
+    const buildingDocuments = ref(JSON.parse('{}'))
+    const projectAttachments = ref(JSON.parse('[]'))
     const paymentProps = reactive({
       center: true,
       fluidGrow: true,
@@ -429,6 +267,39 @@ export default {
         }
       })
 
+    store.dispatch('app-project/fetchProjectAttachments', { id: router.currentRoute.params.id })
+      .then(response => {
+        projectAttachments.value = response.data
+      })
+      .catch(error => {
+        if (error.response.status === 404) {
+          projectAttachments.value = undefined
+        }
+        if (error.response.status === 500) {
+          projectAttachments.value = undefined
+        }
+      })
+
+    store.dispatch('app-project/fetchAdminData')
+      .then(response => {
+        adminData.value = response.data
+        store.dispatch('app-project/fetchBuildingDocumentsByMasterTemplateID', { templateId: adminData.value.dr_template_id })
+          .then(resp => {
+            buildingDocumentData.value = resp.data
+          })
+          .catch(err => {
+            console.error(err)
+          })
+      })
+      .catch(error => {
+        if (error.response.status === 404) {
+          adminData.value = undefined
+        }
+        if (error.response.status === 500) {
+          adminData.value = undefined
+        }
+      })
+
     const downloadFile = fileName => {
       store.dispatch('app-project/downloadLink', {
         id: projectData.value.task_id,
@@ -454,32 +325,52 @@ export default {
         })
     }
 
+    const downloadFileByAttachment = attachmentId => {
+      store.dispatch('app-project/downloadLinkByAttachmentId', {
+        taskId: projectData.value.task_id,
+        attachmentId,
+      })
+        .then(response => {
+          // window.open(response.data.url)
+          const downloadLink = document.createElement('a')
+          downloadLink.href = response.data.url
+          downloadLink.download = response.data.filename
+
+          document.body.appendChild(downloadLink)
+          downloadLink.click()
+          document.body.removeChild(downloadLink)
+        })
+        .catch(error => {
+          if (error.response.status === 404) {
+            console.error(error)
+          }
+          if (error.response.status === 500) {
+            console.error(error)
+          }
+        })
+    }
+
     return {
       projectData,
+      adminData,
+      buildingDocumentData,
+      buildingDocuments,
+      projectAttachments,
       downloadFile,
+      downloadFileByAttachment,
     }
   },
   computed: {
-    validationBuildingPlan() {
-      return this.projectData.building_plan !== undefined
+    message: {
+      get() {
+        return this.$store.state.obj.message
+      },
+      set(value) {
+        this.$store.commit('updateMessage', value)
+      },
     },
-    validationRtRw() {
-      return this.projectData.rt_rw !== undefined
-    },
-    validationUplUkl() {
-      return this.projectData.upl_ukl !== undefined
-    },
-    validationEarthquakeResistance() {
-      return this.projectData.earthquake_resistance !== undefined
-    },
-    validationDisabilityFriendly() {
-      return this.projectData.disability_friendly !== undefined
-    },
-    validationSafetyAndFireRequirement() {
-      return this.projectData.safety_and_fire_requirement !== undefined
-    },
-    validationStudyCaseReadiness() {
-      return this.projectData.study_case_readiness !== undefined
+    validationNotRejected() {
+      return this.projectData.approved !== false
     },
   },
   methods: {
@@ -497,19 +388,25 @@ export default {
         },
       })
     },
+    filteredProjectAttachments(fileType) {
+      // eslint-disable-next-line
+      const filtered = this.projectAttachments.filter(pa => { 
+        // eslint-disable-next-line
+        return pa.file_type === fileType
+      })
+      return filtered
+    },
     submitProject() {
       this.$refs.uploadDocumentRules.validate().then(success => {
         if (success) {
           this.isLoading = true
           const request = new FormData()
           request.append('task_id', router.currentRoute.params.id)
-          request.append('building_plan', this.buildingPlan)
-          request.append('rt_rw', this.rtRw)
-          request.append('upl_ukl', this.uplUkl)
-          request.append('earthquake_resistance', this.earthquakeResistance)
-          request.append('disability_friendly', this.disabilityFriendly)
-          request.append('safety_and_fire_requirement', this.safetyAndFireRequirement)
-          request.append('study_case_readiness', this.studyCaseReadiness)
+
+          // eslint-disable-next-line no-restricted-syntax
+          for (const [key, value] of Object.entries(this.buildingDocuments)) {
+            request.append(key, value)
+          }
 
           const config = {
             header: {

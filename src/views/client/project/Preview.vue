@@ -1,30 +1,9 @@
 <template>
   <section class="project-preview-wrapper">
-    <!-- Alert: No item found -->
-    <b-alert
-      variant="danger"
-      :show="projectData === undefined"
-    >
-      <h4 class="alert-heading">
-        Error fetching project data
-      </h4>
-      <div class="alert-body">
-        No project found with this project id. Check
-        <b-link
-          class="alert-link"
-          :to="{ name: 'client-project-list'}"
-        >
-          project List
-        </b-link>
-        for other projects.
-      </div>
-    </b-alert>
-
     <b-row
       v-if="projectData"
       class="project-preview"
     >
-
       <!-- Col: Left (project Container) -->
       <b-col
         cols="12"
@@ -35,8 +14,10 @@
           no-body
           class="project-preview-card"
         >
+          <alert :key="alertKey" />
+
           <!-- alert -->
-          <b-col
+          <!-- <b-col
             v-if="projectData.approved == false"
             cols="12"
             class="mt-75"
@@ -55,7 +36,7 @@
                 </b-link>
               </div>
             </b-alert>
-          </b-col>
+          </b-col> -->
           <!--/ alert -->
 
           <!-- Header -->
@@ -362,7 +343,7 @@
               <b-button
                 variant="gradient-primary"
                 :disabled="isLoading"
-                @click="downloadAllFiles"
+                @click="downloadAllFiles()"
               >
                 <feather-icon icon="ArchiveIcon" />
                 Download All Archived Document
@@ -624,13 +605,14 @@ import {
 import store from '@/store'
 import router from '@/router'
 import {
-  BRow, BCol, BCard, BCardBody, BCardTitle, BCardSubTitle, BCardText, BButton, BAlert, BLink, VBToggle, BTable, BForm, BSpinner,
+  BRow, BCol, BCard, BCardBody, BCardTitle, BCardSubTitle, BCardText, BButton, BLink, VBToggle, BTable, BForm, BSpinner,
 } from 'bootstrap-vue'
 import AppCollapse from '@core/components/app-collapse/AppCollapse.vue'
 import AppCollapseItem from '@core/components/app-collapse/AppCollapseItem.vue'
 import Ripple from 'vue-ripple-directive'
 import projectStoreModule from '@/views/projectStoreModule'
 import fileDownload from 'js-file-download'
+import Alert from './Alert.vue'
 
 export default {
   directives: {
@@ -646,16 +628,17 @@ export default {
     BCardSubTitle,
     BCardText,
     BButton,
-    BAlert,
     BLink,
     BTable,
     BForm,
     BSpinner,
     AppCollapse,
     AppCollapseItem,
+    Alert,
   },
   data() {
     return {
+      alertKey: 0,
       projectAttachmentFields: [
         { key: 'filename', label: 'Document Name' },
         { key: 'version', label: 'Version' },
@@ -665,7 +648,6 @@ export default {
         { task: 'design-recognition-trial', role: 'admin', title: 'Proses approval DR' },
         { task: 'design-recognition-trial-revision', role: 'client', title: 'Revisi DR setelah sidang' },
       ],
-      isLoading: false,
     }
   },
   computed: {
@@ -756,6 +738,7 @@ export default {
     const faRevisionDocument = ref(null)
     const drEvaluationDocument = ref(null)
     const faEvaluationDocument = ref(null)
+    const isLoading = ref(null)
 
     const PROJECT_APP_STORE_MODULE_NAME = 'app-project'
 
@@ -1039,37 +1022,37 @@ export default {
         })
     }
 
-    // const downloadAllFiles = () => {
-    //   isLoading = true
+    const downloadAllFiles = () => {
+      isLoading.value = true
 
-    //   store.dispatch('app-project/downloadAllFiles', {
-    //     id: projectData.value.task_id,
-    //   })
-    //     .then(response => {
-    //       isLoading = false
+      store.dispatch('app-project/downloadAllFiles', {
+        id: projectData.value.task_id,
+      })
+        .then(response => {
+          isLoading.value = false
 
-    //       const blob = new Blob([response.data], { type: 'application/zip' })
-    //       const url = window.URL.createObjectURL(blob)
+          const blob = new Blob([response.data], { type: 'application/zip' })
+          const url = window.URL.createObjectURL(blob)
 
-    //       // window.open(url)
-    //       const downloadLink = document.createElement('a')
-    //       downloadLink.href = url
+          // window.open(url)
+          const downloadLink = document.createElement('a')
+          downloadLink.href = url
 
-    //       document.body.appendChild(downloadLink)
-    //       downloadLink.click()
-    //       document.body.removeChild(downloadLink)
-    //     })
-    //     .catch(error => {
-    //       isLoading = false
+          document.body.appendChild(downloadLink)
+          downloadLink.click()
+          document.body.removeChild(downloadLink)
+        })
+        .catch(error => {
+          isLoading.value = false
 
-    //       if (error.response.status === 404) {
-    //         console.error(error)
-    //       }
-    //       if (error.response.status === 500) {
-    //         console.error(error)
-    //       }
-    //     })
-    // }
+          if (error.response.status === 404) {
+            console.error(error)
+          }
+          if (error.response.status === 500) {
+            console.error(error)
+          }
+        })
+    }
 
     const aboveCheckBuildingTasks = ['check-registration-project', 'fill-registration-project', 'fill-document-building', 'check-document-building']
     const aboveFirstPaymentTasks = ['check-registration-project', 'fill-registration-project', 'fill-document-building', 'check-document-building', 'agreement', 'first-payment']
@@ -1089,7 +1072,7 @@ export default {
       faRevisionSubmissionTask,
       uploadDocumentPage,
       downloadFileByAttachment,
-      // downloadAllFiles,
+      downloadAllFiles,
       eligibleStatement,
       registeredProject,
       scoringFormAttachment,
@@ -1099,6 +1082,7 @@ export default {
       draftRegistrationLetter,
       aboveCheckBuildingTasks,
       aboveFirstPaymentTasks,
+      isLoading,
     }
   },
   methods: {
@@ -1108,35 +1092,6 @@ export default {
     filteredAttachment(attachment) {
       // eslint-disable-next-line no-unused-vars
       return Object.fromEntries(Object.entries(attachment).filter(([k, v]) => v != null && v.length > 0))
-    },
-    downloadAllFiles() {
-      this.isLoading = true
-
-      this.$http.get(`/engine-rest/new-building/project/attachments/${router.currentRoute.params.id}/archived_files`)
-        .then(response => {
-          this.isLoading = false
-
-          const blob = new Blob([response.data], { type: 'application/zip' })
-          const url = window.URL.createObjectURL(blob)
-
-          // window.open(url)
-          const downloadLink = document.createElement('a')
-          downloadLink.href = url
-
-          document.body.appendChild(downloadLink)
-          downloadLink.click()
-          document.body.removeChild(downloadLink)
-        })
-        .catch(error => {
-          this.isLoading = false
-
-          if (error.response.status === 404) {
-            console.error(error)
-          }
-          if (error.response.status === 500) {
-            console.error(error)
-          }
-        })
     },
   },
 }

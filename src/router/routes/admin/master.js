@@ -219,6 +219,26 @@ export default [
     },
   },
   {
+    path: '/admin/master/vendor/:vendorId/templates/:templateId/building_document/:buildingDocumentId/edit',
+    name: 'admin-building-document-edit',
+    component: () => import('@/views/admin/master/BuildingDocumentEdit.vue'),
+    meta: {
+      pageTitle: 'Update Building Document',
+      breadcrumb: [
+        {
+          text: 'List Building Document',
+          to: '/admin/master/building_document',
+        },
+        {
+          text: 'Update Building Document',
+          active: true,
+        },
+      ],
+      action: 'read',
+      resource: 'master',
+    },
+  },
+  {
     path: '/admin/master/vendor/:vendorId/templates/:templateId/evaluations',
     name: 'admin-evaluation-list',
     component: () => import('@/views/admin/master/EvaluationList.vue'),

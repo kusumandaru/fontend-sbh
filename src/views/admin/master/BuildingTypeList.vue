@@ -69,7 +69,7 @@
                   @click="$router.push({ name: 'admin-building-edit', params: { buildingId: props.row.id }})"
                 />
                 <b-tooltip
-                  title="Vendor Update"
+                  title="Building Type Update"
                   :target="`master-row-${props.row.id}-building-icon-edit`"
                 />
               </template>

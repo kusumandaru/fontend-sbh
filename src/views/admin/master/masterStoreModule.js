@@ -54,6 +54,30 @@ export default {
           .catch(error => reject(error))
       })
     },
+    fetchBuildingDocument(ctx, { buildingDocumentId }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/engine-rest/new-building/project/document_buildings/${buildingDocumentId}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    addBuildingDocument(ctx, buildingDocumentData) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post('/engine-rest/new-building/project/document_buildings', buildingDocumentData)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    editBuildingDocument(ctx, { buildingDocumentId, buildingDocumentData }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .patch(`/engine-rest/new-building/project/document_buildings/${buildingDocumentId}`, buildingDocumentData)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
     fetchProvinces(ctx, queryParams) {
       return new Promise((resolve, reject) => {
         axios
