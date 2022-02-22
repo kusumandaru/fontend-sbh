@@ -142,6 +142,22 @@ export default {
           .catch(error => reject(error))
       })
     },
+    fetchProjectAttachments(ctx, { id }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`engine-rest/new-building/project/attachments/${id}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    fetchBuildingDocumentsByMasterTemplateID(ctx, { templateId }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/engine-rest/new-building/project/active_document_buildings/${templateId}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
     fetchTemplates(ctx, queryParams) {
       return new Promise((resolve, reject) => {
         axios

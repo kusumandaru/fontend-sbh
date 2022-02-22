@@ -69,7 +69,7 @@
                   @click="$router.push({ name: 'admin-province-edit', params: { provinceId: props.row.id }})"
                 />
                 <b-tooltip
-                  title="Vendor Update"
+                  title="Province Update"
                   :target="`master-row-${props.row.id}-province-icon-edit`"
                 />
               </template>
