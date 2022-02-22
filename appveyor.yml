@@ -2,7 +2,7 @@ environment:
   nodejs_version: "12"
 
 install:
-  - ps: Install-Product node $env:nodejs_versions
+  - ps: Install-Product node 16
   - yarn --network-timeout 600000
 
 
