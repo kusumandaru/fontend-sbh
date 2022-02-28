@@ -444,7 +444,7 @@
             variant="secondary"
             class="mb-75"
             block
-            @click="scoringFormAttachment"
+            @click="latestScoringFormAttachment"
           >
             Form Penilaian
           </b-button>
@@ -679,7 +679,7 @@ export default {
       return !(this.aboveFirstPaymentTasks.includes(this.projectData.definition_key))
     },
     scoringFormAttachmentShow() {
-      return !(this.aboveFirstPaymentTasks.includes(this.projectData.definition_key))
+      return (this.submissionTasks.includes(this.projectData.definition_key))
     },
     drRevisionShow() {
       return ['design-recognition-trial-revision'].includes(this.projectData.definition_key)
@@ -738,6 +738,7 @@ export default {
     const faRevisionDocument = ref(null)
     const drEvaluationDocument = ref(null)
     const faEvaluationDocument = ref(null)
+    const scoringForm = ref(null)
     const isLoading = ref(null)
 
     const PROJECT_APP_STORE_MODULE_NAME = 'app-project'
@@ -964,6 +965,43 @@ export default {
         })
     }
 
+    const latestScoringFormAttachment = () => {
+      store.dispatch('app-project/getLatestAttachmentByType', { taskId: router.currentRoute.params.id, fileType: 'scoring_form' })
+        .then(response => {
+          scoringForm.value = response.data
+
+          store.dispatch('app-project/downloadLinkByAttachmentId', {
+            taskId: projectData.value.task_id,
+            attachmentId: scoringForm.value.id,
+          })
+            .then(resp => {
+              const downloadLink = document.createElement('a')
+              downloadLink.href = resp.data.url
+              downloadLink.download = resp.data.filename
+
+              document.body.appendChild(downloadLink)
+              downloadLink.click()
+              document.body.removeChild(downloadLink)
+            })
+            .catch(err => {
+              if (err.response.status === 404) {
+                console.error(err)
+              }
+              if (err.response.status === 500) {
+                console.error(err)
+              }
+            })
+        })
+        .catch(error => {
+          if (error.response.status === 404) {
+            scoringForm.value = undefined
+          }
+          if (error.response.status === 500) {
+            scoringForm.value = undefined
+          }
+        })
+    }
+
     const registeredProjectAttachment = () => {
       store.dispatch('app-project/downloadRegisteredProjectAttachment', {
         id: projectData.value.task_id,
@@ -1056,6 +1094,7 @@ export default {
 
     const aboveCheckBuildingTasks = ['check-registration-project', 'fill-registration-project', 'fill-document-building', 'check-document-building']
     const aboveFirstPaymentTasks = ['check-registration-project', 'fill-registration-project', 'fill-document-building', 'check-document-building', 'agreement', 'first-payment']
+    const submissionTasks = ['design-recognition-submission', 'final-assessment-submission']
 
     return {
       projectData,
@@ -1076,12 +1115,15 @@ export default {
       eligibleStatement,
       registeredProject,
       scoringFormAttachment,
+      latestScoringFormAttachment,
       registeredProjectAttachment,
       designRecognitionSubmission,
       finalAssessmentSubmission,
       draftRegistrationLetter,
       aboveCheckBuildingTasks,
       aboveFirstPaymentTasks,
+      submissionTasks,
+      scoringForm,
       isLoading,
     }
   },
