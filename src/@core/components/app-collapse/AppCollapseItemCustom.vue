@@ -107,8 +107,5 @@ export default {
       if (this.openOnHover) this.updateVisible(false)
     },
   },
-  mounted() {
-    // this.bus.$on('updateVisible', this.updateVisible(true))
-  },
 }
 </script>
