@@ -435,6 +435,18 @@
             Workshop and Consultation Submission
           </b-button>
 
+          <!-- Button: Second Payment Confirmation -->
+          <b-button
+            v-if="secondPaymentConfirmationShow"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="success"
+            class="mb-75"
+            block
+            @click="secondPaymentConfirmationPage"
+          >
+            Second Payment Confirmation
+          </b-button>
+
           <!-- Button: Design Recognition Review-->
           <b-button
             v-if="designRecognitionReviewShow"
@@ -572,6 +584,9 @@ export default {
     workshopShow() {
       return this.workshopTasks.includes(this.projectData.definition_key)
     },
+    secondPaymentConfirmationShow() {
+      return ['check-second-payment'].includes(this.projectData.definition_key)
+    },
     designRecognitionReviewShow() {
       return ['design-recognition-review'].includes(this.projectData.definition_key)
     },
@@ -613,6 +628,7 @@ export default {
     const workshorReportDocument = ref(null)
     const eligibilityStatement = ref(null)
     const agreementLetterDocument = ref(null)
+    const scoringForm = ref(null)
     const drRevisionDocument = ref(null)
     const faRevisionDocument = ref(null)
     const drEvaluationDocument = ref(null)
@@ -640,6 +656,7 @@ export default {
       workshop_report_document: workshorReportDocument,
       eligibility_statement: eligibilityStatement,
       agreement_letter_document: agreementLetterDocument,
+      scoring_form: scoringForm,
     })
 
     const revisionAttachments = ref({
@@ -831,6 +848,10 @@ export default {
       router.push({ name: 'admin-project-workshop', params: { id: router.currentRoute.params.id } })
     }
 
+    const secondPaymentConfirmationPage = () => {
+      router.push({ name: 'admin-project-second-payment-confirmation', params: { id: router.currentRoute.params.id } })
+    }
+
     const designRecognitionReview = () => {
       router.push({ name: 'admin-project-dr-assessment', params: { id: router.currentRoute.params.id } })
     }
@@ -847,7 +868,7 @@ export default {
       router.push({ name: 'admin-project-fa-evaluation-assessment', params: { id: router.currentRoute.params.id } })
     }
 
-    const adminTasks = ['check-registration-project', 'check-document-building', 'check-first-payment', 'check-second-payment', 'check-third-payment', 'check-third-payment-fa', 'design-recognition-trial', 'design-recognition-revision-review', 'final-assessment-trial', 'final-assessment-revision-review']
+    const adminTasks = ['check-registration-project', 'check-document-building', 'check-first-payment', 'check-third-payment', 'check-third-payment-fa', 'design-recognition-trial', 'design-recognition-revision-review', 'final-assessment-trial', 'final-assessment-revision-review']
     const agreementTasks = ['agreement']
     const workshopTasks = ['workshop']
 
@@ -861,6 +882,7 @@ export default {
       workshopTasks,
       agreementPage,
       workshopPage,
+      secondPaymentConfirmationPage,
       printProject,
       paymentProps,
       approveTask,

@@ -31,6 +31,11 @@ export default [
     component: () => import('@/views/admin/project/Workshop.vue'),
   },
   {
+    path: '/admin/project/second-payment-confirmation/:id',
+    name: 'admin-project-second-payment-confirmation',
+    component: () => import('@/views/admin/project/SecondPaymentConfirmation.vue'),
+  },
+  {
     path: '/admin/project/dr/assesment/:id',
     name: 'admin-project-dr-assessment',
     component: () => import('@/views/admin/dr/DRList.vue'),

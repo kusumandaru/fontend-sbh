@@ -102,5 +102,21 @@ export default {
           .catch(error => reject(error))
       })
     },
+    getLatestAttachmentByType(ctx, { taskId, fileType }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/engine-rest/new-building/project/attachments/${taskId}/${fileType}/latest`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    downloadLinkByAttachmentId(ctx, { taskId, attachmentId }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/engine-rest/new-building/project/attachments/${taskId}/${attachmentId}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
   },
 }

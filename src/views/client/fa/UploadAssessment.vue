@@ -1,6 +1,15 @@
 <!--Dokumen Penilaian -->
 <template>
   <b-col md="12">
+    <b-button
+      v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+      type="submit"
+      variant="light"
+      class="mr-1"
+      @click="latestScoringFormAttachment"
+    >
+      Download template form penilaian
+    </b-button>
     <b-form-group>
       <label>Upload Dokumen Penilaian</label>
       <b-input-group>
@@ -130,6 +139,7 @@ export default {
     }
     const projectAssessment = ref(JSON.parse(JSON.stringify(blankProjectAssessment)))
     const projectAttachments = ref(JSON.parse('[]'))
+    const scoringForm = ref(null)
 
     // Register module
     if (!store.hasModule(FA_APP_STORE_MODULE_NAME)) store.registerModule(FA_APP_STORE_MODULE_NAME, masterFaStoreModule)
@@ -160,9 +170,47 @@ export default {
         }
       })
 
+    const latestScoringFormAttachment = () => {
+      store.dispatch('app-dr/getLatestAttachmentByType', { taskId: router.currentRoute.params.id, fileType: 'scoring_form' })
+        .then(response => {
+          scoringForm.value = response.data
+
+          store.dispatch('app-dr/downloadLinkByAttachmentId', {
+            taskId: router.currentRoute.params.id,
+            attachmentId: scoringForm.value.id,
+          })
+            .then(resp => {
+              const downloadLink = document.createElement('a')
+              downloadLink.href = resp.data.url
+              downloadLink.download = resp.data.filename
+
+              document.body.appendChild(downloadLink)
+              downloadLink.click()
+              document.body.removeChild(downloadLink)
+            })
+            .catch(err => {
+              if (err.response.status === 404) {
+                console.error(err)
+              }
+              if (err.response.status === 500) {
+                console.error(err)
+              }
+            })
+        })
+        .catch(error => {
+          if (error.response.status === 404) {
+            scoringForm.value = undefined
+          }
+          if (error.response.status === 500) {
+            scoringForm.value = undefined
+          }
+        })
+    }
+
     return {
       projectAssessment,
       projectAttachments,
+      latestScoringFormAttachment,
     }
   },
   methods: {

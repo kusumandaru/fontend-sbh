@@ -1,41 +1,76 @@
 <template>
-  <validation-observer ref="uploadDocumentRules">
+  <validation-observer ref="secondPaymentConfirmationRules">
     <b-form @submit.prevent>
-      <project-header />
-      <alert />
+      <project-header :key="projectHeaderKey" />
 
       <b-row>
-        <!-- Iteration -->
-        <b-col
-          v-for="(document, index) in buildingDocumentData"
-          :key="index"
-          md="12"
-          lazy
-        >
+        <!--Second Payment Confirmation Letter Document -->
+        <b-col md="12">
           <b-form-group>
-            <label>{{ document.name }}</label>
+            <label>Form Penilaian</label>
             <validation-provider
               #default="{ errors }"
-              :name="document.name"
-              :rules="document.mandatory && validationNotRejected ? 'required' : ''"
+              name="Form Penilaian"
+              rules="required"
             >
               <b-form-file
-                v-model.lazy="buildingDocuments[document.code]"
-                :placeholder="document.placeholder"
+                v-model.lazy="scoringFormInput"
+                placeholder="(Mandatory) Upload form penilaian..."
                 drop-placeholder="Drop file here..."
               />
               <small class="text-danger">{{ errors[0] }}</small>
-              <b-card-text
-                v-if="buildingDocuments[document.code]"
-                class="my-1"
-              >
-                Selected file: <strong>{{ buildingDocuments[document.code] ? buildingDocuments[document.code].name : '' }}</strong>
+              <b-card-text class="my-1">
+                Selected file: <strong>{{ scoringFormInput ? scoringFormInput.name : '' }}</strong>
               </b-card-text>
             </validation-provider>
+
+            <b-card-text
+              v-if="scoringForm"
+              class="mb-0"
+            >
+              <b-button
+                v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+                variant="flat-primary"
+                @click="downloadFileByAttachment(scoringForm.id)"
+              >
+                <feather-icon icon="ArchiveIcon" />
+                Download Form Penilaian
+              </b-button>
+            </b-card-text>
+          </b-form-group>
+        </b-col>
+
+        <!--Approved-->
+        <b-col cols="12">
+          <b-form-group
+            label="Approve second payment"
+            label-for="secondPayment"
+            description="Setujui pembayaran kedua"
+          >
+            <validation-provider
+              #default="{ errors }"
+              rules=""
+              name="Second Payment"
+            >
+              <b-form-checkbox
+                v-model="selectedApproved"
+                class="custom-control-success"
+                name="check-button"
+                switch
+              />
+              <!-- <v-select
+                id="certification_type"
+                v-model="selectedApproved"
+                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                label="name"
+                :options="approvedOption"
+              /> -->
+              <small class="text-danger">{{ errors[0] }}</small>
+            </validation-provider>
+
             <b-table
-              v-if="filteredProjectAttachments(document.code)"
               responsive
-              :items="filteredProjectAttachments(document.code)"
+              :items="secondPaymentData"
               :fields="projectAttachmentFields"
               class="mb-0"
             >
@@ -50,7 +85,6 @@
             </b-table>
           </b-form-group>
         </b-col>
-        <!-- End of Iteration -->
 
         <!-- submit and reset -->
         <b-col>
@@ -60,7 +94,7 @@
             variant="secondary"
             class="mr-1"
             :disabled="isLoading"
-            @click="submitProject()"
+            @click="submitProject"
           >
             <b-spinner
               v-if="isLoading"
@@ -107,12 +141,13 @@ import {
   BCol,
   BFormFile,
   BFormGroup,
+  BFormCheckbox,
   BForm,
+  BLink,
+  BTable,
   BButton,
   BModal,
   BSpinner,
-  BTable,
-  BLink,
 } from 'bootstrap-vue'
 import {
   ref, onUnmounted, reactive,
@@ -127,7 +162,6 @@ import {
 } from '@validations'
 import projectStoreModule from '@/views/projectStoreModule'
 import ProjectHeader from './ProjectHeader.vue'
-import Alert from './Alert.vue'
 
 export default {
   components: {
@@ -135,17 +169,17 @@ export default {
     BRow,
     BCol,
     BFormFile,
+    BTable,
+    BLink,
     BFormGroup,
+    BFormCheckbox,
     BForm,
     BButton,
     BModal,
     BSpinner,
-    BTable,
-    BLink,
     ValidationObserver,
     ValidationProvider,
     ProjectHeader,
-    Alert,
   },
   directives: {
     Ripple,
@@ -153,12 +187,18 @@ export default {
   data() {
     return {
       projectHeaderKey: 0,
-      alertKey: 0,
+      scoringFormInput: null,
+      firstPaymentDocument: null,
       maxChar: 200,
       successShow: false,
       result: {},
       resultId: null,
       isLoading: false,
+      projectAttachmentFields: [
+        { key: 'filename', label: 'Document Name' },
+        { key: 'version', label: 'Version' },
+        { key: 'created_at', label: 'Created At' },
+      ],
       options: {
         number: {
           numeral: true,
@@ -195,41 +235,18 @@ export default {
         length,
         alphaDash,
       },
-      projectAttachmentFields: [
-        { key: 'filename', label: 'Document Name' },
-        { key: 'version', label: 'Version' },
-        { key: 'created_at', label: 'Created At' },
-      ],
     }
   },
   setup() {
     const projectData = ref({})
+    const scoringForm = ref({})
+    const secondPaymentData = ref([])
     const PROJECT_APP_STORE_MODULE_NAME = 'app-project'
-    const blankAdminData = {
-      manager_name: '',
-      manager_signature: '',
-      registration_letter: '',
-      first_attachment: '',
-      second_attachment: '',
-      third_attachment: '',
-      scoring_form: '',
-      dr_template_id: '',
-      fa_template_id: '',
-      default_dr_level: '',
-      default_fa_level: '',
-    }
-    const adminData = ref(JSON.parse(JSON.stringify(blankAdminData)))
-
-    const buildingDocumentData = ref(JSON.parse('[]'))
-    const buildingDocuments = ref(JSON.parse('{}'))
-    const projectAttachments = ref(JSON.parse('[]'))
-    const paymentProps = reactive({
-      center: true,
-      fluidGrow: true,
-      blank: true,
-      blankColor: '#bbb',
-      class: 'my-5',
-    })
+    const selectedApproved = ref(false)
+    const approvedOption = reactive([
+      { id: 'true', name: 'Approve' },
+      { id: 'false', name: 'Rejected' },
+    ])
 
     // Register module
     if (!store.hasModule(PROJECT_APP_STORE_MODULE_NAME)) store.registerModule(PROJECT_APP_STORE_MODULE_NAME, projectStoreModule)
@@ -242,8 +259,6 @@ export default {
     store.dispatch('app-project/fetchProject', { id: router.currentRoute.params.id })
       .then(response => {
         projectData.value = response.data
-        paymentProps.blank = false
-        paymentProps.src = response.data.proof_of_payment_url
       })
       .catch(error => {
         if (error.response.status === 404) {
@@ -254,63 +269,31 @@ export default {
         }
       })
 
-    store.dispatch('app-project/fetchProjectAttachments', { id: router.currentRoute.params.id })
+    store.dispatch('app-project/getLatestAttachmentByType', { taskId: router.currentRoute.params.id, fileType: 'second_payment' })
       .then(response => {
-        projectAttachments.value = response.data
+        scoringForm.value = response.data
       })
       .catch(error => {
         if (error.response.status === 404) {
-          projectAttachments.value = undefined
+          scoringForm.value = undefined
         }
         if (error.response.status === 500) {
-          projectAttachments.value = undefined
+          scoringForm.value = undefined
         }
       })
 
-    store.dispatch('app-project/fetchAdminData')
+    store.dispatch('app-project/getAttachmentsByType', { taskId: router.currentRoute.params.id, fileType: 'second_payment_document' })
       .then(response => {
-        adminData.value = response.data
-        store.dispatch('app-project/fetchBuildingDocumentsByMasterTemplateID', { templateId: adminData.value.dr_template_id })
-          .then(resp => {
-            buildingDocumentData.value = resp.data
-          })
-          .catch(err => {
-            console.error(err)
-          })
+        secondPaymentData.value = response.data
       })
       .catch(error => {
         if (error.response.status === 404) {
-          adminData.value = undefined
+          secondPaymentData.value = undefined
         }
         if (error.response.status === 500) {
-          adminData.value = undefined
+          secondPaymentData.value = undefined
         }
       })
-
-    const downloadFile = fileName => {
-      store.dispatch('app-project/downloadLink', {
-        id: projectData.value.task_id,
-        filename: fileName,
-      })
-        .then(response => {
-          // window.open(response.data.url)
-          const downloadLink = document.createElement('a')
-          downloadLink.href = response.data.url
-          downloadLink.download = response.data.filename
-
-          document.body.appendChild(downloadLink)
-          downloadLink.click()
-          document.body.removeChild(downloadLink)
-        })
-        .catch(error => {
-          if (error.response.status === 404) {
-            console.error(error)
-          }
-          if (error.response.status === 500) {
-            console.error(error)
-          }
-        })
-    }
 
     const downloadFileByAttachment = attachmentId => {
       store.dispatch('app-project/downloadLinkByAttachmentId', {
@@ -339,25 +322,16 @@ export default {
 
     return {
       projectData,
-      adminData,
-      buildingDocumentData,
-      buildingDocuments,
-      projectAttachments,
-      downloadFile,
+      scoringForm,
+      secondPaymentData,
       downloadFileByAttachment,
+      selectedApproved,
+      approvedOption,
     }
   },
   computed: {
-    message: {
-      get() {
-        return this.$store.state.obj.message
-      },
-      set(value) {
-        this.$store.commit('updateMessage', value)
-      },
-    },
-    validationNotRejected() {
-      return this.projectData.approved !== false
+    validationSecondPaymentConfirmationLetter() {
+      return this.projectData.scoring_form !== undefined
     },
   },
   methods: {
@@ -375,32 +349,21 @@ export default {
         },
       })
     },
-    filteredProjectAttachments(fileType) {
-      // eslint-disable-next-line
-      const filtered = this.projectAttachments.filter(pa => { 
-        // eslint-disable-next-line
-        return pa.file_type === fileType
-      })
-      return filtered
-    },
     submitProject() {
-      this.$refs.uploadDocumentRules.validate().then(success => {
+      this.$refs.secondPaymentConfirmationRules.validate().then(success => {
         if (success) {
           this.isLoading = true
           const request = new FormData()
           request.append('task_id', router.currentRoute.params.id)
-
-          // eslint-disable-next-line no-restricted-syntax
-          for (const [key, value] of Object.entries(this.buildingDocuments)) {
-            request.append(key, value)
-          }
+          request.append('scoring_form', this.scoringFormInput)
+          request.append('approved', this.selectedApproved)
 
           const config = {
             header: {
               'Content-Type': 'multipart/form-data',
             },
           }
-          this.$http.post('/engine-rest/new-building/upload-eligibility-document', request, config).then(res => {
+          this.$http.post('/engine-rest/new-building/second_payment_approval', request, config).then(res => {
             this.result = JSON.parse(JSON.stringify(res.data))
             this.successShow = true
             this.isLoading = false
@@ -415,7 +378,14 @@ export default {
       })
     },
     gotoIndex() {
-      router.push({ name: 'client-project-list' })
+      router.push({ name: 'admin-project-list' })
+    },
+    stringToBoolean(value) {
+      switch (value.toLowerCase().trim()) {
+        case 'true': case 'yes': case '1': return true
+        case 'false': case 'no': case '0': case null: return false
+        default: return Boolean(value)
+      }
     },
   },
 }
@@ -427,6 +397,7 @@ export default {
 </style>
 
 <style lang="scss">
+@import '@core/scss/vue/libs/vue-select.scss';
 @media print {
 
   // Global Styles
