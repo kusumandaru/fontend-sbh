@@ -91,7 +91,7 @@ export default {
     this.visible = this.isVisible
   },
   methods: {
-    updateVisible(val = true) {
+    updateVisible(val = false) {
       if (this.headerBgVariant === 'primary') {
         this.visible = val
         this.$emit('visible', val)
@@ -106,6 +106,9 @@ export default {
     collapseClose() {
       if (this.openOnHover) this.updateVisible(false)
     },
+  },
+  mounted() {
+    // this.bus.$on('updateVisible', this.updateVisible(true))
   },
 }
 </script>
