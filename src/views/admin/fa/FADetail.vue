@@ -49,6 +49,7 @@
       >
         <app-collapse-item
           v-for="( criteria,idx) in exercise.criterias"
+          :ref="`collapse-item-ref-${criteria.id}`"
           :key="idx"
           :title="criteria.criteria.code"
           :subtitle="translateStatus(criteria)"
@@ -210,7 +211,7 @@
                         icon="Trash2Icon"
                         size="16"
                         class="mx-1"
-                        @click="deleteAttachment(rowc.item)"
+                        @click="deleteAttachment(rowc.item, criteria)"
                       />
                     </template>
                   </b-table>
@@ -227,7 +228,7 @@
                       <b-button
                         size="14"
                         variant="outline-secondary"
-                        @click="uploadFile(row.item)"
+                        @click="uploadFile(row.item, criteria)"
                       >
                         Upload
                       </b-button>
@@ -395,8 +396,14 @@ import { quillEditor } from 'vue-quill-editor'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 import AppCollapse from '@core/components/app-collapse/AppCollapse.vue'
 import AppCollapseItem from '@core/components/app-collapse/AppCollapseItemCustom.vue'
+import Vue from 'vue'
+import VueCookies from 'vue-cookies'
 import masterFaStoreModule from './masterFaStoreModule'
 import { codeFormatterCallback, codeRowDetailsSupport } from './code'
+
+Vue.use(VueCookies)
+// set default config
+Vue.$cookies.config('7d')
 
 export default {
   directives: {
@@ -517,6 +524,12 @@ export default {
   },
   computed: {
   },
+  mounted() {
+    // eslint-disable-next-line prefer-arrow-callback
+    this.$nextTick(function () {
+      this.activateAccordion()
+    })
+  },
   setup() {
     const FA_APP_STORE_MODULE_NAME = 'app-fa'
 
@@ -543,6 +556,8 @@ export default {
     // eslint-disable-next-line
     submitComment(criteria) {
       this.isLoading = true
+      this.updateCriteriaId(criteria)
+
       const initCommentData = {
         criteriaScoringID: criteria.id,
         comment: this.criteriaComment,
@@ -561,11 +576,13 @@ export default {
           this.showToast('danger', 'Cannot Save', 'There is error when submit comment, contact administrator')
         })
     },
-    uploadFile(document) {
+    uploadFile(document, criteria) {
       if (document.files === undefined) {
         return
       }
       this.isLoading = true
+      this.updateCriteriaId(criteria)
+
       const request = new FormData()
       for (let i = 0; i < document.files.length; i += 1) {
         request.append('files', document.files[i])
@@ -604,8 +621,10 @@ export default {
         this.showToast('danger', 'Cannot Load Attachment', 'There is error when load attachment, contact administrator')
       })
     },
-    deleteAttachment(attachment) {
+    deleteAttachment(attachment, criteria) {
       this.isLoading = true
+      this.updateCriteriaId(criteria)
+
       this.$http.delete(`/engine-rest/new-building/attachments/${attachment.id}`).then(() => {
         this.isLoading = false
         this.rerenderCriteria()
@@ -617,6 +636,8 @@ export default {
     },
     reviewCriteria(criteria) {
       this.isLoading = true
+      this.updateCriteriaId(criteria)
+
       const request = new FormData()
       request.append('task_id', router.currentRoute.params.id)
       request.append('approval_status', criteria.approval_status)
@@ -642,6 +663,9 @@ export default {
     },
     rerenderCriteria() {
       this.rerenderCriteriaParent()
+    },
+    updateCriteriaId(criteria) {
+      Vue.$cookies.set('_admin_fa_criteria_id', criteria.id)
     },
     forceRerenderComment() {
       this.commentKey += 1
@@ -673,6 +697,12 @@ export default {
       }
 
       return scoreArray
+    },
+    activateAccordion() {
+      const criteriaId = Vue.$cookies.get('_admin_fa_criteria_id')
+      if (this.$refs[`collapse-item-ref-${criteriaId}`] !== undefined) {
+        this.$refs[`collapse-item-ref-${criteriaId}`][0].updateVisible(true)
+      }
     },
   },
 }

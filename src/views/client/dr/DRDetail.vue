@@ -446,7 +446,6 @@ export default {
       criteriaComment: '',
       commentCheckmark: '',
       commentKey: 0,
-      selectedCriteria: null,
       docFields: [
         'show_attachment',
         { key: 'document.name', label: 'Document Name' },
@@ -634,7 +633,7 @@ export default {
       this.rerenderCriteriaParent()
     },
     updateCriteriaId(criteria) {
-      Vue.$cookies.set('_criteria_id', criteria.id)
+      Vue.$cookies.set('_client_dr_criteria_id', criteria.id)
     },
     forceRerenderComment() {
       this.commentKey += 1
@@ -665,7 +664,7 @@ export default {
       return scoreArray
     },
     activateAccordion() {
-      const criteriaId = Vue.$cookies.get('_criteria_id')
+      const criteriaId = Vue.$cookies.get('_client_dr_criteria_id')
       if (this.$refs[`collapse-item-ref-${criteriaId}`] !== undefined) {
         this.$refs[`collapse-item-ref-${criteriaId}`][0].updateVisible(true)
       }
