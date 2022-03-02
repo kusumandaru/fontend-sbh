@@ -9299,6 +9299,11 @@
   dependencies:
     "vue-clickaway" "^2.2.2"
 
+"vue-cookies@^1.7.4":
+  "integrity" "sha512-mOS5Btr8V9zvAtkmQ7/TfqJIropOx7etDAgBywPCmHjvfJl2gFbH2XgoMghleLoyyMTi5eaJss0mPN7arMoslA=="
+  "resolved" "https://registry.npmjs.org/vue-cookies/-/vue-cookies-1.7.4.tgz"
+  "version" "1.7.4"
+
 "vue-demi@latest":
   "integrity" "sha512-7s1lufRD2l369eFWPjgLvhqCRk0XzGWJsQc7K4q+0mZtixyGIvsK1Cg88P4NcaRIEiBuuN4q1NN4SZKFKwQswA=="
   "resolved" "https://registry.npmjs.org/vue-demi/-/vue-demi-0.9.1.tgz"
