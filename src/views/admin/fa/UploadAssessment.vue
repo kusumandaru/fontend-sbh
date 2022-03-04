@@ -25,6 +25,30 @@
         </b-card>
       </b-card-text>
     </b-form-group>
+
+    <!-- Spacer -->
+    <hr class="project-spacing">
+
+    <b-card no-body>
+      <b-card-text
+        class="mb-0"
+      >
+        <span class="font-weight-bold">Berkas : </span>
+        <b-button
+          variant="gradient-primary"
+          :disabled="isLoading"
+          @click="downloadAllFiles()"
+        >
+          <feather-icon icon="ArchiveIcon" />
+          Download All Final Assessment Document
+          <b-spinner
+            v-show="isLoading"
+            small
+            type="grow"
+          />
+        </b-button>
+      </b-card-text>
+    </b-card>
   </b-col>
 </template>
 
@@ -36,6 +60,7 @@ import {
   BTable,
   BLink,
   BCard,
+  BSpinner,
 } from 'bootstrap-vue'
 import {
   ref, onUnmounted,
@@ -54,6 +79,7 @@ export default {
     BTable,
     BLink,
     BCard,
+    BSpinner,
   },
   directives: {
     Ripple,
@@ -92,6 +118,51 @@ export default {
     }
     const projectAssessment = ref(JSON.parse(JSON.stringify(blankProjectAssessment)))
     const projectAttachments = ref(JSON.parse('[]'))
+    const blankAdminData = {
+      manager_name: '',
+      manager_signature: '',
+      registration_letter: '',
+      first_attachment: '',
+      second_attachment: '',
+      third_attachment: '',
+      dr_template_id: '',
+      fa_template_id: '',
+    }
+    const adminData = ref(JSON.parse(JSON.stringify(blankAdminData)))
+    const isLoading = ref(null)
+
+    const downloadAllFiles = () => {
+      isLoading.value = true
+
+      store.dispatch('app-fa/downloadAllScoringFiles', {
+        id: router.currentRoute.params.id,
+        templateId: adminData.value.dr_template_id,
+      })
+        .then(response => {
+          isLoading.value = false
+
+          const blob = new Blob([response.data], { type: 'application/zip' })
+          const url = window.URL.createObjectURL(blob)
+
+          // window.open(url)
+          const downloadLink = document.createElement('a')
+          downloadLink.href = url
+
+          document.body.appendChild(downloadLink)
+          downloadLink.click()
+          document.body.removeChild(downloadLink)
+        })
+        .catch(error => {
+          isLoading.value = false
+
+          if (error.response.status === 404) {
+            console.error(error)
+          }
+          if (error.response.status === 500) {
+            console.error(error)
+          }
+        })
+    }
 
     // Register module
     if (!store.hasModule(FA_APP_STORE_MODULE_NAME)) store.registerModule(FA_APP_STORE_MODULE_NAME, masterFaStoreModule)
@@ -122,9 +193,24 @@ export default {
         }
       })
 
+    store.dispatch('app-fa/fetchAdminData')
+      .then(response => {
+        adminData.value = response.data
+      })
+      .catch(error => {
+        if (error.response.status === 404) {
+          adminData.value = undefined
+        }
+        if (error.response.status === 500) {
+          adminData.value = undefined
+        }
+      })
+
     return {
       projectAssessment,
       projectAttachments,
+      downloadAllFiles,
+      isLoading,
     }
   },
   methods: {
