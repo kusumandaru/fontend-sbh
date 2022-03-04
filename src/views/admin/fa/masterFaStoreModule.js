@@ -118,5 +118,23 @@ export default {
           .catch(error => reject(error))
       })
     },
+    downloadAllScoringFiles(ctx, { id, templateId }) {
+      return new Promise((resolve, reject) => {
+        axios({
+          method: 'get',
+          url: `/engine-rest/new-building/project/attachments/${id}/archived_scoring/${templateId}`,
+          responseType: 'arraybuffer',
+        }).then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    fetchAdminData() {
+      return new Promise((resolve, reject) => {
+        axios
+          .get('engine-rest/master/master_admins')
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
   },
 }

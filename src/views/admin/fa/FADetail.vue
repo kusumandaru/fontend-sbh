@@ -526,7 +526,7 @@ export default {
   },
   mounted() {
     // eslint-disable-next-line prefer-arrow-callback
-    this.$nextTick(function () {
+    this.$nextTick(() => {
       this.activateAccordion()
     })
   },
