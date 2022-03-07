@@ -10,6 +10,24 @@
     >
       Download template form penilaian
     </b-button>
+    <b-modal
+      id="modal-success"
+      v-model.lazy="isLoading"
+      modal-class="modal-success"
+      centered
+      title="Download in progress"
+      hide-footer
+      hide-header-close
+      no-close-on-backdrop
+      no-close-on-esc
+    >
+      <b-card-text>
+        <h5>
+          Waiting to collect all attachment and compress
+          <b-spinner v-show="isLoading" />
+        </h5>
+      </b-card-text>
+    </b-modal>
     <b-form-group>
       <label>Upload Dokumen Penilaian</label>
       <b-input-group>
@@ -71,7 +89,7 @@
       <b-card-text
         class="mb-0"
       >
-        <span class="font-weight-bold">Berkas : </span>
+        <span class="font-weight-bold"></span>
         <b-button
           variant="gradient-primary"
           :disabled="isLoading"
@@ -79,11 +97,6 @@
         >
           <feather-icon icon="ArchiveIcon" />
           Download All Design Recognition Document
-          <b-spinner
-            v-show="isLoading"
-            small
-            type="grow"
-          />
         </b-button>
       </b-card-text>
     </b-card>
@@ -100,6 +113,7 @@ import {
   BInputGroup,
   BInputGroupAppend,
   BTable,
+  BModal,
   BLink,
   BCard,
   BSpinner,
@@ -123,6 +137,7 @@ export default {
     BInputGroup,
     BInputGroupAppend,
     BTable,
+    BModal,
     BLink,
     BCard,
     BSpinner,
