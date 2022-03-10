@@ -6,7 +6,7 @@
       v-model.lazy="isLoading"
       modal-class="modal-success"
       centered
-      title="Download in progress"
+      title="Processing in background"
       hide-footer
       hide-header-close
       no-close-on-backdrop
@@ -14,7 +14,7 @@
     >
       <b-card-text>
         <h5>
-          Waiting to collect all attachment and compress
+          Waiting to process ...
           <b-spinner v-show="isLoading" />
         </h5>
       </b-card-text>
@@ -47,13 +47,16 @@
     <!-- Spacer -->
     <hr class="project-spacing">
 
-    <b-card no-body>
+    <b-card
+      no-body
+      style="background: #f6f6f6"
+    >
       <b-card-text
         class="mb-0"
       >
-        <span class="font-weight-bold"></span>
+        <span class="font-weight-bold" />
         <b-button
-          variant="gradient-primary"
+          variant="light"
           :disabled="isLoading"
           @click="downloadAllFiles()"
         >
