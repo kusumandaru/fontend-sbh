@@ -14,49 +14,50 @@
           >
             <div class="pricing-trial-content justify-content-between">
               <div class="text-center mt-3">
-                <h3 class="text-secondary">
+                <h3
+                  v-if="!eligibleApprove.eligible"
+                  class="text-secondary"
+                >
                   Lakukan penilaian untuk semua task dengan status Under Review
+                </h3>
+                <h3
+                  v-if="eligibleApprove.eligible"
+                  class="text-secondary"
+                >
+                  Setujui atau tolak penilaian
                 </h3>
                 <h5 v-if="!eligibleApprove.eligible">
                   Prequisite code harus direview {{ criteriaCodes }}
                 </h5>
                 <b-form-group>
-                  <v-select
-                    v-if="eligibleApprove.eligible"
-                    v-model="approvalStatus"
-                    :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                    :options="approvalOptions"
-                    :reduce="val => val.value"
-                    :clearable="false"
-                    :disabled="!eligibleApprove.eligible"
-                    input-id="approval-status"
-                    label="text"
-                    code="value"
-                  >
-                    <template #option="{ text, icon }">
-                      <feather-icon
-                        :icon="icon"
-                        size="16"
-                        class="align-middle mr-50"
-                      />
-                      <span> {{ text }}</span>
-                    </template>
-                  </v-select>
                   <b-form-textarea
-                    v-if="!approvalStatus"
-                    v-model="rejectedReason"
-                    placeholder="Rejected Reason"
+                    v-if="eligibleApprove.eligible"
+                    v-model="reviewReason"
+                    placeholder="Reason"
                     rows="3"
                   />
-                  <b-button
-                    v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-                    :variant="eligibleApprove.eligible ? 'primary' : 'danger'"
-                    class="mt-2 mt-lg-3"
-                    :disabled="!eligibleApprove.eligible"
-                    @click="reviewProjectDR"
-                  >
-                    Submit Design Recognition
-                  </b-button>
+                  <div class="demo-inline-spacing d-flex align-items-center justify-content-center mb-5 pb-50">
+                    <b-button
+                      v-if="eligibleApprove.eligible"
+                      v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+                      variant="primary"
+                      class="mt-2 mt-lg-3"
+                      :disabled="!eligibleApprove.eligible"
+                      @click="reviewProjectDR(true)"
+                    >
+                      Approve Design Recognition
+                    </b-button>
+                    <b-button
+                      v-if="eligibleApprove.eligible"
+                      v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+                      variant="danger"
+                      class="mt-2 mt-lg-3"
+                      :disabled="!eligibleApprove.eligible"
+                      @click="reviewProjectDR(false)"
+                    >
+                      Reject Design Recognition
+                    </b-button>
+                  </div>
                 </b-form-group>
               </div>
             </div>
@@ -99,7 +100,6 @@ import {
 import {
   ref, onUnmounted,
 } from '@vue/composition-api'
-import vSelect from 'vue-select'
 import router from '@/router'
 import store from '@/store'
 import Ripple from 'vue-ripple-directive'
@@ -116,7 +116,6 @@ export default {
     BCardText,
     BFormGroup,
     BFormTextarea,
-    vSelect,
   },
   directives: {
     Ripple,
@@ -127,7 +126,7 @@ export default {
       isLoading: false,
       resultId: null,
       approvalStatus: true,
-      rejectedReason: '',
+      reviewReason: '',
       approvalOptions: [
         {
           value: false,
@@ -190,12 +189,12 @@ export default {
         },
       })
     },
-    reviewProjectDR() {
+    reviewProjectDR(approvalStatus) {
       this.isLoading = true
 
       const request = new FormData()
-      request.append('approval_status', this.approvalStatus)
-      request.append('rejected_reason', this.rejectedReason)
+      request.append('approval_status', approvalStatus)
+      request.append('review_reason', this.reviewReason)
       request.append('task_id', router.currentRoute.params.id)
       const config = {
         header: {

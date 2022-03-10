@@ -13,6 +13,10 @@
           no-body
           class="project-preview-card"
         >
+          <!-- alert -->
+          <alert :key="alertKey" />
+          <!-- alert -->
+
           <b-card-body class="project-padding pb-0">
             <div class="d-flex justify-content-between flex-md-row flex-column project-spacing mt-0">
               <!-- Header: Left Content -->
@@ -133,6 +137,7 @@ import CardAnalyticGoalOverview from './CardAnalyticGoalOverview.vue'
 import CardStatistic from './CardStatistic.vue'
 import UploadAssessment from './UploadAssessment.vue'
 import EligibleSubmit from './EligibleSubmit.vue'
+import Alert from './Alert.vue'
 
 export default {
   components: {
@@ -144,6 +149,7 @@ export default {
     CardStatistic,
     UploadAssessment,
     EligibleSubmit,
+    Alert,
   },
   directives: {
     Ripple,
@@ -154,6 +160,7 @@ export default {
       scoreKey: 0,
       cardStatisticKey: 0,
       uploadAssessmentKey: 0,
+      alertKey: 0,
     }
   },
   computed: {

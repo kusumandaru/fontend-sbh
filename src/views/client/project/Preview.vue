@@ -14,30 +14,9 @@
           no-body
           class="project-preview-card"
         >
-          <alert :key="alertKey" />
-
           <!-- alert -->
-          <!-- <b-col
-            v-if="projectData.approved == false"
-            cols="12"
-            class="mt-75"
-          >
-            <b-alert
-              show
-              variant="warning"
-              class="mb-50"
-            >
-              <h4 class="alert-heading">
-                Your request is Rejected
-              </h4>
-              <div class="alert-body">
-                <b-link class="alert-link">
-                  {{ projectData.rejected_reason }}
-                </b-link>
-              </div>
-            </b-alert>
-          </b-col> -->
-          <!--/ alert -->
+          <alert :key="alertKey" />
+          <!-- alert -->
 
           <!-- Header -->
           <b-card-body class="project-padding pb-0">

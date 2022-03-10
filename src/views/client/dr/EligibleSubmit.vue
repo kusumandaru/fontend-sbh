@@ -14,8 +14,17 @@
           >
             <div class="pricing-trial-content justify-content-between">
               <div class="text-center mt-3">
-                <h3 class="text-secondary">
+                <h3
+                  v-if="!eligibleSubmission.attachment"
+                  class="text-secondary"
+                >
                   Minimum nilai skor bronze, pemilihan penilaian prequisite dan form penilaian yang telah diupload diperlukan untuk submit Design Recognition
+                </h3>
+                <h3
+                  v-if="eligibleSubmission.attachment"
+                  class="text-secondary"
+                >
+                  Submit Design Recognition to Approver
                 </h3>
                 <h5 v-if="!eligibleSubmission.attachment">
                   Form Penilaian belum diupload
