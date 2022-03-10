@@ -74,6 +74,7 @@
         modal-class="modal-success"
         centered
         title="Success Modal"
+        hide-header-close
         @ok="gotoIndex"
       >
         <b-card-text>
