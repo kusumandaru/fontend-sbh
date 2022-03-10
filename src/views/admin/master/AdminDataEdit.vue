@@ -342,6 +342,7 @@
         modal-class="modal-success"
         centered
         title="Success Modal"
+        hide-header-close
         @ok="showAdminData"
       >
         <b-card-text>

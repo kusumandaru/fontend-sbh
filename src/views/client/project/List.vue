@@ -22,6 +22,7 @@
         modal-class="modal-success"
         centered
         title="Diagram Modal"
+        hide-header-close
         size="lg"
       >
         <b-card-text>
