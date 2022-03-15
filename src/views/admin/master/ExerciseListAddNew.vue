@@ -85,6 +85,79 @@
             </b-form-group>
           </validation-provider>
 
+          <!-- Exercise Type -->
+          <validation-provider
+            #default="validationContext"
+            name="Exercise Type"
+            rules="required"
+          >
+            <b-form-group
+              label="Exercise Type"
+              label-for="exercise-type"
+            >
+              <v-select
+                v-model="exerciseData.exerciseType"
+                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                :options="exerciseTypeOptions"
+                :reduce="val => val.value"
+                :clearable="false"
+                input-id="exercise-type"
+              />
+
+              <b-form-invalid-feedback>
+                {{ validationContext.errors[0] }}
+              </b-form-invalid-feedback>
+            </b-form-group>
+          </validation-provider>
+
+          <!-- Max Score -->
+          <validation-provider
+            v-if="validationMaxScore"
+            #default="validationContext"
+            name="Score"
+            :rules="validationMaxScore ? 'required' : ''"
+          >
+            <b-form-group
+              label="Max Score"
+              label-for="max-score"
+            >
+              <b-form-input
+                id="score"
+                v-model="exerciseData.maxScore"
+                :state="getValidationState(validationContext)"
+                type="number"
+                trim
+              />
+
+              <b-form-invalid-feedback>
+                {{ validationContext.errors[0] }}
+              </b-form-invalid-feedback>
+            </b-form-group>
+          </validation-provider>
+
+          <!-- Active -->
+          <validation-provider
+            #default="validationContext"
+            name="Active"
+          >
+            <b-form-group
+              label="Active"
+              label-for="active"
+            >
+              <b-form-checkbox
+                id="exercise-active"
+                v-model="exerciseData.active"
+                switch
+                inline
+              >
+                Active
+              </b-form-checkbox>
+              <b-form-invalid-feedback>
+                {{ validationContext.errors[0] }}
+              </b-form-invalid-feedback>
+            </b-form-group>
+          </validation-provider>
+
           <!-- Form Actions -->
           <div class="d-flex mt-2">
             <b-button
@@ -113,7 +186,7 @@
 
 <script>
 import {
-  BSidebar, BForm, BFormGroup, BFormInput, BFormInvalidFeedback, BButton,
+  BSidebar, BForm, BFormCheckbox, BFormGroup, BFormInput, BFormInvalidFeedback, BButton,
 } from 'bootstrap-vue'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import { ref } from '@vue/composition-api'
@@ -121,16 +194,19 @@ import { required, alphaNum, email } from '@validations'
 import router from '@/router'
 import formValidation from '@core/comp-functions/forms/form-validation'
 import Ripple from 'vue-ripple-directive'
+import vSelect from 'vue-select'
 import store from '@/store'
 
 export default {
   components: {
     BSidebar,
     BForm,
+    BFormCheckbox,
     BFormGroup,
     BFormInput,
     BFormInvalidFeedback,
     BButton,
+    vSelect,
     // Form Validation
     ValidationProvider,
     ValidationObserver,
@@ -147,6 +223,10 @@ export default {
       type: Boolean,
       required: true,
     },
+    exerciseTypeOptions: {
+      type: Array,
+      required: true,
+    },
   },
   data() {
     return {
@@ -160,6 +240,9 @@ export default {
       code: '',
       name: '',
       masterEvaluationID: `${router.currentRoute.params.evaluationId}`,
+      active: true,
+      maxScore: null,
+      exerciseType: 'score',
     }
 
     const exerciseData = ref(JSON.parse(JSON.stringify(blankExerciseData)))
@@ -189,6 +272,11 @@ export default {
       getValidationState,
       resetForm,
     }
+  },
+  computed: {
+    validationMaxScore() {
+      return this.exerciseData.exerciseType !== 'prequisite'
+    },
   },
 }
 </script>

@@ -299,6 +299,10 @@ export default {
           field: 'not_available',
         },
         {
+          label: 'Active',
+          field: 'active',
+        },
+        {
           label: 'Created At',
           field: 'created_at',
         },

@@ -82,6 +82,94 @@
               </validation-provider>
             </b-col>
 
+            <!-- Exercise Type -->
+            <b-col
+              cols="12"
+              md="4"
+            >
+              <validation-provider
+                #default="validationContext"
+                name="Exercise Type"
+                rules="required"
+              >
+                <b-form-group
+                  label="Exercise Type"
+                  label-for="exercise-type"
+                >
+                  <v-select
+                    v-model="exerciseData.exercise_type"
+                    :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                    :options="exerciseTypeOptions"
+                    :reduce="val => val.value"
+                    :clearable="false"
+                    input-id="exercise-type"
+                  />
+
+                  <b-form-invalid-feedback>
+                    {{ validationContext.errors[0] }}
+                  </b-form-invalid-feedback>
+                </b-form-group>
+              </validation-provider>
+            </b-col>
+
+            <!-- Max Score -->
+            <b-col
+              cols="12"
+              md="4"
+            >
+              <validation-provider
+                v-if="validationMaxScore"
+                #default="validationContext"
+                name="Score"
+                :rules="validationMaxScore ? 'required' : ''"
+              >
+                <b-form-group
+                  label="Max Score"
+                  label-for="max-score"
+                >
+                  <b-form-input
+                    id="score"
+                    v-model="exerciseData.max_score"
+                    :state="getValidationState(validationContext)"
+                    type="number"
+                    trim
+                  />
+
+                  <b-form-invalid-feedback>
+                    {{ validationContext.errors[0] }}
+                  </b-form-invalid-feedback>
+                </b-form-group>
+              </validation-provider>
+            </b-col>
+
+            <!-- Field: Active-->
+            <b-col
+              cols="12"
+              md="4"
+            >
+              <validation-provider
+                #default="validationContext"
+                name="Exercise Active"
+              >
+                <b-form-group
+                  label="Exercise Active"
+                  label-for="exercise-active"
+                >
+                  <b-form-checkbox
+                    id="exercise-active"
+                    v-model="exerciseData.active"
+                    switch
+                    inline
+                  >
+                    Active
+                  </b-form-checkbox>
+                  <b-form-invalid-feedback>
+                    {{ validationContext.errors[0] }}
+                  </b-form-invalid-feedback>
+                </b-form-group>
+              </validation-provider>
+            </b-col>
+
           </b-row>
           <div class="d-flex mt-2">
             <b-button
@@ -109,7 +197,7 @@
 
 <script>
 import {
-  BTab, BTabs, BCard, BAlert, BLink, BFormInput, BButton, BCol, BFormGroup, BRow, BForm, BFormInvalidFeedback,
+  BTab, BTabs, BCard, BAlert, BLink, BFormInput, BButton, BCol, BFormCheckbox, BFormGroup, BRow, BForm, BFormInvalidFeedback,
 } from 'bootstrap-vue'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import { ref, onUnmounted } from '@vue/composition-api'
@@ -128,6 +216,7 @@ export default {
     BCard,
     BAlert,
     BLink,
+    BFormCheckbox,
     BFormInput,
     BButton,
     BCol,
@@ -148,15 +237,24 @@ export default {
       code: '',
       name: '',
       master_evaluation_id: '',
+      active: true,
+      max_score: null,
+      exercise_type: '',
     }
 
     const exerciseData = ref(JSON.parse(JSON.stringify(blankExerciseData)))
     const resetexerciseData = () => {
       exerciseData.value = JSON.parse(JSON.stringify(blankExerciseData))
     }
+    const exerciseTypeOptions = [
+      { label: 'Prequisite', value: 'prequisite' },
+      { label: 'Score', value: 'score' },
+    ]
     const USER_APP_STORE_MODULE_NAME = 'app-exercise'
     const onSubmit = () => {
       exerciseData.value.masterEvaluationID = exerciseData.value.master_evaluation_id
+      exerciseData.value.exerciseType = exerciseData.value.exercise_type
+      exerciseData.value.maxScore = exerciseData.value.max_score
 
       store.dispatch('app-exercise/editExercise', { exerciseId: router.currentRoute.params.exerciseId, exerciseData: exerciseData.value })
         .then(() => {
@@ -188,12 +286,18 @@ export default {
     return {
       blankExerciseData,
       exerciseData,
+      exerciseTypeOptions,
       onSubmit,
       resetexerciseData,
       refFormObserver,
       getValidationState,
       resetForm,
     }
+  },
+  computed: {
+    validationMaxScore() {
+      return this.exerciseData.exercise_type !== 'prequisite'
+    },
   },
   methods: {
     cancel() {

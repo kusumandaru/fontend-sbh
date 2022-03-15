@@ -87,6 +87,29 @@
             </b-form-group>
           </validation-provider>
 
+          <!-- Active -->
+          <validation-provider
+            #default="validationContext"
+            name="Active"
+          >
+            <b-form-group
+              label="Active"
+              label-for="active"
+            >
+              <b-form-checkbox
+                id="template-active"
+                v-model="templateData.active"
+                switch
+                inline
+              >
+                Active
+              </b-form-checkbox>
+              <b-form-invalid-feedback>
+                {{ validationContext.errors[0] }}
+              </b-form-invalid-feedback>
+            </b-form-group>
+          </validation-provider>
+
           <!-- Form Actions -->
           <div class="d-flex mt-2">
             <b-button
@@ -115,7 +138,7 @@
 
 <script>
 import {
-  BSidebar, BForm, BFormGroup, BFormInput, BFormInvalidFeedback, BButton,
+  BSidebar, BForm, BFormCheckbox, BFormGroup, BFormInput, BFormInvalidFeedback, BButton,
 } from 'bootstrap-vue'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import { ref } from '@vue/composition-api'
@@ -130,6 +153,7 @@ export default {
   components: {
     BSidebar,
     BForm,
+    BFormCheckbox,
     BFormGroup,
     BFormInput,
     BFormInvalidFeedback,
@@ -168,6 +192,7 @@ export default {
       projectType: '',
       projectVersion: '',
       masterVendorID: `${router.currentRoute.params.vendorId}`,
+      active: true,
     }
 
     const templateData = ref(JSON.parse(JSON.stringify(blankTemplateData)))
