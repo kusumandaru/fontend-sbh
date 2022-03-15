@@ -218,6 +218,10 @@ export default {
           field: 'description',
         },
         {
+          label: 'Active',
+          field: 'active',
+        },
+        {
           label: 'Created At',
           field: 'created_at',
         },

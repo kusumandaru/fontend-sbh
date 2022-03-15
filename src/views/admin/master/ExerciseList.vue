@@ -2,6 +2,7 @@
   <div>
     <exercise-list-add-new
       :is-add-new-exercise-sidebar-active.sync="isAddNewExerciseSidebarActive"
+      :exercise-type-options="exerciseTypeOptions"
       @refetch-data="refetchData"
     />
 
@@ -205,6 +206,11 @@ export default {
 
     const isAddNewExerciseSidebarActive = ref(false)
 
+    const exerciseTypeOptions = [
+      { label: 'Score', value: 'score' },
+      { label: 'Prequisite', value: 'prequisite' },
+    ]
+
     const {
       resolveProjectTypeIcon,
       resolveProjectTypeVariant,
@@ -215,6 +221,7 @@ export default {
     return {
       // Sidebar
       isAddNewExerciseSidebarActive,
+      exerciseTypeOptions,
       refExerciseListTable,
       resolveProjectTypeIcon,
       resolveProjectTypeVariant,
@@ -244,6 +251,10 @@ export default {
             enabled: true,
             placeholder: 'Search Name',
           },
+        },
+        {
+          label: 'Active',
+          field: 'active',
         },
         {
           label: 'Created At',

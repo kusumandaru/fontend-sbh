@@ -174,6 +174,29 @@
             </b-form-group>
           </validation-provider>
 
+          <!-- Active -->
+          <validation-provider
+            #default="validationContext"
+            name="Active"
+          >
+            <b-form-group
+              label="Active"
+              label-for="active"
+            >
+              <b-form-checkbox
+                id="criteria-active"
+                v-model="criteriaData.active"
+                switch
+                inline
+              >
+                Active
+              </b-form-checkbox>
+              <b-form-invalid-feedback>
+                {{ validationContext.errors[0] }}
+              </b-form-invalid-feedback>
+            </b-form-group>
+          </validation-provider>
+
           <!-- Form Actions -->
           <div class="d-flex mt-2">
             <b-button
@@ -267,6 +290,7 @@ export default {
       additionalNotes: '',
       notAvailable: false,
       masterExerciseID: `${router.currentRoute.params.exerciseId}`,
+      active: true,
     }
 
     const editorOption = {

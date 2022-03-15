@@ -267,6 +267,10 @@ export default {
           },
         },
         {
+          label: 'Active',
+          field: 'active',
+        },
+        {
           label: 'Created At',
           field: 'created_at',
         },

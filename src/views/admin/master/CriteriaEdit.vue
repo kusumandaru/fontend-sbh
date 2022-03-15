@@ -197,6 +197,34 @@
               </validation-provider>
             </b-col>
 
+            <!-- Field: Active-->
+            <b-col
+              cols="12"
+              md="4"
+            >
+              <validation-provider
+                #default="validationContext"
+                name="Criteria Active"
+              >
+                <b-form-group
+                  label="Criteria Active"
+                  label-for="criteria-active"
+                >
+                  <b-form-checkbox
+                    id="criteria-active"
+                    v-model="criteriaData.active"
+                    switch
+                    inline
+                  >
+                    Active
+                  </b-form-checkbox>
+                  <b-form-invalid-feedback>
+                    {{ validationContext.errors[0] }}
+                  </b-form-invalid-feedback>
+                </b-form-group>
+              </validation-provider>
+            </b-col>
+
           </b-row>
           <div class="d-flex mt-2">
             <b-button
@@ -224,7 +252,7 @@
 
 <script>
 import {
-  BTab, BTabs, BCard, BAlert, BLink, BFormInput, BButton, BCol, BFormGroup, BRow, BForm, BFormInvalidFeedback, BFormCheckbox,
+  BTab, BTabs, BCard, BAlert, BLink, BFormInput, BButton, BCol, BFormGroup, BRow, BForm, BFormCheckbox, BFormInvalidFeedback,
 } from 'bootstrap-vue'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import { ref, onUnmounted } from '@vue/composition-api'
@@ -275,6 +303,7 @@ export default {
       additional_notes: '',
       not_available: false,
       masterExerciseID: `${router.currentRoute.params.exerciseId}`,
+      active: true,
     }
 
     const editorOption = {

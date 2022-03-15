@@ -106,6 +106,34 @@
                 </b-form-group>
               </validation-provider>
             </b-col>
+
+            <!-- Field: Active-->
+            <b-col
+              cols="12"
+              md="4"
+            >
+              <validation-provider
+                #default="validationContext"
+                name="Vendor Active"
+              >
+                <b-form-group
+                  label="Vendor Active"
+                  label-for="vendor-active"
+                >
+                  <b-form-checkbox
+                    id="vendor-active"
+                    v-model="vendorData.active"
+                    switch
+                    inline
+                  >
+                    Active
+                  </b-form-checkbox>
+                  <b-form-invalid-feedback>
+                    {{ validationContext.errors[0] }}
+                  </b-form-invalid-feedback>
+                </b-form-group>
+              </validation-provider>
+            </b-col>
           </b-row>
           <div class="d-flex mt-2">
             <b-button
@@ -133,7 +161,7 @@
 
 <script>
 import {
-  BTab, BTabs, BCard, BAlert, BLink, BFormInput, BButton, BCol, BFormGroup, BRow, BForm, BFormInvalidFeedback,
+  BTab, BTabs, BCard, BAlert, BLink, BFormInput, BButton, BCol, BFormGroup, BRow, BForm, BFormInvalidFeedback, BFormCheckbox,
 } from 'bootstrap-vue'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import { ref, onUnmounted } from '@vue/composition-api'
@@ -152,6 +180,7 @@ export default {
     BAlert,
     BLink,
     BFormInput,
+    BFormCheckbox,
     BButton,
     BCol,
     BFormGroup,
@@ -170,6 +199,7 @@ export default {
       vendor_name: '',
       vendor_code: '',
       description: '',
+      active: true,
     }
 
     const vendorData = ref(JSON.parse(JSON.stringify(blankVendorData)))
