@@ -2,17 +2,6 @@
   <div>
     <!-- input search -->
     <div class="custom-search d-flex justify-content-end">
-      <b-form-group>
-        <div class="d-flex align-items-center">
-          <label class="mr-1">Search</label>
-          <b-form-input
-            v-model="searchTerm"
-            placeholder="Search"
-            type="text"
-            class="d-inline-block"
-          />
-        </div>
-      </b-form-group>
       <b-modal
         id="modal-success"
         v-model="diagramShow"
@@ -36,7 +25,11 @@
       </b-modal>
     </div>
     <!-- table -->
+    <!--  eslint-disable vue/attribute-hyphenation -->
     <vue-good-table
+      mode="remote"
+      :totalRows="totalRecords"
+      :isLoading.sync="isLoading"
       :columns="columns"
       :rows="rows"
       :rtl="direction"
@@ -47,7 +40,15 @@
         enabled: true,
         perPage:pageLength
       }"
+      :sort-options="{
+        enabled: false,
+      }"
+      @on-page-change="onPageChange"
+      @on-sort-change="onSortChange"
+      @on-column-filter="onColumnFilter"
+      @on-per-page-change="onPerPageChange"
     >
+      <!--  eslint-enable vue/attribute-hyphenation -->
       <template
         slot="table-row"
         slot-scope="props"
@@ -178,7 +179,7 @@
 
 <script>
 import {
-  BAvatar, BBadge, BCardText, BPagination, BFormGroup, BFormInput, BFormSelect, BTooltip,
+  BAvatar, BBadge, BCardText, BPagination, BFormSelect, BTooltip,
 } from 'bootstrap-vue'
 import { VueGoodTable } from 'vue-good-table'
 import store from '@/store/index'
@@ -194,8 +195,6 @@ export default {
     BCardText,
     BBadge,
     BPagination,
-    BFormGroup,
-    BFormInput,
     BFormSelect,
     BTooltip,
   },
@@ -227,10 +226,6 @@ export default {
         {
           label: 'Building Type',
           field: 'building_type_name',
-          filterOptions: {
-            enabled: true,
-            placeholder: 'Search Building Type',
-          },
         },
         {
           label: ' Building Name',
@@ -266,6 +261,21 @@ export default {
         },
       ],
       rows: [],
+      isLoading: false,
+      totalRecords: 0,
+      serverParams: {
+        columnFilters: {
+        },
+        sort: [
+          {
+            field: 'created_at',
+            type: 'asc',
+          },
+        ],
+        page: 1,
+        firstResult: 1,
+        perPage: 10,
+      },
       taskVariables: [],
       taskDiagrams: {},
       activityInstances: {},
@@ -393,12 +403,15 @@ export default {
     },
   },
   created() {
-    this.retrieveProjects()
+    this.loadItems()
   },
   methods: {
     retrieveProjects() {
-      this.$http.get('engine-rest/new-building/tasks')
-        .then(res => { this.rows = res.data })
+      this.$http.get('engine-rest/new-building/tasks/pagi')
+        .then(res => {
+          this.rows = res.data.sbh_tasks
+          this.totalRecords = res.data.count
+        })
     },
     retrieveDiagrams(processDefinitionId, taskDefinitionKey) {
       this.$http.get(`engine-rest/process-definition/${processDefinitionId}/xml`)
@@ -429,6 +442,52 @@ export default {
       }
       this.$http.post('engine-rest/new-building/read-task', request, config)
       router.push({ name: 'client-project-preview', params: { id: id } })
+    },
+    updateParams(newProps) {
+      // eslint-disable-next-line prefer-object-spread
+      this.serverParams = Object.assign({}, this.serverParams, newProps)
+    },
+    onPageChange(params) {
+      this.updateParams({ page: params.currentPage })
+      this.updateParams({ firstResult: ((params.currentPage - 1) * params.currentPerPage) })
+      this.loadItems()
+    },
+    onPerPageChange(params) {
+      this.updateParams({ perPage: params.currentPerPage })
+      this.updateParams({ firstResult: ((params.currentPage - 1) * params.currentPerPage) })
+      this.loadItems()
+    },
+    onSortChange(params) {
+      this.updateParams({
+        sort: [{
+          type: params[0].type,
+          field: params[0].field,
+        }],
+      })
+      this.loadItems()
+    },
+    onColumnFilter(params) {
+      this.updateParams(params)
+      this.loadItems()
+    },
+
+    // load items is what brings back the rows from server
+    loadItems() {
+      const request = {
+        page: this.serverParams.firstResult,
+        size: this.serverParams.perPage,
+        sort: this.serverParams.sort,
+        filter: this.serverParams.columnFilters,
+      }
+      request.filter.buildingTypeName = request.filter.building_type_name
+      request.filter.buildingName = request.filter.building_name
+      request.filter.certificationType = request.filter.certification_type
+
+      this.$http.post('engine-rest/new-building/tasks/pagi', request)
+        .then(res => {
+          this.totalRecords = res.data.count
+          this.rows = res.data.sbh_tasks
+        })
     },
     /* eslint-enable object-shorthand */
 
