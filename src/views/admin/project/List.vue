@@ -274,7 +274,7 @@ export default {
         ],
         page: 1,
         firstResult: 1,
-        perPage: 10,
+        perPage: 20,
       },
       taskVariables: [],
       taskDiagrams: {},
