@@ -273,7 +273,7 @@ export default {
           },
         ],
         page: 1,
-        firstResult: 1,
+        firstResult: 0,
         perPage: 20,
       },
       taskVariables: [],
