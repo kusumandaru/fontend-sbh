@@ -512,6 +512,18 @@
             Design Recognition Submission
           </b-button>
 
+          <!-- Button: On Site Revision Submission -->
+          <b-button
+            v-if="onSiteRevisionSubmissionShow"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="success"
+            class="mb-75"
+            block
+            @click="onSiteRevisionSubmissionPage"
+          >
+            On Site Revision
+          </b-button>
+
           <!-- Button: Final Assessment-->
           <b-button
             v-if="finalAssessmentShow"
@@ -677,6 +689,9 @@ export default {
     },
     workshopMessageShow() {
       return ['workshop'].includes(this.projectData.definition_key)
+    },
+    onSiteRevisionSubmissionShow() {
+      return ['on-site-revision-submission'].includes(this.projectData.definition_key)
     },
     trialMessageShow() {
       return ['design-recognition-trial', 'final-assessment-trial'].includes(this.projectData.definition_key)
@@ -861,6 +876,18 @@ export default {
       router.push({ name: 'client-project-upload-document', params: { id: router.currentRoute.params.id } })
     }
 
+    const designRecognitionSubmission = () => {
+      router.push({ name: 'client-project-dr-assessment', params: { id: router.currentRoute.params.id } })
+    }
+
+    const onSiteRevisionSubmissionPage = () => {
+      router.push({ name: 'client-project-on-site-revision-submission', params: { id: router.currentRoute.params.id } })
+    }
+
+    const finalAssessmentSubmission = () => {
+      router.push({ name: 'client-project-fa-assessment', params: { id: router.currentRoute.params.id } })
+    }
+
     const downloadFileByAttachment = attachmentId => {
       store.dispatch('app-project/downloadLinkByAttachmentId', {
         taskId: projectData.value.task_id,
@@ -1007,14 +1034,6 @@ export default {
         })
     }
 
-    const designRecognitionSubmission = () => {
-      router.push({ name: 'client-project-dr-assessment', params: { id: router.currentRoute.params.id } })
-    }
-
-    const finalAssessmentSubmission = () => {
-      router.push({ name: 'client-project-fa-assessment', params: { id: router.currentRoute.params.id } })
-    }
-
     const draftRegistrationLetter = () => {
       store.dispatch('app-project/downloadMasterLink', {
         filename: 'registration_letter',
@@ -1097,6 +1116,7 @@ export default {
       latestScoringFormAttachment,
       registeredProjectAttachment,
       designRecognitionSubmission,
+      onSiteRevisionSubmissionPage,
       finalAssessmentSubmission,
       draftRegistrationLetter,
       aboveCheckBuildingTasks,

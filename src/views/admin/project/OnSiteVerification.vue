@@ -1,56 +1,121 @@
 <template>
-  <validation-observer ref="secondPaymentConfirmationRules">
+  <validation-observer ref="onSiteVerificationRules">
     <b-form @submit.prevent>
       <project-header :key="projectHeaderKey" />
 
       <b-row>
-        <!--Second Payment Confirmation Letter Document -->
+        <!--Approver Report -->
+        <b-col
+          v-if="verificatorAttachmentExist"
+          md="12"
+        >
+          <!-- Report -->
+          <b-form-group
+            label="Verificator Report"
+            label-for="verificator-report"
+          >
+            <b-card-text class="mb-0">
+              <b-card no-body>
+                <b-table
+                  responsive
+                  :items="verificatorAttachments"
+                  :fields="projectAttachmentFields"
+                  class="mb-0"
+                >
+                  <template #cell(filename)="doc">
+                    <b-link
+                      class="font-weight-bold d-block text-nowrap"
+                      @click="getAttachment(doc.item)"
+                    >
+                      {{ doc.value }}
+                    </b-link>
+                  </template>
+                </b-table>
+              </b-card>
+            </b-card-text>
+          </b-form-group>
+        </b-col>
+
+        <!--Client Submission -->
+        <b-col
+          v-if="clientAttachmentExist"
+          md="12"
+        >
+          <!-- Report -->
+          <b-form-group
+            label="Client Submission"
+            label-for="client-submission"
+          >
+            <b-card-text class="mb-0">
+              <b-card no-body>
+                <b-table
+                  responsive
+                  :items="clientAttachments"
+                  :fields="projectAttachmentFields"
+                  class="mb-0"
+                >
+                  <template #cell(filename)="doc">
+                    <b-link
+                      class="font-weight-bold d-block text-nowrap"
+                      @click="getAttachment(doc.item)"
+                    >
+                      {{ doc.value }}
+                    </b-link>
+                  </template>
+                </b-table>
+              </b-card>
+            </b-card-text>
+          </b-form-group>
+        </b-col>
+
+        <!--Client Note -->
+        <b-col v-if="projectData.on_site_client_revision_note">
+          <!-- Note -->
+          <b-form-group
+            label="Client Note"
+            label-for="on-site-client-revision-note"
+          >
+            <b-form-textarea
+              id="on-site-client-revision-note"
+              v-model="projectData.on_site_client_revision_note"
+              plaintext
+              rows="5"
+              trim
+            />
+          </b-form-group>
+        </b-col>
+
+        <!--OnSite Verification Document -->
         <b-col md="12">
           <b-form-group>
-            <label>Form Penilaian</label>
+            <label>On Site Verification</label>
             <validation-provider
               #default="{ errors }"
-              name="Form Penilaian"
+              name="On Site Verification"
               rules="required"
             >
               <b-form-file
-                v-model.lazy="scoringFormInput"
-                placeholder="(Mandatory) Upload form penilaian..."
+                v-model="files"
+                placeholder="(Mandatory) Upload verification report..."
                 drop-placeholder="Drop file here..."
+                multiple
               />
               <small class="text-danger">{{ errors[0] }}</small>
-              <b-card-text class="my-1">
-                Selected file: <strong>{{ scoringFormInput ? scoringFormInput.name : '' }}</strong>
-              </b-card-text>
             </validation-provider>
-
-            <b-card-text
-              v-if="scoringForm"
-              class="mb-0"
-            >
-              <b-button
-                v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-                variant="flat-primary"
-                @click="downloadFileByAttachment(scoringForm.id)"
-              >
-                <feather-icon icon="ArchiveIcon" />
-                Download Form Penilaian
-              </b-button>
-            </b-card-text>
           </b-form-group>
         </b-col>
 
         <!--Approved-->
         <b-col cols="12">
           <b-form-group
-            label="Approve second payment"
-            label-for="secondPayment"
-            description="Setujui pembayaran kedua"
+            label="Approve on site verification"
+            label-for="onSiteVerification"
+            description="Setujui verifikasi on site"
           >
             <validation-provider
               #default="{ errors }"
               rules=""
-              name="Second Payment"
+              name="On Site Verification"
             >
               <b-form-checkbox
                 v-model="selectedApproved"
@@ -60,27 +125,27 @@
               />
               <small class="text-danger">{{ errors[0] }}</small>
             </validation-provider>
+          </b-form-group>
+        </b-col>
 
-            <b-table
-              responsive
-              :items="secondPaymentData"
-              :fields="projectAttachmentFields"
-              class="mb-0"
-            >
-              <template #cell(filename)="doc">
-                <b-link
-                  class="font-weight-bold d-block text-nowrap"
-                  @click="downloadFileByAttachment(doc.item.id)"
-                >
-                  {{ doc.value }}
-                </b-link>
-              </template>
-            </b-table>
+        <b-col md="12">
+          <!-- Note -->
+          <b-form-group
+            label="Note"
+            label-for="on-site-note"
+          >
+            <b-form-textarea
+              id="on-site-note"
+              v-model="onSiteNote"
+              placeholder="Note"
+              rows="5"
+              trim
+            />
           </b-form-group>
         </b-col>
 
         <!-- submit and reset -->
-        <b-col>
+        <b-col md="12">
           <b-button
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             type="submit"
@@ -130,6 +195,7 @@
 
 <script>
 import {
+  BCard,
   BCardText,
   BRow,
   BCol,
@@ -137,6 +203,7 @@ import {
   BFormGroup,
   BFormCheckbox,
   BForm,
+  BFormTextarea,
   BLink,
   BTable,
   BButton,
@@ -159,6 +226,7 @@ import ProjectHeader from './ProjectHeader.vue'
 
 export default {
   components: {
+    BCard,
     BCardText,
     BRow,
     BCol,
@@ -168,6 +236,7 @@ export default {
     BFormGroup,
     BFormCheckbox,
     BForm,
+    BFormTextarea,
     BButton,
     BModal,
     BSpinner,
@@ -181,7 +250,7 @@ export default {
   data() {
     return {
       projectHeaderKey: 0,
-      scoringFormInput: null,
+      files: null,
       firstPaymentDocument: null,
       maxChar: 200,
       successShow: false,
@@ -233,14 +302,16 @@ export default {
   },
   setup() {
     const projectData = ref({})
-    const scoringForm = ref({})
-    const secondPaymentData = ref([])
+    const onSiteVerificationData = ref([])
     const PROJECT_APP_STORE_MODULE_NAME = 'app-project'
     const selectedApproved = ref(false)
+    const onSiteNote = ref('')
     const approvedOption = reactive([
       { id: 'true', name: 'Approve' },
       { id: 'false', name: 'Rejected' },
     ])
+    const verificatorAttachments = ref(JSON.parse('[]'))
+    const clientAttachments = ref(JSON.parse('[]'))
 
     // Register module
     if (!store.hasModule(PROJECT_APP_STORE_MODULE_NAME)) store.registerModule(PROJECT_APP_STORE_MODULE_NAME, projectStoreModule)
@@ -263,29 +334,36 @@ export default {
         }
       })
 
-    store.dispatch('app-project/getLatestAttachmentByType', { taskId: router.currentRoute.params.id, fileType: 'second_payment' })
+    store.dispatch('app-project/getAttachmentsByType', { taskId: router.currentRoute.params.id, fileType: 'on_site_client_revision_note' })
       .then(response => {
-        scoringForm.value = response.data
+        onSiteVerificationData.value = response.data
       })
       .catch(error => {
         if (error.response.status === 404) {
-          scoringForm.value = undefined
+          onSiteVerificationData.value = undefined
         }
         if (error.response.status === 500) {
-          scoringForm.value = undefined
+          onSiteVerificationData.value = undefined
         }
       })
 
-    store.dispatch('app-project/getAttachmentsByType', { taskId: router.currentRoute.params.id, fileType: 'second_payment_document' })
+    store.dispatch('app-project/fetchProjectAttachmentsByFileType', { taskId: router.currentRoute.params.id, fileType: 'on_site_verification_submission' })
       .then(response => {
-        secondPaymentData.value = response.data
+        verificatorAttachments.value = response.data
       })
       .catch(error => {
         if (error.response.status === 404) {
-          secondPaymentData.value = undefined
+          verificatorAttachments.value = undefined
         }
-        if (error.response.status === 500) {
-          secondPaymentData.value = undefined
+      })
+
+    store.dispatch('app-project/fetchProjectAttachmentsByFileType', { taskId: router.currentRoute.params.id, fileType: 'on_site_revision_submission' })
+      .then(response => {
+        clientAttachments.value = response.data
+      })
+      .catch(error => {
+        if (error.response.status === 404) {
+          clientAttachments.value = undefined
         }
       })
 
@@ -316,16 +394,21 @@ export default {
 
     return {
       projectData,
-      scoringForm,
-      secondPaymentData,
+      onSiteVerificationData,
       downloadFileByAttachment,
       selectedApproved,
+      onSiteNote,
       approvedOption,
+      verificatorAttachments,
+      clientAttachments,
     }
   },
   computed: {
-    validationSecondPaymentConfirmationLetter() {
-      return this.projectData.scoring_form !== undefined
+    verificatorAttachmentExist() {
+      return Array.isArray(this.verificatorAttachments) && this.verificatorAttachments.length > 0
+    },
+    clientAttachmentExist() {
+      return Array.isArray(this.clientAttachments) && this.clientAttachments.length > 0
     },
   },
   methods: {
@@ -344,20 +427,27 @@ export default {
       })
     },
     submitProject() {
-      this.$refs.secondPaymentConfirmationRules.validate().then(success => {
+      this.$refs.onSiteVerificationRules.validate().then(success => {
         if (success) {
+          if (this.files === undefined && this.files.length < 1) {
+            return
+          }
+
           this.isLoading = true
           const request = new FormData()
           request.append('task_id', router.currentRoute.params.id)
-          request.append('scoring_form', this.scoringFormInput)
-          request.append('approved', this.selectedApproved)
+          for (let i = 0; i < this.files.length; i += 1) {
+            request.append('files', this.files[i])
+          }
+          request.append('approval_status', this.selectedApproved)
+          request.append('on_site_note', this.onSiteNote)
 
           const config = {
             header: {
               'Content-Type': 'multipart/form-data',
             },
           }
-          this.$http.post('/engine-rest/new-building/second_payment_approval', request, config).then(res => {
+          this.$http.post('/engine-rest/new-building/on_site_verification_submission', request, config).then(res => {
             this.result = JSON.parse(JSON.stringify(res.data))
             this.successShow = true
             this.isLoading = false
@@ -369,6 +459,24 @@ export default {
         } else {
           this.showToast('danger', 'Cannot Save', 'There is any empty data')
         }
+      })
+    },
+    getAttachment(attachment) {
+      this.isLoading = true
+      this.$http.get(`/engine-rest/new-building/assessment_attachment/${attachment.id}`).then(response => {
+        // window.open(response.data.url)
+        const downloadLink = document.createElement('a')
+        downloadLink.href = response.data.url
+        downloadLink.download = response.data.filename
+
+        document.body.appendChild(downloadLink)
+        downloadLink.click()
+        document.body.removeChild(downloadLink)
+
+        this.isLoading = false
+      }).catch(() => {
+        this.isLoading = false
+        this.showToast('danger', 'Cannot Load Attachment', 'There is error when load attachment, contact administrator')
       })
     },
     gotoIndex() {
