@@ -275,7 +275,7 @@ export default {
       store.dispatch('app-dr/getLatestAttachmentByType', { taskId: router.currentRoute.params.id, fileType: 'scoring_form' })
         .then(response => {
           scoringForm.value = response.data
-
+          console.log(scoringForm)
           store.dispatch('app-dr/downloadLinkByAttachmentId', {
             taskId: router.currentRoute.params.id,
             attachmentId: scoringForm.value.id,

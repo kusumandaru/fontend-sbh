@@ -357,6 +357,8 @@ export default {
         'third-payment-fa': 'client',
         'check-third-payment-fa': 'admin',
         'final-assessment-review': 'admin',
+        'on-site-verification': 'admin',
+        'on-site-revision-submission': 'client',
         'final-assessment-evaluation-assessment': 'admin',
         'final-assessment-trial-revision': 'client',
         'final-assessment-revision-review': 'admin',

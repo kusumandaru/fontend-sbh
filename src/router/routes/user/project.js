@@ -77,6 +77,11 @@ export default [
     component: () => import('@/views/client/dr/DRList.vue'),
   },
   {
+    path: '/client/project/on-site-revision-submission/:id',
+    name: 'client-project-on-site-revision-submission',
+    component: () => import('@/views/client/project/OnSiteRevisionSubmission.vue'),
+  },
+  {
     path: '/client/project/fa/assesment/:id',
     name: 'client-project-fa-assessment',
     component: () => import('@/views/client/fa/FAList.vue'),

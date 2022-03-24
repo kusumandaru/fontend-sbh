@@ -447,6 +447,18 @@
             Second Payment Confirmation
           </b-button>
 
+          <!-- Button: On Site Verification -->
+          <b-button
+            v-if="onSiteVerificationShow"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="success"
+            class="mb-75"
+            block
+            @click="onSiteVerificationPage"
+          >
+            On Site Verification
+          </b-button>
+
           <!-- Button: Design Recognition Review-->
           <b-button
             v-if="designRecognitionReviewShow"
@@ -586,6 +598,9 @@ export default {
     },
     secondPaymentConfirmationShow() {
       return ['check-second-payment'].includes(this.projectData.definition_key)
+    },
+    onSiteVerificationShow() {
+      return ['on-site-verification'].includes(this.projectData.definition_key)
     },
     designRecognitionReviewShow() {
       return ['design-recognition-review'].includes(this.projectData.definition_key)
@@ -852,6 +867,10 @@ export default {
       router.push({ name: 'admin-project-second-payment-confirmation', params: { id: router.currentRoute.params.id } })
     }
 
+    const onSiteVerificationPage = () => {
+      router.push({ name: 'admin-project-on-site-verification', params: { id: router.currentRoute.params.id } })
+    }
+
     const designRecognitionReview = () => {
       router.push({ name: 'admin-project-dr-assessment', params: { id: router.currentRoute.params.id } })
     }
@@ -883,6 +902,7 @@ export default {
       agreementPage,
       workshopPage,
       secondPaymentConfirmationPage,
+      onSiteVerificationPage,
       printProject,
       paymentProps,
       approveTask,

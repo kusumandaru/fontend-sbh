@@ -36,6 +36,11 @@ export default [
     component: () => import('@/views/admin/project/SecondPaymentConfirmation.vue'),
   },
   {
+    path: '/admin/project/on-site-verification/:id',
+    name: 'admin-project-on-site-verification',
+    component: () => import('@/views/admin/project/OnSiteVerification.vue'),
+  },
+  {
     path: '/admin/project/dr/assesment/:id',
     name: 'admin-project-dr-assessment',
     component: () => import('@/views/admin/dr/DRList.vue'),
