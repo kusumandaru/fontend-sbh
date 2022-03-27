@@ -159,7 +159,10 @@
                 old file : {{ adminData.manager_signature }}
               </b-button>
             </b-card-text>
-            <b-card-text class="my-1">
+            <b-card-text
+              v-if="managerSignature"
+              class="my-1"
+            >
               Selected file: <strong>{{ managerSignature ? managerSignature.name : '' }}</strong>
             </b-card-text>
           </b-form-group>
@@ -187,7 +190,10 @@
                 old file : {{ adminData.registration_letter }}
               </b-button>
             </b-card-text>
-            <b-card-text class="my-1">
+            <b-card-text
+              v-if="registrationLetter"
+              class="my-1"
+            >
               Selected file: <strong>{{ registrationLetter ? registrationLetter.name : '' }}</strong>
             </b-card-text>
           </b-form-group>
@@ -215,7 +221,10 @@
                 old file : {{ adminData.first_attachment }}
               </b-button>
             </b-card-text>
-            <b-card-text class="my-1">
+            <b-card-text
+              v-if="firstAttachment"
+              class="my-1"
+            >
               Selected file: <strong>{{ firstAttachment ? firstAttachment.name : '' }}</strong>
             </b-card-text>
           </b-form-group>
@@ -243,7 +252,10 @@
                 old file : {{ adminData.second_attachment }}
               </b-button>
             </b-card-text>
-            <b-card-text class="my-1">
+            <b-card-text
+              v-if="secondAttachment"
+              class="my-1"
+            >
               Selected file: <strong>{{ secondAttachment ? secondAttachment.name : '' }}</strong>
             </b-card-text>
           </b-form-group>
@@ -271,7 +283,10 @@
                 old file : {{ adminData.third_attachment }}
               </b-button>
             </b-card-text>
-            <b-card-text class="my-1">
+            <b-card-text
+              v-if="thirdAttachment"
+              class="my-1"
+            >
               Selected file: <strong>{{ thirdAttachment ? thirdAttachment.name : '' }}</strong>
             </b-card-text>
           </b-form-group>
@@ -299,7 +314,10 @@
                 old file : {{ adminData.scoring_form }}
               </b-button>
             </b-card-text>
-            <b-card-text class="my-1">
+            <b-card-text
+              v-if="scoringForm"
+              class="my-1"
+            >
               Selected file: <strong>{{ scoringForm ? scoringForm.name : '' }}</strong>
             </b-card-text>
           </b-form-group>

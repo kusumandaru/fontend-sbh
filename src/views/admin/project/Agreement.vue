@@ -62,7 +62,10 @@
                 drop-placeholder="Drop file here..."
               />
               <small class="text-danger">{{ errors[0] }}</small>
-              <b-card-text class="my-1">
+              <b-card-text
+                v-if="agreementLetterDocumentInput"
+                class="my-1"
+              >
                 Selected file: <strong>{{ agreementLetterDocumentInput ? agreementLetterDocumentInput.name : '' }}</strong>
               </b-card-text>
             </validation-provider>

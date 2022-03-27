@@ -146,10 +146,16 @@
           </b-card-body>
 
           <!-- Spacer -->
-          <hr class="project-spacing">
+          <hr
+            v-if="eligibilityAttachmentAny"
+            class="project-spacing"
+          >
 
           <!-- Eligibility Document -->
-          <b-card-body class="project-padding pb-0">
+          <b-card-body
+            v-if="eligibilityAttachmentAny"
+            class="project-padding pb-0"
+          >
             <b-card-title>Eligibility Document</b-card-title>
             <b-card-sub-title>Eligibility Document for Project Registration</b-card-sub-title>
             <p />
@@ -192,10 +198,16 @@
           </b-card-body>
 
           <!-- Spacer -->
-          <hr class="project-spacing">
+          <hr
+            v-if="registeredAttachmentAny"
+            class="project-spacing"
+          >
 
           <!-- Registered Project Document -->
-          <b-card-body class="project-padding pb-0">
+          <b-card-body
+            v-if="registeredAttachmentAny"
+            class="project-padding pb-0"
+          >
             <b-card-title>Registered Project Document</b-card-title>
             <p />
             <b-row>
@@ -252,11 +264,16 @@
           </b-card-body>
 
           <!-- Spacer -->
-          <hr class="project-spacing">
-
-          <!-- Revision Project Document -->
-          <b-card-body class="project-padding pb-0">
-            <b-card-title>Revision Project Document</b-card-title>
+          <hr
+            v-if="evaluationAttachmentAny"
+            class="project-spacing"
+          >
+          <!-- Evaluation Project Document -->
+          <b-card-body
+            v-if="evaluationAttachmentAny"
+            class="project-padding pb-0"
+          >
+            <b-card-title>Evaluation Project Document</b-card-title>
             <p />
             <b-row>
 
@@ -270,7 +287,7 @@
               >
                 <app-collapse>
                   <app-collapse-item
-                    v-for="(attachments, name) in filteredAttachment(revisionAttachments)"
+                    v-for="(attachments, name) in filteredAttachment(evaluationAttachments)"
                     :key="name"
                     :title="toTitleCase(name)"
                     :is-visible="true"
@@ -500,6 +517,18 @@
             Third Payment
           </b-button>
 
+          <!-- Button: Upload Plang dan Persetujuan Pemuatan-->
+          <b-button
+            v-if="workshopShow"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="success"
+            class="mb-75"
+            block
+            @click="signPostAndLoadApprovalSubmission"
+          >
+            Upload pemesanan plang dan persetujuan pemuatan
+          </b-button>
+
           <!-- Button: Design Recognition-->
           <b-button
             v-if="designRecognitionShow"
@@ -558,11 +587,14 @@
         </b-card>
 
         <b-card
-          v-if="workshopMessageShow"
+          v-if="workshopShow"
           class="mb-4"
         >
           <b-card-text>
-            Proses selanjutnya hasil workshop dapat diunduh setelah pelaksanaan workshop selesai
+            Proses selanjutnya hasil workshop dapat diunduh setelah pelaksanaan workshop selesai.
+            <br>
+            <br>
+            Form Pemesanan Plang GREENSHIP dan Form Persetujuan Pemuatan Data Gedung di Website dan Media Massa dapat di download pada 'Panduan Registered Project Declaration' dan Form yang telah di isi dan ditandatangani dapat diupload pada 'Upload Form Pemesanan Plang'
           </b-card-text>
         </b-card>
 
@@ -687,7 +719,7 @@ export default {
     agreementMessageShow() {
       return ['agreement-and-first-payment', 'agreement'].includes(this.projectData.definition_key)
     },
-    workshopMessageShow() {
+    workshopShow() {
       return ['workshop'].includes(this.projectData.definition_key)
     },
     onSiteRevisionSubmissionShow() {
@@ -710,6 +742,33 @@ export default {
       }
       return ''
     },
+    eligibilityAttachmentAny() {
+      let count = 0
+      Object.keys(this.eligibilityAttachments).forEach(key => {
+        if (this.eligibilityAttachments[key] !== undefined) {
+          count += this.eligibilityAttachments[key].length
+        }
+      })
+      return count > 0
+    },
+    registeredAttachmentAny() {
+      let count = 0
+      Object.keys(this.registeredAttachments).forEach(key => {
+        if (this.registeredAttachments[key] !== undefined) {
+          count += this.registeredAttachments[key].length
+        }
+      })
+      return count > 0
+    },
+    evaluationAttachmentAny() {
+      let count = 0
+      Object.keys(this.evaluationAttachments).forEach(key => {
+        if (this.evaluationAttachments[key] !== undefined) {
+          count += this.evaluationAttachments[key].length
+        }
+      })
+      return count > 0
+    },
   },
   setup() {
     const projectData = ref(null)
@@ -724,7 +783,7 @@ export default {
     const firstPaymentDocument = ref(null)
     const secondPaymentDocument = ref(null)
     const thirdPaymentDocument = ref(null)
-    const attendanceDocument = ref(null)
+    const workshopAttendanceDocument = ref(null)
     const workshorReportDocument = ref(null)
     const eligibilityStatement = ref(null)
     const agreementLetterDocument = ref(null)
@@ -732,6 +791,8 @@ export default {
     const faRevisionDocument = ref(null)
     const drEvaluationDocument = ref(null)
     const faEvaluationDocument = ref(null)
+    const signPost = ref(null)
+    const approvalBuildingRelease = ref(null)
     const scoringForm = ref(null)
     const isLoading = ref(null)
 
@@ -752,13 +813,15 @@ export default {
       first_payment_document: firstPaymentDocument,
       second_payment_document: secondPaymentDocument,
       third_payment_document: thirdPaymentDocument,
-      attendance_document: attendanceDocument,
+      workshop_attendance_document: workshopAttendanceDocument,
       workshop_report_document: workshorReportDocument,
       eligibility_statement: eligibilityStatement,
       agreement_letter_document: agreementLetterDocument,
+      sign_post: signPost,
+      approval_building_release: approvalBuildingRelease,
     })
 
-    const revisionAttachments = ref({
+    const evaluationAttachments = ref({
       dr_revision_submission: drRevisionDocument,
       fa_revision_submission: faRevisionDocument,
       dr_evaluation_assessment: drEvaluationDocument,
@@ -829,17 +892,17 @@ export default {
         })
     })
 
-    Object.keys(revisionAttachments.value).forEach(key => {
+    Object.keys(evaluationAttachments.value).forEach(key => {
       store.dispatch('app-project/getAttachmentsByType', { taskId: router.currentRoute.params.id, fileType: key })
         .then(response => {
-          revisionAttachments.value[key] = response.data
+          evaluationAttachments.value[key] = response.data
         })
         .catch(error => {
           if (error.response.status === 404) {
-            revisionAttachments.value[key] = undefined
+            evaluationAttachments.value[key] = undefined
           }
           if (error.response.status === 500) {
-            revisionAttachments.value[key] = undefined
+            evaluationAttachments.value[key] = undefined
           }
         })
     })
@@ -878,6 +941,10 @@ export default {
 
     const designRecognitionSubmission = () => {
       router.push({ name: 'client-project-dr-assessment', params: { id: router.currentRoute.params.id } })
+    }
+
+    const signPostAndLoadApprovalSubmission = () => {
+      router.push({ name: 'client-project-sign-post-load-approval', params: { id: router.currentRoute.params.id } })
     }
 
     const onSiteRevisionSubmissionPage = () => {
@@ -1098,7 +1165,7 @@ export default {
       projectData,
       eligibilityAttachments,
       registeredAttachments,
-      revisionAttachments,
+      evaluationAttachments,
       printProject,
       paymentProps,
       editProject,
@@ -1116,6 +1183,7 @@ export default {
       latestScoringFormAttachment,
       registeredProjectAttachment,
       designRecognitionSubmission,
+      signPostAndLoadApprovalSubmission,
       onSiteRevisionSubmissionPage,
       finalAssessmentSubmission,
       draftRegistrationLetter,

@@ -90,7 +90,10 @@
                 drop-placeholder="Drop file here..."
               />
               <small class="text-danger">{{ errors[0] }}</small>
-              <b-card-text class="my-1">
+              <b-card-text
+                v-if="attendanceDocument"
+                class="my-1"
+              >
                 Selected file: <strong>{{ attendanceDocument ? attendanceDocument.name : '' }}</strong>
               </b-card-text>
             </validation-provider>
@@ -125,7 +128,10 @@
                 drop-placeholder="Drop file here..."
               />
               <small class="text-danger">{{ errors[0] }}</small>
-              <b-card-text class="my-1">
+              <b-card-text
+                v-if="workshopReportDocument"
+                class="my-1"
+              >
                 Selected file: <strong>{{ workshopReportDocument ? workshopReportDocument.name : '' }}</strong>
               </b-card-text>
             </validation-provider>
