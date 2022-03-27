@@ -1,84 +1,103 @@
 <template>
-  <validation-observer ref="secondPaymentConfirmationRules">
+  <validation-observer ref="agreementFirstPaymentRules">
     <b-form @submit.prevent>
       <project-header :key="projectHeaderKey" />
 
       <b-row>
-        <!--Second Payment Confirmation Letter Document -->
+        <!--Form Pemesanan Plang GREENSHIP -->
         <b-col md="12">
           <b-form-group>
-            <label>Form Penilaian</label>
+            <label>Form Pemesanan Plang Greenship</label>
             <validation-provider
               #default="{ errors }"
-              name="Form Penilaian"
+              name="Form Pemesanan Plang Greenship"
               rules="required"
             >
               <b-form-file
-                v-model.lazy="scoringFormInput"
-                placeholder="(Mandatory) Upload form penilaian..."
+                v-model.lazy="signPostFormInput"
+                placeholder="(Mandatory) Upload form pemesanan plang Greenship..."
                 drop-placeholder="Drop file here..."
               />
               <small class="text-danger">{{ errors[0] }}</small>
               <b-card-text
-                v-if="scoringFormInput"
+                v-if="signPostFormInput"
                 class="my-1"
               >
-                Selected file: <strong>{{ scoringFormInput ? scoringFormInput.name : '' }}</strong>
+                Selected file: <strong>{{ signPostFormInput ? signPostFormInput.name : '' }}</strong>
               </b-card-text>
             </validation-provider>
-
             <b-card-text
-              v-if="scoringForm"
+              v-if="signPostAttachmentExist"
               class="mb-0"
             >
-              <b-button
-                v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-                variant="flat-primary"
-                @click="downloadFileByAttachment(scoringForm.id)"
-              >
-                <feather-icon icon="ArchiveIcon" />
-                Download Form Penilaian
-              </b-button>
+              <b-card-text class="text-muted mb-0">
+                List of submitted form pemesanan plang Greenship
+              </b-card-text>
+              <b-card no-body>
+                <b-table
+                  responsive
+                  :items="signPostAttachments"
+                  :fields="projectAttachmentFields"
+                  class="mb-0"
+                >
+                  <template #cell(filename)="doc">
+                    <b-link
+                      class="font-weight-bold d-block text-nowrap"
+                      @click="getAttachment(doc.item)"
+                    >
+                      {{ doc.value }}
+                    </b-link>
+                  </template>
+                </b-table>
+              </b-card>
             </b-card-text>
           </b-form-group>
         </b-col>
 
-        <!--Approved-->
-        <b-col cols="12">
-          <b-form-group
-            label="Approve second payment"
-            label-for="secondPayment"
-            description="Setujui pembayaran kedua"
-          >
+        <!--Persetujuan pemuatan data gedung di website dan media massa -->
+        <b-col md="12">
+          <b-form-group>
+            <label>Persetujuan pemuatan data gedung di website dan media massa</label>
             <validation-provider
               #default="{ errors }"
-              rules=""
-              name="Second Payment"
+              name="Persetujuan pemuatan data gedung di website dan media massa"
+              rules="required"
             >
-              <b-form-checkbox
-                v-model="selectedApproved"
-                class="custom-control-success"
-                name="check-button"
-                switch
+              <b-form-file
+                v-model.lazy="approvalBuildingReleaseFormInput"
+                placeholder="(Mandatory) Upload persetujuan..."
+                drop-placeholder="Drop file here..."
               />
               <small class="text-danger">{{ errors[0] }}</small>
+              <b-card-text
+                v-if="approvalBuildingReleaseFormInput"
+                class="my-1"
+              >
+                Selected file: <strong>{{ approvalBuildingReleaseFormInput ? approvalBuildingReleaseFormInput.name : '' }}</strong>
+              </b-card-text>
             </validation-provider>
-
-            <b-table
-              responsive
-              :items="secondPaymentData"
-              :fields="projectAttachmentFields"
+            <b-card-text
+              v-if="approvalBuildingReleaseAttachmentExist"
               class="mb-0"
             >
-              <template #cell(filename)="doc">
-                <b-link
-                  class="font-weight-bold d-block text-nowrap"
-                  @click="downloadFileByAttachment(doc.item.id)"
+              <b-card no-body>
+                <b-table
+                  responsive
+                  :items="approvalBuildingReleaseAttachments"
+                  :fields="projectAttachmentFields"
+                  class="mb-0"
                 >
-                  {{ doc.value }}
-                </b-link>
-              </template>
-            </b-table>
+                  <template #cell(filename)="doc">
+                    <b-link
+                      class="font-weight-bold d-block text-nowrap"
+                      @click="getAttachment(doc.item)"
+                    >
+                      {{ doc.value }}
+                    </b-link>
+                  </template>
+                </b-table>
+              </b-card>
+            </b-card-text>
           </b-form-group>
         </b-col>
 
@@ -87,7 +106,7 @@
           <b-button
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             type="submit"
-            variant="secondary"
+            variant="primary"
             class="mr-1"
             :disabled="isLoading"
             @click="submitProject"
@@ -102,7 +121,7 @@
           <b-button
             v-ripple.400="'rgba(186, 191, 199, 0.15)'"
             type="reset"
-            variant="outline-secondary"
+            variant="outline-primary"
             @click="reset"
           >
             Reset
@@ -138,13 +157,12 @@ import {
   BCol,
   BFormFile,
   BFormGroup,
-  BFormCheckbox,
   BForm,
-  BLink,
-  BTable,
   BButton,
   BModal,
   BSpinner,
+  BLink,
+  BTable,
 } from 'bootstrap-vue'
 import {
   ref, onUnmounted, reactive,
@@ -166,14 +184,13 @@ export default {
     BRow,
     BCol,
     BFormFile,
-    BTable,
-    BLink,
     BFormGroup,
-    BFormCheckbox,
     BForm,
     BButton,
     BModal,
     BSpinner,
+    BLink,
+    BTable,
     ValidationObserver,
     ValidationProvider,
     ProjectHeader,
@@ -184,8 +201,8 @@ export default {
   data() {
     return {
       projectHeaderKey: 0,
-      scoringFormInput: null,
-      firstPaymentDocument: null,
+      signPostFormInput: null,
+      approvalBuildingReleaseFormInput: null,
       maxChar: 200,
       successShow: false,
       result: {},
@@ -236,13 +253,18 @@ export default {
   },
   setup() {
     const projectData = ref({})
-    const scoringForm = ref({})
-    const secondPaymentData = ref([])
+    const approvalBuildingReleaseForm = ref({})
+    const signPostAttachments = ref(JSON.parse('[]'))
+    const approvalBuildingReleaseAttachments = ref(JSON.parse('[]'))
+
     const PROJECT_APP_STORE_MODULE_NAME = 'app-project'
-    const selectedApproved = ref(false)
-    const approvedOption = reactive([
-      { id: 'true', name: 'Approve' },
-      { id: 'false', name: 'Rejected' },
+    const selectedDesignRecognition = reactive({
+      id: '',
+      name: '',
+    })
+    const designRecognitionOption = reactive([
+      { id: 'true', name: 'Need Design Recognition' },
+      { id: 'false', name: 'Skip Design Recognition' },
     ])
 
     // Register module
@@ -256,6 +278,8 @@ export default {
     store.dispatch('app-project/fetchProject', { id: router.currentRoute.params.id })
       .then(response => {
         projectData.value = response.data
+        selectedDesignRecognition.id = response.data.design_recognition.toString()
+        selectedDesignRecognition.name = response.data.design_recognition ? 'Need Design Recognition' : 'Skip Design Recognition'
       })
       .catch(error => {
         if (error.response.status === 404) {
@@ -266,29 +290,29 @@ export default {
         }
       })
 
-    store.dispatch('app-project/getLatestAttachmentByType', { taskId: router.currentRoute.params.id, fileType: 'second_payment' })
+    store.dispatch('app-project/fetchProjectAttachmentsByFileType', { taskId: router.currentRoute.params.id, fileType: 'sign_post' })
       .then(response => {
-        scoringForm.value = response.data
+        signPostAttachments.value = response.data
       })
       .catch(error => {
         if (error.response.status === 404) {
-          scoringForm.value = undefined
+          signPostAttachments.value = undefined
         }
         if (error.response.status === 500) {
-          scoringForm.value = undefined
+          signPostAttachments.value = undefined
         }
       })
 
-    store.dispatch('app-project/getAttachmentsByType', { taskId: router.currentRoute.params.id, fileType: 'second_payment_document' })
+    store.dispatch('app-project/fetchProjectAttachmentsByFileType', { taskId: router.currentRoute.params.id, fileType: 'approval_building_release' })
       .then(response => {
-        secondPaymentData.value = response.data
+        approvalBuildingReleaseAttachments.value = response.data
       })
       .catch(error => {
         if (error.response.status === 404) {
-          secondPaymentData.value = undefined
+          approvalBuildingReleaseAttachments.value = undefined
         }
         if (error.response.status === 500) {
-          secondPaymentData.value = undefined
+          approvalBuildingReleaseAttachments.value = undefined
         }
       })
 
@@ -319,16 +343,20 @@ export default {
 
     return {
       projectData,
-      scoringForm,
-      secondPaymentData,
+      approvalBuildingReleaseForm,
       downloadFileByAttachment,
-      selectedApproved,
-      approvedOption,
+      selectedDesignRecognition,
+      designRecognitionOption,
+      approvalBuildingReleaseAttachments,
+      signPostAttachments,
     }
   },
   computed: {
-    validationSecondPaymentConfirmationLetter() {
-      return this.projectData.scoring_form !== undefined
+    signPostAttachmentExist() {
+      return Array.isArray(this.signPostAttachments) && this.signPostAttachments.length > 0
+    },
+    approvalBuildingReleaseAttachmentExist() {
+      return Array.isArray(this.approvalBuildingReleaseAttachments) && this.approvalBuildingReleaseAttachments.length > 0
     },
   },
   methods: {
@@ -347,20 +375,20 @@ export default {
       })
     },
     submitProject() {
-      this.$refs.secondPaymentConfirmationRules.validate().then(success => {
+      this.$refs.agreementFirstPaymentRules.validate().then(success => {
         if (success) {
           this.isLoading = true
           const request = new FormData()
           request.append('task_id', router.currentRoute.params.id)
-          request.append('scoring_form', this.scoringFormInput)
-          request.append('approved', this.selectedApproved)
+          request.append('sign_post', this.signPostFormInput)
+          request.append('approval_building_release', this.approvalBuildingReleaseFormInput)
 
           const config = {
             header: {
               'Content-Type': 'multipart/form-data',
             },
           }
-          this.$http.post('/engine-rest/new-building/second_payment_approval', request, config).then(res => {
+          this.$http.post('/engine-rest/new-building/sign_post', request, config).then(res => {
             this.result = JSON.parse(JSON.stringify(res.data))
             this.successShow = true
             this.isLoading = false
@@ -375,7 +403,7 @@ export default {
       })
     },
     gotoIndex() {
-      router.push({ name: 'admin-project-list' })
+      router.push({ name: 'client-project-list' })
     },
     stringToBoolean(value) {
       switch (value.toLowerCase().trim()) {

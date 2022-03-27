@@ -86,4 +86,9 @@ export default [
     name: 'client-project-fa-assessment',
     component: () => import('@/views/client/fa/FAList.vue'),
   },
+  {
+    path: '/client/project/workshop/sign-post-approval/:id',
+    name: 'client-project-sign-post-load-approval',
+    component: () => import('@/views/client/project/SignPostAndLoadApprovalSubmission.vue'),
+  },
 ]

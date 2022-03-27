@@ -27,7 +27,7 @@
                   Setujui atau tolak penilaian
                 </h3>
                 <h5 v-if="!eligibleApprove.eligible">
-                  Prequisite code harus direview {{ criteriaCodes }}
+                  Terdapat penilaian yang belum direview {{ criteriaCodes }}
                 </h5>
                 <b-form-group>
                   <b-form-textarea

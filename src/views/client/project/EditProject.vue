@@ -356,7 +356,10 @@
               placeholder="Choose a file or drop it here..."
               drop-placeholder="Drop file here..."
             />
-            <b-card-text class="my-1">
+            <b-card-text
+              v-if="proofOfPaymentInput"
+              class="my-1"
+            >
               Selected file: <strong>{{ proofOfPaymentInput ? proofOfPaymentInput.name : '' }}</strong>
             </b-card-text>
 
