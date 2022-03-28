@@ -746,7 +746,11 @@ export default {
       let count = 0
       Object.keys(this.eligibilityAttachments).forEach(key => {
         if (this.eligibilityAttachments[key] !== undefined) {
-          count += this.eligibilityAttachments[key].length
+          try {
+            count += this.eligibilityAttachments[key].length
+          } catch (err) {
+            count += 0
+          }
         }
       })
       return count > 0
@@ -755,7 +759,11 @@ export default {
       let count = 0
       Object.keys(this.registeredAttachments).forEach(key => {
         if (this.registeredAttachments[key] !== undefined) {
-          count += this.registeredAttachments[key].length
+          try {
+            count += this.registeredAttachments[key].length
+          } catch (err) {
+            count += 0
+          }
         }
       })
       return count > 0
@@ -764,7 +772,11 @@ export default {
       let count = 0
       Object.keys(this.evaluationAttachments).forEach(key => {
         if (this.evaluationAttachments[key] !== undefined) {
-          count += this.evaluationAttachments[key].length
+          try {
+            count += this.evaluationAttachments[key].length
+          } catch (err) {
+            count += 0
+          }
         }
       })
       return count > 0
