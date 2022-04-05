@@ -117,6 +117,19 @@
                   <span> {{ text }}</span>
                 </template>
               </v-select>
+              <b-modal
+                :ref="`score-modal-ref-${criteria.id}`"
+                ok-only
+                ok-variant="danger"
+                ok-title="Accept"
+                modal-class="modal-danger"
+                centered
+                title="Max Score"
+              >
+                <b-card-text>
+                  Score cannot be zero (0) for {{ criteria.criteria.code }}
+                </b-card-text>
+              </b-modal>
             </b-form-group>
           </div>
           <!-- scoring -->
@@ -378,6 +391,7 @@ import {
   BFormFile,
   BLink,
   BOverlay,
+  BModal,
 } from 'bootstrap-vue'
 import vSelect from 'vue-select'
 import {
@@ -431,6 +445,7 @@ export default {
     BFormFile,
     BOverlay,
     BLink,
+    BModal,
     vSelect,
     quillEditor,
   },
@@ -635,28 +650,34 @@ export default {
       })
     },
     reviewCriteria(criteria) {
-      this.isLoading = true
-      this.updateCriteriaId(criteria)
+      if (criteria.approved_score <= 0 && criteria.criteria.exercise_type === 'max_score') {
+        if (this.$refs[`score-modal-ref-${criteria.id}`] !== undefined) {
+          this.$refs[`score-modal-ref-${criteria.id}`][0].show()
+        }
+      } else {
+        this.isLoading = true
+        this.updateCriteriaId(criteria)
 
-      const request = new FormData()
-      request.append('task_id', router.currentRoute.params.id)
-      request.append('approval_status', criteria.approval_status)
-      request.append('approved_score', criteria.approved_score)
+        const request = new FormData()
+        request.append('task_id', router.currentRoute.params.id)
+        request.append('approval_status', criteria.approval_status)
+        request.append('approved_score', criteria.approved_score)
 
-      const config = {
-        header: {
-          'Content-Type': 'multipart/form-data',
-        },
+        const config = {
+          header: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+        this.$http.post(`/engine-rest/new-building/criteria_scoring/${criteria.id}/review`, request, config).then(() => {
+          this.isLoading = false
+          this.rerenderCriteria()
+          this.rerenderScoreParent()
+          this.showToast('success', 'Saved', 'Review successfully')
+        }).catch(error => {
+          this.isLoading = false
+          this.showToast('danger', 'Cannot review', error.response.data.message)
+        })
       }
-      this.$http.post(`/engine-rest/new-building/criteria_scoring/${criteria.id}/review`, request, config).then(() => {
-        this.isLoading = false
-        this.rerenderCriteria()
-        this.rerenderScoreParent()
-        this.showToast('success', 'Saved', 'Review successfully')
-      }).catch(error => {
-        this.isLoading = false
-        this.showToast('danger', 'Cannot review', error.response.data.message)
-      })
     },
     rerenderScore() {
       this.rerenderScoreParent()

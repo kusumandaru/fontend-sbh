@@ -1,8 +1,8 @@
-<!--Upload Dokument Penilaian -->
+<!--Dokumen Penilaian -->
 <template>
   <b-col md="12">
     <b-modal
-      id="upload-assessment-modal "
+      id="scoring-document-modal"
       v-model.lazy="isLoading"
       modal-class="modal-success"
       centered
@@ -19,30 +19,22 @@
         </h5>
       </b-card-text>
     </b-modal>
-    <b-form-group>
+
+    <b-card no-body>
       <b-card-text
-        v-if="attachmentExist"
         class="mb-0"
       >
-        <b-card no-body>
-          <b-table
-            responsive
-            :items="projectAttachments"
-            :fields="attachmentFields"
-            class="mb-0"
-          >
-            <template #cell(filename)="doc">
-              <b-link
-                class="font-weight-bold d-block text-nowrap"
-                @click="getAttachment(doc.item)"
-              >
-                {{ doc.value }}
-              </b-link>
-            </template>
-          </b-table>
-        </b-card>
+        <span class="font-weight-bold" />
+        <b-button
+          variant="light"
+          :disabled="isLoading"
+          @click="downloadAllFiles()"
+        >
+          <feather-icon icon="ArchiveIcon" />
+          Download All Design Recognition Document
+        </b-button>
       </b-card-text>
-    </b-form-group>
+    </b-card>
   </b-col>
 </template>
 
@@ -50,10 +42,8 @@
 import {
   BCardText,
   BCol,
-  BFormGroup,
-  BTable,
+  BButton,
   BModal,
-  BLink,
   BCard,
   BSpinner,
 } from 'bootstrap-vue'
@@ -70,21 +60,13 @@ export default {
   components: {
     BCardText,
     BCol,
-    BFormGroup,
-    BTable,
+    BButton,
     BModal,
-    BLink,
     BCard,
     BSpinner,
   },
   directives: {
     Ripple,
-  },
-  props: {
-    rerenderUploadAssessment: {
-      type: Function,
-      default: () => {},
-    },
   },
   data() {
     return {
@@ -131,32 +113,44 @@ export default {
     const downloadAllFiles = () => {
       isLoading.value = true
 
-      store.dispatch('app-dr/downloadAllScoringFiles', {
-        id: router.currentRoute.params.id,
-        templateId: adminData.value.dr_template_id,
-      })
+      store.dispatch('app-dr/fetchAdminData')
         .then(response => {
-          isLoading.value = false
+          adminData.value = response.data
+          store.dispatch('app-dr/downloadAllScoringFiles', {
+            id: router.currentRoute.params.id,
+            templateId: adminData.value.dr_template_id,
+          })
+            .then(resp => {
+              isLoading.value = false
 
-          const blob = new Blob([response.data], { type: 'application/zip' })
-          const url = window.URL.createObjectURL(blob)
+              const blob = new Blob([resp.data], { type: 'application/zip' })
+              const url = window.URL.createObjectURL(blob)
 
-          // window.open(url)
-          const downloadLink = document.createElement('a')
-          downloadLink.href = url
+              // window.open(url)
+              const downloadLink = document.createElement('a')
+              downloadLink.href = url
 
-          document.body.appendChild(downloadLink)
-          downloadLink.click()
-          document.body.removeChild(downloadLink)
+              document.body.appendChild(downloadLink)
+              downloadLink.click()
+              document.body.removeChild(downloadLink)
+            })
+            .catch(err => {
+              isLoading.value = false
+
+              if (err.response.status === 404) {
+                console.error(err)
+              }
+              if (err.response.status === 500) {
+                console.error(err)
+              }
+            })
         })
         .catch(error => {
-          isLoading.value = false
-
           if (error.response.status === 404) {
-            console.error(error)
+            adminData.value = undefined
           }
           if (error.response.status === 500) {
-            console.error(error)
+            adminData.value = undefined
           }
         })
     }
@@ -187,19 +181,6 @@ export default {
       .catch(error => {
         if (error.response.status === 404) {
           projectAttachments.value = undefined
-        }
-      })
-
-    store.dispatch('app-dr/fetchAdminData')
-      .then(response => {
-        adminData.value = response.data
-      })
-      .catch(error => {
-        if (error.response.status === 404) {
-          adminData.value = undefined
-        }
-        if (error.response.status === 500) {
-          adminData.value = undefined
         }
       })
 

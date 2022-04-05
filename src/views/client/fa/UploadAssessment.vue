@@ -274,11 +274,11 @@ export default {
       })
 
     const latestScoringFormAttachment = () => {
-      store.dispatch('app-dr/getLatestAttachmentByType', { taskId: router.currentRoute.params.id, fileType: 'scoring_form' })
+      store.dispatch('app-fa/getLatestAttachmentByType', { taskId: router.currentRoute.params.id, fileType: 'scoring_form' })
         .then(response => {
           scoringForm.value = response.data
 
-          store.dispatch('app-dr/downloadLinkByAttachmentId', {
+          store.dispatch('app-fa/downloadLinkByAttachmentId', {
             taskId: router.currentRoute.params.id,
             attachmentId: scoringForm.value.id,
           })
@@ -360,7 +360,7 @@ export default {
     },
     getAttachment(attachment) {
       this.isLoading = true
-      this.$http.get(`/engine-rest/new-building/final_assessment/assessment_attachment/${attachment.id}`).then(response => {
+      this.$http.get(`/engine-rest/new-building/assessment_attachment/${attachment.id}`).then(response => {
         // window.open(response.data.url)
         const downloadLink = document.createElement('a')
         downloadLink.href = response.data.url
