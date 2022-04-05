@@ -2,7 +2,7 @@
 <template>
   <b-col md="12">
     <b-modal
-      id="upload-assessment-modal"
+      id="scoring-document-modal"
       v-model.lazy="isLoading"
       modal-class="modal-success"
       centered
@@ -19,30 +19,25 @@
         </h5>
       </b-card-text>
     </b-modal>
-    <b-form-group>
+
+    <b-card
+      no-body
+      style="background: #f6f6f6"
+    >
       <b-card-text
-        v-if="attachmentExist"
         class="mb-0"
       >
-        <b-card no-body>
-          <b-table
-            responsive
-            :items="projectAttachments"
-            :fields="attachmentFields"
-            class="mb-0"
-          >
-            <template #cell(filename)="doc">
-              <b-link
-                class="font-weight-bold d-block text-nowrap"
-                @click="getAttachment(doc.item)"
-              >
-                {{ doc.value }}
-              </b-link>
-            </template>
-          </b-table>
-        </b-card>
+        <span class="font-weight-bold" />
+        <b-button
+          variant="light"
+          :disabled="isLoading"
+          @click="downloadAllFiles()"
+        >
+          <feather-icon icon="ArchiveIcon" />
+          Download All Final Assessment Document
+        </b-button>
       </b-card-text>
-    </b-form-group>
+    </b-card>
   </b-col>
 </template>
 
@@ -50,10 +45,8 @@
 import {
   BCardText,
   BCol,
-  BFormGroup,
-  BTable,
+  BButton,
   BModal,
-  BLink,
   BCard,
   BSpinner,
 } from 'bootstrap-vue'
@@ -70,43 +63,83 @@ export default {
   components: {
     BCardText,
     BCol,
-    BFormGroup,
-    BTable,
+    BButton,
     BModal,
-    BLink,
     BCard,
     BSpinner,
   },
   directives: {
     Ripple,
   },
-  props: {
-    rerenderUploadAssessment: {
-      type: Function,
-      default: () => {},
-    },
-  },
   data() {
     return {
       isLoading: false,
-      attachmentFields: [
-        { key: 'filename', label: 'Document Name' },
-        { key: 'version', label: 'Version' },
-        { key: 'created_at', label: 'Created At' },
-      ],
     }
   },
   computed: {
-    attachmentExist() {
-      return Array.isArray(this.projectAttachments) && this.projectAttachments.length > 0
-    },
   },
   created() {
   },
   setup() {
     const FA_APP_STORE_MODULE_NAME = 'app-fa'
-    const projectAttachments = ref(JSON.parse('[]'))
+    const blankAdminData = {
+      manager_name: '',
+      manager_signature: '',
+      registration_letter: '',
+      first_attachment: '',
+      second_attachment: '',
+      third_attachment: '',
+      dr_template_id: '',
+      fa_template_id: '',
+    }
+    const adminData = ref(JSON.parse(JSON.stringify(blankAdminData)))
     const isLoading = ref(null)
+
+    const downloadAllFiles = () => {
+      isLoading.value = true
+
+      store.dispatch('app-fa/fetchAdminData')
+        .then(response => {
+          adminData.value = response.data
+
+          store.dispatch('app-fa/downloadAllScoringFiles', {
+            id: router.currentRoute.params.id,
+            templateId: adminData.value.dr_template_id,
+          })
+            .then(resp => {
+              isLoading.value = false
+
+              const blob = new Blob([resp.data], { type: 'application/zip' })
+              const url = window.URL.createObjectURL(blob)
+
+              // window.open(url)
+              const downloadLink = document.createElement('a')
+              downloadLink.href = url
+
+              document.body.appendChild(downloadLink)
+              downloadLink.click()
+              document.body.removeChild(downloadLink)
+            })
+            .catch(err => {
+              isLoading.value = false
+
+              if (err.response.status === 404) {
+                console.error(err)
+              }
+              if (err.response.status === 500) {
+                console.error(err)
+              }
+            })
+        })
+        .catch(error => {
+          if (error.response.status === 404) {
+            adminData.value = undefined
+          }
+          if (error.response.status === 500) {
+            adminData.value = undefined
+          }
+        })
+    }
 
     // Register module
     if (!store.hasModule(FA_APP_STORE_MODULE_NAME)) store.registerModule(FA_APP_STORE_MODULE_NAME, masterFaStoreModule)
@@ -116,18 +149,8 @@ export default {
       if (store.hasModule(FA_APP_STORE_MODULE_NAME)) store.unregisterModule(FA_APP_STORE_MODULE_NAME)
     })
 
-    store.dispatch('app-fa/fetchProjectAttachments', { taskId: router.currentRoute.params.id })
-      .then(response => {
-        projectAttachments.value = response.data
-      })
-      .catch(error => {
-        if (error.response.status === 404) {
-          projectAttachments.value = undefined
-        }
-      })
-
     return {
-      projectAttachments,
+      downloadAllFiles,
       isLoading,
     }
   },

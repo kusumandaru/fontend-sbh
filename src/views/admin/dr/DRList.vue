@@ -96,6 +96,9 @@
                 :key="uploadAssessmentKey"
                 :rerender-upload-assessment="forceRerenderUploadAssessment"
               />
+              <!-- Spacer -->
+              <hr class="project-spacing">
+              <scoring-document />
             </div>
           </div>
         </b-card-body>
@@ -129,6 +132,7 @@ import DRTab from './DRTab.vue'
 import CardAnalyticGoalOverview from './CardAnalyticGoalOverview.vue'
 import CardStatistic from './CardStatistic.vue'
 import UploadAssessment from './UploadAssessment.vue'
+import ScoringDocument from './ScoringDocument.vue'
 import EligibleReview from './EligibleReview.vue'
 
 export default {
@@ -140,6 +144,7 @@ export default {
     CardAnalyticGoalOverview,
     CardStatistic,
     UploadAssessment,
+    ScoringDocument,
     EligibleReview,
   },
   directives: {

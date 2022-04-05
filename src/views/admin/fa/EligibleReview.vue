@@ -43,9 +43,19 @@
                       variant="primary"
                       class="mt-2 mt-lg-3"
                       :disabled="!eligibleApprove.eligible"
-                      @click="reviewProjectFA(true)"
+                      @click="reviewProjectFA('approved')"
                     >
-                      Approve Final Assessment
+                      Approve
+                    </b-button>
+                    <b-button
+                      v-if="eligibleApprove.eligible"
+                      v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+                      variant="warning"
+                      class="mt-2 mt-lg-3"
+                      :disabled="!eligibleApprove.eligible"
+                      @click="reviewProjectFA('referenced')"
+                    >
+                      Approve With Reference
                     </b-button>
                     <b-button
                       v-if="eligibleApprove.eligible"
@@ -53,9 +63,9 @@
                       variant="danger"
                       class="mt-2 mt-lg-3"
                       :disabled="!eligibleApprove.eligible"
-                      @click="reviewProjectFA(false)"
+                      @click="reviewProjectFA('rejected')"
                     >
-                      Reject FinalAssessment
+                      Reject
                     </b-button>
                   </div>
                 </b-form-group>
@@ -101,11 +111,15 @@ import {
 import {
   ref, onUnmounted,
 } from '@vue/composition-api'
+import Vue from 'vue'
+import VueSweetalert2 from 'vue-sweetalert2'
 import router from '@/router'
 import store from '@/store'
 import Ripple from 'vue-ripple-directive'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 import masterFaStoreModule from './masterFaStoreModule'
+
+Vue.use(VueSweetalert2)
 
 export default {
   components: {
@@ -126,7 +140,6 @@ export default {
       successShow: false,
       isLoading: false,
       resultId: null,
-      approvalStatus: true,
       reviewReason: '',
       approvalOptions: [
         {
@@ -190,26 +203,41 @@ export default {
         },
       })
     },
-    reviewProjectFA(approvalStatus) {
-      this.isLoading = true
-
-      const request = new FormData()
-      request.append('approval_status', approvalStatus)
-      request.append('review_reason', this.reviewReason)
-      request.append('task_id', router.currentRoute.params.id)
-      const config = {
-        header: {
-          'Content-Type': 'multipart/form-data',
+    reviewProjectFA(approvalType) {
+      this.$swal({
+        title: 'Are you sure?',
+        text: 'Approval for Final Assessment',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: approvalType,
+        customClass: {
+          confirmButton: 'btn btn-primary',
+          cancelButton: 'btn btn-outline-danger ml-1',
         },
-      }
-      this.$http.post(`/engine-rest/new-building/final_assessment/${router.currentRoute.params.id}/review_fa`, request, config).then(res => {
-        this.result = JSON.parse(JSON.stringify(res.data))
-        this.isLoading = false
-        this.showToast('success', 'Saved', 'FA successfully reviewed')
-        this.successShow = true
-      }).catch(() => {
-        this.isLoading = false
-        this.showToast('danger', 'Cannot Save', 'There is error when submit data, contact administrator')
+        buttonsStyling: false,
+      }).then(result => {
+        if (result.value) {
+          this.isLoading = true
+
+          const request = new FormData()
+          request.append('approval_type', approvalType)
+          request.append('review_reason', this.reviewReason)
+          request.append('task_id', router.currentRoute.params.id)
+          const config = {
+            header: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+          this.$http.post(`/engine-rest/new-building/final_assessment/${router.currentRoute.params.id}/review_fa`, request, config).then(res => {
+            this.result = JSON.parse(JSON.stringify(res.data))
+            this.isLoading = false
+            this.showToast('success', 'Saved', 'FA successfully reviewed')
+            this.successShow = true
+          }).catch(() => {
+            this.isLoading = false
+            this.showToast('danger', 'Cannot Save', 'There is error when submit data, contact administrator')
+          })
+        }
       })
     },
     gotoIndex() {

@@ -3,6 +3,7 @@ import {
   required as rule_required,
   email as rule_email,
   min as rule_min,
+  min_value as rule_min_value,
   confirmed as rule_confirmed,
   regex as rule_regex,
   between as rule_between,
@@ -28,6 +29,8 @@ export const required = extend('required', rule_required)
 export const email = extend('email', rule_email)
 
 export const min = extend('min', rule_min)
+
+export const minValue = extend('min_value', rule_min_value)
 
 export const confirmed = extend('confirmed', rule_confirmed)
 
