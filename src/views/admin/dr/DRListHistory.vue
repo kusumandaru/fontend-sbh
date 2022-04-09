@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- project information section -->
-    <section id="fa-search-filter">
+    <section id="dr-search-filter">
       <b-card
         no-body
         class="faq-search"
@@ -88,6 +88,7 @@
                     <card-analytic-goal-overview
                       :key="scoreKey"
                       :rerender-score-parent="forceRerenderScore"
+                      :read-only="readOnly"
                     />
                   </div>
                 </div>
@@ -114,9 +115,11 @@
     <card-statistic :key="cardStatisticKey" />
 
     <!-- tab for evaluation -->
-    <f-a-tab :rerender-score-parent="forceRerenderScore" />
+    <d-r-tab
+      :rerender-score-parent="forceRerenderScore"
+      :read-only="readOnly"
+    />
     <!--/ tab for evaluation -->
-
   </div>
 </template>
 
@@ -131,7 +134,7 @@ import router from '@/router'
 import store from '@/store'
 import Ripple from 'vue-ripple-directive'
 import projectStoreModule from '@/views/projectStoreModule'
-import FATab from './FATab.vue'
+import DRTab from './DRTab.vue'
 import CardAnalyticGoalOverview from './CardAnalyticGoalOverview.vue'
 import CardStatistic from './CardStatistic.vue'
 import UploadAssessment from './UploadAssessment.vue'
@@ -143,7 +146,7 @@ export default {
     BCard,
     BCardBody,
     BCardText,
-    FATab,
+    DRTab,
     CardAnalyticGoalOverview,
     CardStatistic,
     UploadAssessment,
@@ -159,7 +162,7 @@ export default {
       scoreKey: 0,
       cardStatisticKey: 0,
       uploadAssessmentKey: 0,
-      readOnly: false,
+      readOnly: true,
     }
   },
   computed: {

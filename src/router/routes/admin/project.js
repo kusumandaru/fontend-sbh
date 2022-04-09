@@ -46,9 +46,19 @@ export default [
     component: () => import('@/views/admin/dr/DRList.vue'),
   },
   {
+    path: '/admin/project/dr/history/:id',
+    name: 'admin-project-dr-history',
+    component: () => import('@/views/admin/dr/DRListHistory.vue'),
+  },
+  {
     path: '/admin/project/fa/assesment/:id',
     name: 'admin-project-fa-assessment',
     component: () => import('@/views/admin/fa/FAList.vue'),
+  },
+  {
+    path: '/admin/project/fa/history/:id',
+    name: 'admin-project-fa-history',
+    component: () => import('@/views/admin/fa/FAListHistory.vue'),
   },
   {
     path: '/admin/project/dr_evaluation_assessment/:id',

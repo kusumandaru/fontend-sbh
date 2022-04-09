@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- project information section -->
-    <section id="fa-search-filter">
+    <section id="dr-search-filter">
       <b-card
         no-body
         class="faq-search"
@@ -13,6 +13,10 @@
           no-body
           class="project-preview-card"
         >
+          <!-- alert -->
+          <alert :key="alertKey" />
+          <!-- alert -->
+
           <b-card-body class="project-padding pb-0">
             <div class="d-flex justify-content-between flex-md-row flex-column project-spacing mt-0">
               <!-- Header: Left Content -->
@@ -88,6 +92,7 @@
                     <card-analytic-goal-overview
                       :key="scoreKey"
                       :rerender-score-parent="forceRerenderScore"
+                      :read-only="readOnly"
                     />
                   </div>
                 </div>
@@ -95,26 +100,22 @@
               <upload-assessment
                 :key="uploadAssessmentKey"
                 :rerender-upload-assessment="forceRerenderUploadAssessment"
+                :read-only="readOnly"
               />
-              <!-- Spacer -->
-              <hr class="project-spacing">
-              <scoring-document />
             </div>
           </div>
         </b-card-body>
       </b-card>
     </section>
-    <!--/ review button -->
-    <eligible-review
-      v-if="!readOnly"
-      :key="eligibleReviewKey"
-    />
 
     <!--/ project information section -->
     <card-statistic :key="cardStatisticKey" />
 
     <!-- tab for evaluation -->
-    <f-a-tab :rerender-score-parent="forceRerenderScore" />
+    <d-r-tab
+      :rerender-score-parent="forceRerenderScore"
+      :read-only="readOnly"
+    />
     <!--/ tab for evaluation -->
 
   </div>
@@ -122,7 +123,9 @@
 
 <script>
 import {
-  BCard, BCardBody, BCardText,
+  BCard,
+  BCardBody,
+  BCardText,
 } from 'bootstrap-vue'
 import {
   ref, onUnmounted,
@@ -131,35 +134,34 @@ import router from '@/router'
 import store from '@/store'
 import Ripple from 'vue-ripple-directive'
 import projectStoreModule from '@/views/projectStoreModule'
-import FATab from './FATab.vue'
+import DRTab from './DRTab.vue'
 import CardAnalyticGoalOverview from './CardAnalyticGoalOverview.vue'
 import CardStatistic from './CardStatistic.vue'
 import UploadAssessment from './UploadAssessment.vue'
-import ScoringDocument from './ScoringDocument.vue'
-import EligibleReview from './EligibleReview.vue'
+import Alert from './Alert.vue'
 
 export default {
   components: {
     BCard,
     BCardBody,
     BCardText,
-    FATab,
+    DRTab,
     CardAnalyticGoalOverview,
     CardStatistic,
     UploadAssessment,
-    ScoringDocument,
-    EligibleReview,
+    Alert,
   },
   directives: {
     Ripple,
   },
   data() {
     return {
-      eligibleReviewKey: 1,
+      eligibleSubmitKey: 1,
       scoreKey: 0,
       cardStatisticKey: 0,
       uploadAssessmentKey: 0,
-      readOnly: false,
+      alertKey: 0,
+      readOnly: true,
     }
   },
   computed: {
@@ -181,10 +183,11 @@ export default {
     forceRerenderScore() {
       this.scoreKey += 1
       this.cardStatisticKey += 1
-      this.eligibleReviewKey += 1
+      this.eligibleSubmitKey += 1
     },
     forceRerenderUploadAssessment() {
       this.uploadAssessmentKey += 1
+      this.eligibleSubmitKey += 1
     },
   },
   setup() {

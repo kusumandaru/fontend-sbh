@@ -108,7 +108,7 @@
                 :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
                 :options="scoreDictionary(criteria)"
                 :reduce="val => val.value"
-                :disabled="criteria.approval_status == 2 || criteria.approval_status == 4"
+                :disabled="criteria.approval_status == 2 || criteria.approval_status == 4 || readOnly"
                 label="text"
                 code="value"
                 :clearable="false"
@@ -123,7 +123,10 @@
 
           <!-- take score -->
           <p />
-          <b-col cols="12">
+          <b-col
+            v-if="!readOnly"
+            cols="12"
+          >
             <b-button
               v-if="[1,3].includes(criteria.approval_status)"
               v-ripple.400="'rgba(255, 255, 255, 0.15)'"
@@ -137,7 +140,10 @@
 
           <!-- untake score -->
           <p />
-          <b-col cols="12">
+          <b-col
+            v-if="!readOnly"
+            cols="12"
+          >
             <b-button
               v-if="[2,3].includes(criteria.approval_status)"
               v-ripple.400="'rgba(255, 255, 255, 0.15)'"
@@ -193,7 +199,10 @@
                         {{ doc.value }}
                       </b-link>
                     </template>
-                    <template #cell(action)="drow">
+                    <template
+                      v-if="!readOnly"
+                      #cell(action)="drow"
+                    >
                       <feather-icon
                         v-if="drow.item.submitted_at == undefined"
                         :id="`master-row-${row.item.id}-delete-icon`"
@@ -204,7 +213,7 @@
                       />
                     </template>
                   </b-table>
-                  <b-row v-if="criteria.approval_status !== 4">
+                  <b-row v-if="criteria.approval_status !== 4 && !readOnly">
                     <b-col md="9">
                       <b-form-file
                         v-model="row.item.files"
@@ -300,7 +309,7 @@
 
           <!-- Leave a Blog Comment -->
           <b-col
-            v-if="criteria.approval_status !== 4"
+            v-if="criteria.approval_status !== 4 && !readOnly"
             cols="12"
             class="mt-2"
           >
@@ -436,6 +445,10 @@ export default {
     rerenderCriteriaParent: {
       type: Function,
       default: () => {},
+    },
+    readOnly: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {

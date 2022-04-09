@@ -33,7 +33,7 @@
               </b-card-text>
             </validation-provider>
             <b-table
-              v-if="filteredProjectAttachments(document.code)"
+              v-if="filteredProjectAttachmentPresent(document.code)"
               responsive
               :items="filteredProjectAttachments(document.code)"
               :fields="projectAttachmentFields"
@@ -417,6 +417,9 @@ export default {
     },
     gotoIndex() {
       router.push({ name: 'client-project-list' })
+    },
+    filteredProjectAttachmentPresent(fileType) {
+      return this.filteredProjectAttachments(fileType).length > 0
     },
   },
 }

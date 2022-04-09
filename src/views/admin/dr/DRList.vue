@@ -88,6 +88,7 @@
                     <card-analytic-goal-overview
                       :key="scoreKey"
                       :rerender-score-parent="forceRerenderScore"
+                      :read-only="readOnly"
                     />
                   </div>
                 </div>
@@ -105,7 +106,10 @@
       </b-card>
     </section>
     <!--/ review button -->
-    <eligible-review :key="eligibleReviewKey" />
+    <eligible-review
+      v-if="!readOnly"
+      :key="eligibleReviewKey"
+    />
 
     <!--/ project information section -->
     <card-statistic :key="cardStatisticKey" />
@@ -156,6 +160,7 @@ export default {
       scoreKey: 0,
       cardStatisticKey: 0,
       uploadAssessmentKey: 0,
+      readOnly: false,
     }
   },
   computed: {

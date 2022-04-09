@@ -10,6 +10,7 @@
       v-for="(evaluation,index) in masterEvaluations"
       :key="index"
       :title="evaluation.name"
+      :read-only="readOnly"
       lazy
     >
       <b-alert
@@ -156,6 +157,10 @@ export default {
     rerenderScoreParent: {
       type: Function,
       default: () => {},
+    },
+    readOnly: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
