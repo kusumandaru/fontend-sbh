@@ -13,6 +13,10 @@
           no-body
           class="project-preview-card"
         >
+          <!-- alert -->
+          <alert :key="alertKey" />
+          <!-- alert -->
+
           <b-card-body class="project-padding pb-0">
             <div class="d-flex justify-content-between flex-md-row flex-column project-spacing mt-0">
               <!-- Header: Left Content -->
@@ -73,7 +77,7 @@
 
         <b-card-body class="text-center">
           <h1 class="text-primary">
-            Design Recognition
+            Final Assessment
           </h1>
           <b-card-text class="mb-2">
             <h2 class="text-primary">
@@ -88,6 +92,7 @@
                     <card-analytic-goal-overview
                       :key="scoreKey"
                       :rerender-score-parent="forceRerenderScore"
+                      :read-only="readOnly"
                     />
                   </div>
                 </div>
@@ -95,26 +100,22 @@
               <upload-assessment
                 :key="uploadAssessmentKey"
                 :rerender-upload-assessment="forceRerenderUploadAssessment"
+                :read-only="readOnly"
               />
-              <!-- Spacer -->
-              <hr class="project-spacing">
-              <scoring-document />
             </div>
           </div>
         </b-card-body>
       </b-card>
     </section>
-    <!--/ review button -->
-    <eligible-review
-      v-if="!readOnly"
-      :key="eligibleReviewKey"
-    />
 
     <!--/ project information section -->
     <card-statistic :key="cardStatisticKey" />
 
     <!-- tab for evaluation -->
-    <f-a-tab :rerender-score-parent="forceRerenderScore" />
+    <f-a-tab
+      :rerender-score-parent="forceRerenderScore"
+      :read-only="readOnly"
+    />
     <!--/ tab for evaluation -->
 
   </div>
@@ -122,7 +123,9 @@
 
 <script>
 import {
-  BCard, BCardBody, BCardText,
+  BCard,
+  BCardBody,
+  BCardText,
 } from 'bootstrap-vue'
 import {
   ref, onUnmounted,
@@ -135,8 +138,7 @@ import FATab from './FATab.vue'
 import CardAnalyticGoalOverview from './CardAnalyticGoalOverview.vue'
 import CardStatistic from './CardStatistic.vue'
 import UploadAssessment from './UploadAssessment.vue'
-import ScoringDocument from './ScoringDocument.vue'
-import EligibleReview from './EligibleReview.vue'
+import Alert from './Alert.vue'
 
 export default {
   components: {
@@ -147,19 +149,19 @@ export default {
     CardAnalyticGoalOverview,
     CardStatistic,
     UploadAssessment,
-    ScoringDocument,
-    EligibleReview,
+    Alert,
   },
   directives: {
     Ripple,
   },
   data() {
     return {
-      eligibleReviewKey: 1,
+      eligibleSubmitKey: 1,
       scoreKey: 0,
       cardStatisticKey: 0,
       uploadAssessmentKey: 0,
-      readOnly: false,
+      alertKey: 0,
+      readOnly: true,
     }
   },
   computed: {
@@ -181,10 +183,11 @@ export default {
     forceRerenderScore() {
       this.scoreKey += 1
       this.cardStatisticKey += 1
-      this.eligibleReviewKey += 1
+      this.eligibleSubmitKey += 1
     },
     forceRerenderUploadAssessment() {
       this.uploadAssessmentKey += 1
+      this.eligibleSubmitKey += 1
     },
   },
   setup() {

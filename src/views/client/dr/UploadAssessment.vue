@@ -29,8 +29,8 @@
       </b-card-text>
     </b-modal>
     <b-form-group>
-      <label>Upload Dokumen Penilaian</label>
-      <b-input-group>
+      <label v-if="!readOnly">Upload Dokumen Penilaian</label>
+      <b-input-group v-if="!readOnly">
         <b-form-file
           v-model="files"
           placeholder="Choose a file or drop it here..."
@@ -68,7 +68,10 @@
                 {{ doc.value }}
               </b-link>
             </template>
-            <template #cell(action)="drow">
+            <template
+              v-if="!readOnly"
+              #cell(action)="drow"
+            >
               <feather-icon
                 :id="`attachment-${drow.item.id}-delete-icon`"
                 icon="Trash2Icon"
@@ -152,6 +155,10 @@ export default {
     rerenderUploadAssessment: {
       type: Function,
       default: () => {},
+    },
+    readOnly: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {

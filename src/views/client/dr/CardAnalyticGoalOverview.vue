@@ -35,6 +35,7 @@
     <!-- evaluation score -->
     <!-- level -->
     <b-dropdown
+      v-if="!readOnly"
       v-ripple.400="'rgba(40, 199, 111, 0.15)'"
       :text="projectAssessment.proposed_level.name"
       variant="flat-success"
@@ -48,6 +49,9 @@
         {{ level.name }}
       </b-dropdown-item>
     </b-dropdown>
+    <b-card-text v-if="readOnly">
+      {{ projectAssessment.proposed_level.name }}
+    </b-card-text>
     <b-row class="text-center mx-0">
       <b-col
         cols="6"
@@ -109,6 +113,10 @@ export default {
     rerenderScoreParent: {
       type: Function,
       default: () => {},
+    },
+    readOnly: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {

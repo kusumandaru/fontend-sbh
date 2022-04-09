@@ -77,6 +77,11 @@ export default [
     component: () => import('@/views/client/dr/DRList.vue'),
   },
   {
+    path: '/client/project/dr/history/:id',
+    name: 'client-project-dr-history',
+    component: () => import('@/views/client/dr/DRListHistory.vue'),
+  },
+  {
     path: '/client/project/on-site-revision-submission/:id',
     name: 'client-project-on-site-revision-submission',
     component: () => import('@/views/client/project/OnSiteRevisionSubmission.vue'),
@@ -85,6 +90,11 @@ export default [
     path: '/client/project/fa/assesment/:id',
     name: 'client-project-fa-assessment',
     component: () => import('@/views/client/fa/FAList.vue'),
+  },
+  {
+    path: '/client/project/fa/history/:id',
+    name: 'client-project-fa-history',
+    component: () => import('@/views/client/fa/FAListHistory.vue'),
   },
   {
     path: '/client/project/workshop/sign-post-approval/:id',

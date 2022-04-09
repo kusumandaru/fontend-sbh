@@ -4,6 +4,11 @@
       <project-header :key="projectHeaderKey" />
 
       <b-row>
+        <b-col md="12">
+          <b-form-group>
+            <h4>{{ projectData.review_reason }}</h4>
+          </b-form-group>
+        </b-col>
         <!--DR Evaluation Assessment Document -->
         <b-col md="12">
           <b-form-group>

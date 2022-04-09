@@ -10,6 +10,7 @@
       v-for="(evaluation,index) in masterEvaluations"
       :key="index"
       :title="evaluation.name"
+      :read-only="readOnly"
       lazy
     >
       <b-alert
@@ -95,6 +96,7 @@
               :exercise="exercise"
               :rerender-score-parent="rerenderScore"
               :rerender-criteria-parent="forceRerenderCriteria"
+              :read-only="readOnly"
             />
           </b-tab>
           <!--/ payment tab -->
@@ -156,6 +158,10 @@ export default {
     rerenderScoreParent: {
       type: Function,
       default: () => {},
+    },
+    readOnly: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {

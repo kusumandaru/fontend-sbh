@@ -96,6 +96,8 @@
               :exercise="exercise"
               :rerender-score-parent="rerenderScore"
               :rerender-criteria-parent="forceRerenderCriteria"
+              :read-only="readOnly"
+              lazy
             />
           </b-tab>
           <!--/ payment tab -->
@@ -157,6 +159,10 @@ export default {
     rerenderScoreParent: {
       type: Function,
       default: () => {},
+    },
+    readOnly: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {

@@ -488,6 +488,18 @@
             Design Recognition Review
           </b-button>
 
+          <!-- Button: Design Recognition History-->
+          <b-button
+            v-if="designRecognitionHistoryShow"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="info"
+            class="mb-75"
+            block
+            @click="designRecognitionHistory"
+          >
+            Design Recognition History
+          </b-button>
+
           <!-- Button: Design Recognition Evaluation Assessment-->
           <b-button
             v-if="designRecognitionEvaluationAssessmentShow"
@@ -510,6 +522,18 @@
             @click="finalAssessmentReview"
           >
             Final Assessment Review
+          </b-button>
+
+          <!-- Button: Final Assessment History-->
+          <b-button
+            v-if="finalAssessmentHistoryShow"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="info"
+            class="mb-75"
+            block
+            @click="finalAssessmentHistory"
+          >
+            Final Assessment History
           </b-button>
 
           <!-- Button:Final Assessment Evaluation Assessment-->
@@ -622,11 +646,17 @@ export default {
     designRecognitionReviewShow() {
       return ['design-recognition-review'].includes(this.projectData.definition_key)
     },
+    designRecognitionHistoryShow() {
+      return this.designRecognitionHistoryTasks.includes(this.projectData.definition_key) && this.projectData.design_recognition
+    },
     designRecognitionEvaluationAssessmentShow() {
       return ['design-recognition-evaluation-assessment'].includes(this.projectData.definition_key)
     },
     finalAssessmentReviewShow() {
       return ['final-assessment-review'].includes(this.projectData.definition_key)
+    },
+    finalAssessmentHistoryShow() {
+      return this.finalAssessmentHistoryTasks.includes(this.projectData.definition_key)
     },
     finalAssessmentEvaluationAssessmentShow() {
       return ['final-assessment-evaluation-assessment'].includes(this.projectData.definition_key)
@@ -936,12 +966,20 @@ export default {
       router.push({ name: 'admin-project-dr-assessment', params: { id: router.currentRoute.params.id } })
     }
 
+    const designRecognitionHistory = () => {
+      router.push({ name: 'admin-project-dr-history', params: { id: router.currentRoute.params.id } })
+    }
+
     const designRecognitionEvaluationAssessment = () => {
       router.push({ name: 'admin-project-dr-evaluation-assessment', params: { id: router.currentRoute.params.id } })
     }
 
     const finalAssessmentReview = () => {
       router.push({ name: 'admin-project-fa-assessment', params: { id: router.currentRoute.params.id } })
+    }
+
+    const finalAssessmentHistory = () => {
+      router.push({ name: 'admin-project-fa-history', params: { id: router.currentRoute.params.id } })
     }
 
     const finalAssessmentEvaluationAssessment = () => {
@@ -951,6 +989,8 @@ export default {
     const adminTasks = ['check-registration-project', 'check-document-building', 'check-first-payment', 'check-third-payment', 'check-third-payment-fa', 'design-recognition-trial', 'design-recognition-revision-review', 'final-assessment-trial', 'final-assessment-revision-review']
     const agreementTasks = ['agreement']
     const workshopTasks = ['workshop']
+    const designRecognitionHistoryTasks = ['third-payment', 'check-third-payment', 'design-recognition-evaluation-assessment', 'design-recognition-trial-revision', 'design-recognition-revision-review', 'design-recognition-letter', 'final-assessment-submission', 'final-assessment-review', 'third-payment-fa', 'check-third-payment-fa', 'on-site-verification', 'on-site-revision-submission', 'final-assessment-evaluation-assessment', 'final-assessment-trial-revision', 'final-assessment-revision-review', 'final-assessment-letter']
+    const finalAssessmentHistoryTasks = ['third-payment-fa', 'check-third-payment-fa', 'on-site-revision-submission', 'final-assessment-evaluation-assessment', 'final-assessment-trial-revision', 'final-assessment-revision-review', 'final-assessment-letter']
 
     return {
       projectData,
@@ -960,6 +1000,8 @@ export default {
       adminTasks,
       agreementTasks,
       workshopTasks,
+      designRecognitionHistoryTasks,
+      finalAssessmentHistoryTasks,
       agreementPage,
       workshopPage,
       secondPaymentConfirmationPage,
@@ -971,8 +1013,10 @@ export default {
       downloadAllFiles,
       registeredProject,
       designRecognitionReview,
+      designRecognitionHistory,
       designRecognitionEvaluationAssessment,
       finalAssessmentReview,
+      finalAssessmentHistory,
       finalAssessmentEvaluationAssessment,
       isLoading,
 

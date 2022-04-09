@@ -429,7 +429,10 @@ export default {
     submitProject() {
       this.$refs.onSiteVerificationRules.validate().then(success => {
         if (success) {
-          if (this.files === undefined && this.files.length < 1) {
+          if (this.files === null) {
+            return
+          }
+          if (this.files.length < 1) {
             return
           }
 

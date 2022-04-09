@@ -109,7 +109,7 @@
                 :options="scoreDictionary(criteria)"
                 :reduce="val => val.value"
                 :clearable="false"
-                :disabled="criteria.approval_status != 2"
+                :disabled="criteria.approval_status != 2 || readOnly"
                 label="text"
                 code="value"
               >
@@ -135,7 +135,10 @@
           <!-- scoring -->
           <!-- status -->
           <p />
-          <b-col md="6">
+          <b-col
+            v-if="!readOnly"
+            md="6"
+          >
             <h6>Approval</h6>
             <b-form-group>
               <v-select
@@ -164,7 +167,10 @@
 
           <!-- save button -->
           <p />
-          <b-col cols="12">
+          <b-col
+            v-if="!readOnly"
+            cols="12"
+          >
             <b-button
               v-ripple.400="'rgba(255, 255, 255, 0.15)'"
               variant="primary"
@@ -218,7 +224,10 @@
                         {{ doc.value }}
                       </b-link>
                     </template>
-                    <template #cell(action)="rowc">
+                    <template
+                      v-if="!readOnly"
+                      #cell(action)="rowc"
+                    >
                       <feather-icon
                         :id="`master-row-${rowc.item.id}-delete-icon`"
                         icon="Trash2Icon"
@@ -228,7 +237,7 @@
                       />
                     </template>
                   </b-table>
-                  <b-row>
+                  <b-row v-if="!readOnly">
                     <b-col md="10">
                       <b-form-file
                         v-model="row.item.files"
@@ -324,6 +333,7 @@
 
           <!-- Leave a Blog Comment -->
           <b-col
+            v-if="!readOnly"
             cols="12"
             class="mt-2"
           >
@@ -461,6 +471,10 @@ export default {
     rerenderCriteriaParent: {
       type: Function,
       default: () => {},
+    },
+    readOnly: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {

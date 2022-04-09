@@ -541,6 +541,18 @@
             Design Recognition Submission
           </b-button>
 
+          <!-- Button: Design Recognition History-->
+          <b-button
+            v-if="designRecognitionHistoryShow"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="info"
+            class="mb-75"
+            block
+            @click="designRecognitionHistory"
+          >
+            Design Recognition History
+          </b-button>
+
           <!-- Button: On Site Revision Submission -->
           <b-button
             v-if="onSiteRevisionSubmissionShow"
@@ -563,6 +575,18 @@
             @click="finalAssessmentSubmission"
           >
             Final Assessment Submission
+          </b-button>
+
+          <!-- Button: Final Assessment History-->
+          <b-button
+            v-if="finalAssessmentHistoryShow"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="info"
+            class="mb-75"
+            block
+            @click="finalAssessmentHistory"
+          >
+            Final Assessment History
           </b-button>
 
           <!-- Button: Print -->
@@ -713,8 +737,14 @@ export default {
     designRecognitionShow() {
       return ['design-recognition-submission'].includes(this.projectData.definition_key)
     },
+    designRecognitionHistoryShow() {
+      return this.designRecognitionHistoryTasks.includes(this.projectData.definition_key) && this.projectData.design_recognition
+    },
     finalAssessmentShow() {
       return ['final-assessment-submission'].includes(this.projectData.definition_key)
+    },
+    finalAssessmentHistoryShow() {
+      return this.finalAssessmentHistoryTasks.includes(this.projectData.definition_key)
     },
     agreementMessageShow() {
       return ['agreement-and-first-payment', 'agreement'].includes(this.projectData.definition_key)
@@ -955,6 +985,10 @@ export default {
       router.push({ name: 'client-project-dr-assessment', params: { id: router.currentRoute.params.id } })
     }
 
+    const designRecognitionHistory = () => {
+      router.push({ name: 'client-project-dr-history', params: { id: router.currentRoute.params.id } })
+    }
+
     const signPostAndLoadApprovalSubmission = () => {
       router.push({ name: 'client-project-sign-post-load-approval', params: { id: router.currentRoute.params.id } })
     }
@@ -965,6 +999,10 @@ export default {
 
     const finalAssessmentSubmission = () => {
       router.push({ name: 'client-project-fa-assessment', params: { id: router.currentRoute.params.id } })
+    }
+
+    const finalAssessmentHistory = () => {
+      router.push({ name: 'client-project-fa-history', params: { id: router.currentRoute.params.id } })
     }
 
     const downloadFileByAttachment = attachmentId => {
@@ -1172,6 +1210,8 @@ export default {
     const aboveCheckBuildingTasks = ['check-registration-project', 'fill-registration-project', 'fill-document-building', 'check-document-building']
     const aboveFirstPaymentTasks = ['check-registration-project', 'fill-registration-project', 'fill-document-building', 'check-document-building', 'agreement', 'first-payment']
     const submissionTasks = ['design-recognition-submission', 'final-assessment-submission']
+    const designRecognitionHistoryTasks = ['design-recognition-review', 'third-payment', 'check-third-payment', 'design-recognition-evaluation-assessment', 'design-recognition-trial-revision', 'design-recognition-revision-review', 'design-recognition-letter', 'final-assessment-submission', 'final-assessment-review', 'third-payment-fa', 'check-third-payment-fa', 'on-site-verification', 'on-site-revision-submission', 'final-assessment-evaluation-assessment', 'final-assessment-trial-revision', 'final-assessment-revision-review', 'final-assessment-letter']
+    const finalAssessmentHistoryTasks = ['final-assessment-review', 'third-payment-fa', 'check-third-payment-fa', 'on-site-verification', 'on-site-revision-submission', 'final-assessment-evaluation-assessment', 'final-assessment-trial-revision', 'final-assessment-revision-review', 'final-assessment-letter']
 
     return {
       projectData,
@@ -1186,6 +1226,8 @@ export default {
       thirdPaymentTask,
       drRevisionSubmissionTask,
       faRevisionSubmissionTask,
+      designRecognitionHistoryTasks,
+      finalAssessmentHistoryTasks,
       uploadDocumentPage,
       downloadFileByAttachment,
       downloadAllFiles,
@@ -1195,9 +1237,11 @@ export default {
       latestScoringFormAttachment,
       registeredProjectAttachment,
       designRecognitionSubmission,
+      designRecognitionHistory,
       signPostAndLoadApprovalSubmission,
       onSiteRevisionSubmissionPage,
       finalAssessmentSubmission,
+      finalAssessmentHistory,
       draftRegistrationLetter,
       aboveCheckBuildingTasks,
       aboveFirstPaymentTasks,

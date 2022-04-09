@@ -88,6 +88,7 @@
                     <card-analytic-goal-overview
                       :key="scoreKey"
                       :rerender-score-parent="forceRerenderScore"
+                      :read-only="readOnly"
                     />
                   </div>
                 </div>
@@ -114,9 +115,11 @@
     <card-statistic :key="cardStatisticKey" />
 
     <!-- tab for evaluation -->
-    <f-a-tab :rerender-score-parent="forceRerenderScore" />
+    <f-a-tab
+      :rerender-score-parent="forceRerenderScore"
+      :read-only="readOnly"
+    />
     <!--/ tab for evaluation -->
-
   </div>
 </template>
 
@@ -159,7 +162,7 @@ export default {
       scoreKey: 0,
       cardStatisticKey: 0,
       uploadAssessmentKey: 0,
-      readOnly: false,
+      readOnly: true,
     }
   },
   computed: {
