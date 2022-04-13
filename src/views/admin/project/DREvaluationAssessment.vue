@@ -5,7 +5,8 @@
 
       <b-row>
         <b-col md="12">
-          <b-form-group>
+          <b-form-group v-if="projectData.review_reason">
+            <label>Approval Note</label>
             <h4>{{ projectData.review_reason }}</h4>
           </b-form-group>
         </b-col>
