@@ -618,6 +618,8 @@ export default {
       taskDescription: [
         { task: 'design-recognition-trial', role: 'admin', title: 'Apabila diapprove akan langsung ke Design Recognition Letter, bila direject akan masuk ke revisi DR' },
         { task: 'design-recognition-trial-revision', role: 'client', title: 'Revisi DR oleh client' },
+        { task: 'design-recognition-evaluation-assessment', role: 'client', title: 'Menunggu hasil sidang EAB DR' },
+        { task: 'final-assessment-evaluation-assessment', role: 'client', title: 'Menunggu hasil sidang EAB FA' },
       ],
     }
   },

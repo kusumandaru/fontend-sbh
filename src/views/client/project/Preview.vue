@@ -694,6 +694,8 @@ export default {
       taskDescription: [
         { task: 'design-recognition-trial', role: 'admin', title: 'Proses approval DR' },
         { task: 'design-recognition-trial-revision', role: 'client', title: 'Revisi DR setelah sidang' },
+        { task: 'design-recognition-evaluation-assessment', role: 'client', title: 'Menunggu hasil sidang EAB DR' },
+        { task: 'final-assessment-evaluation-assessment', role: 'client', title: 'Menunggu hasil sidang EAB FA' },
       ],
     }
   },
