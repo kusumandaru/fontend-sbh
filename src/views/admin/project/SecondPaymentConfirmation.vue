@@ -4,40 +4,79 @@
       <project-header :key="projectHeaderKey" />
 
       <b-row>
-        <!--Second Payment Confirmation Letter Document -->
+        <!--DR Scoring Form -->
         <b-col md="12">
           <b-form-group>
-            <label>Form Penilaian</label>
+            <label>Form Penilaian Design Recognition</label>
             <validation-provider
               #default="{ errors }"
               name="Form Penilaian"
               rules="required"
             >
               <b-form-file
-                v-model.lazy="scoringFormInput"
+                v-model.lazy="drScoringFormInput"
                 placeholder="(Mandatory) Upload form penilaian..."
                 drop-placeholder="Drop file here..."
               />
               <small class="text-danger">{{ errors[0] }}</small>
               <b-card-text
-                v-if="scoringFormInput"
+                v-if="drScoringFormInput"
                 class="my-1"
               >
-                Selected file: <strong>{{ scoringFormInput ? scoringFormInput.name : '' }}</strong>
+                Selected file: <strong>{{ drScoringFormInput ? drScoringFormInput.name : '' }}</strong>
               </b-card-text>
             </validation-provider>
 
             <b-card-text
-              v-if="scoringForm"
+              v-if="drScoringForm"
               class="mb-0"
             >
               <b-button
                 v-ripple.400="'rgba(113, 102, 240, 0.15)'"
                 variant="flat-primary"
-                @click="downloadFileByAttachment(scoringForm.id)"
+                @click="downloadFileByAttachment(drScoringForm.id)"
               >
                 <feather-icon icon="ArchiveIcon" />
-                Download Form Penilaian
+                Download Form Penilaian Design Recogntion
+              </b-button>
+            </b-card-text>
+          </b-form-group>
+        </b-col>
+
+        <!--FA Scoring Form -->
+        <b-col md="12">
+          <b-form-group>
+            <label>Form Penilaian Final Assessment</label>
+            <validation-provider
+              #default="{ errors }"
+              name="Form Penilaian"
+              rules="required"
+            >
+              <b-form-file
+                v-model.lazy="faScoringFormInput"
+                placeholder="(Mandatory) Upload form penilaian..."
+                drop-placeholder="Drop file here..."
+              />
+              <small class="text-danger">{{ errors[0] }}</small>
+              <b-card-text
+                v-if="faScoringFormInput"
+                class="my-1"
+              >
+                Selected file: <strong>{{ faScoringFormInput ? faScoringFormInput.name : '' }}</strong>
+              </b-card-text>
+            </validation-provider>
+
+            <b-card-text
+              v-if="faScoringForm"
+              class="mb-0"
+            >
+              <b-button
+                v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+                variant="flat-primary"
+                @click="downloadFileByAttachment(faScoringForm.id)"
+              >
+                <feather-icon icon="ArchiveIcon" />
+                Download Form Penilaian Final Assessment
               </b-button>
             </b-card-text>
           </b-form-group>
@@ -184,7 +223,7 @@ export default {
   data() {
     return {
       projectHeaderKey: 0,
-      scoringFormInput: null,
+      drScoringFormInput: null,
       firstPaymentDocument: null,
       maxChar: 200,
       successShow: false,
@@ -236,7 +275,8 @@ export default {
   },
   setup() {
     const projectData = ref({})
-    const scoringForm = ref({})
+    const drScoringForm = ref({})
+    const faScoringForm = ref({})
     const secondPaymentData = ref([])
     const PROJECT_APP_STORE_MODULE_NAME = 'app-project'
     const selectedApproved = ref(false)
@@ -266,16 +306,29 @@ export default {
         }
       })
 
-    store.dispatch('app-project/getLatestAttachmentByType', { taskId: router.currentRoute.params.id, fileType: 'second_payment' })
+    store.dispatch('app-project/getLatestAttachmentByType', { taskId: router.currentRoute.params.id, fileType: 'dr_scoring_form' })
       .then(response => {
-        scoringForm.value = response.data
+        drScoringForm.value = response.data
       })
       .catch(error => {
         if (error.response.status === 404) {
-          scoringForm.value = undefined
+          drScoringForm.value = undefined
         }
         if (error.response.status === 500) {
-          scoringForm.value = undefined
+          drScoringForm.value = undefined
+        }
+      })
+
+    store.dispatch('app-project/getLatestAttachmentByType', { taskId: router.currentRoute.params.id, fileType: 'fa_scoring_form' })
+      .then(response => {
+        faScoringForm.value = response.data
+      })
+      .catch(error => {
+        if (error.response.status === 404) {
+          faScoringForm.value = undefined
+        }
+        if (error.response.status === 500) {
+          faScoringForm.value = undefined
         }
       })
 
@@ -319,7 +372,7 @@ export default {
 
     return {
       projectData,
-      scoringForm,
+      drScoringForm,
       secondPaymentData,
       downloadFileByAttachment,
       selectedApproved,
@@ -352,7 +405,8 @@ export default {
           this.isLoading = true
           const request = new FormData()
           request.append('task_id', router.currentRoute.params.id)
-          request.append('scoring_form', this.scoringFormInput)
+          request.append('dr_scoring_form', this.drScoringFormInput)
+          request.append('fa_scoring_form', this.faScoringFormInput)
           request.append('approved', this.selectedApproved)
 
           const config = {

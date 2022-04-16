@@ -731,7 +731,8 @@ export default {
     const workshorReportDocument = ref(null)
     const eligibilityStatement = ref(null)
     const agreementLetterDocument = ref(null)
-    const scoringForm = ref(null)
+    const drScoringForm = ref(null)
+    const faScoringForm = ref(null)
     const drRevisionDocument = ref(null)
     const faRevisionDocument = ref(null)
     const drEvaluationDocument = ref(null)
@@ -762,7 +763,8 @@ export default {
       workshop_report_document: workshorReportDocument,
       eligibility_statement: eligibilityStatement,
       agreement_letter_document: agreementLetterDocument,
-      scoring_form: scoringForm,
+      dr_scoring_form: drScoringForm,
+      fa_scoring_form: faScoringForm,
       sign_post: signPost,
       approval_building_release: approvalBuildingRelease,
     })

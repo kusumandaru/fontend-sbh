@@ -84,28 +84,6 @@
         </b-card>
       </b-card-text>
     </b-form-group>
-
-    <!-- Spacer -->
-    <hr class="project-spacing">
-
-    <b-card
-      no-body
-      style="background: #f6f6f6"
-    >
-      <b-card-text
-        class="mb-0"
-      >
-        <span class="font-weight-bold" />
-        <b-button
-          variant="light"
-          :disabled="isLoading"
-          @click="downloadAllFiles()"
-        >
-          <feather-icon icon="ArchiveIcon" />
-          Download All Document
-        </b-button>
-      </b-card-text>
-    </b-card>
   </b-col>
 </template>
 
@@ -180,7 +158,7 @@ export default {
   created() {
   },
   setup() {
-    const FA_APP_STORE_MODULE_NAME = 'app-fa'
+    const FA_APP_STORE_MODULE_NAME = 'app-fa-upload-assessment'
     const blankProjectAssessment = {
       temporary_score: 0,
       potential_score: 0,
@@ -205,39 +183,6 @@ export default {
 
     const isLoading = ref(null)
 
-    const downloadAllFiles = () => {
-      isLoading.value = true
-
-      store.dispatch('app-fa/downloadAllScoringFiles', {
-        id: router.currentRoute.params.id,
-        templateId: adminData.value.dr_template_id,
-      })
-        .then(response => {
-          isLoading.value = false
-
-          const blob = new Blob([response.data], { type: 'application/zip' })
-          const url = window.URL.createObjectURL(blob)
-
-          // window.open(url)
-          const downloadLink = document.createElement('a')
-          downloadLink.href = url
-
-          document.body.appendChild(downloadLink)
-          downloadLink.click()
-          document.body.removeChild(downloadLink)
-        })
-        .catch(error => {
-          isLoading.value = false
-
-          if (error.response.status === 404) {
-            console.error(error)
-          }
-          if (error.response.status === 500) {
-            console.error(error)
-          }
-        })
-    }
-
     // Register module
     if (!store.hasModule(FA_APP_STORE_MODULE_NAME)) store.registerModule(FA_APP_STORE_MODULE_NAME, masterFaStoreModule)
 
@@ -246,7 +191,7 @@ export default {
       if (store.hasModule(FA_APP_STORE_MODULE_NAME)) store.unregisterModule(FA_APP_STORE_MODULE_NAME)
     })
 
-    store.dispatch('app-fa/fetchProjectAssessment', { taskId: router.currentRoute.params.id })
+    store.dispatch('app-fa-upload-assessment/fetchProjectAssessment', { taskId: router.currentRoute.params.id })
       .then(response => {
         // eslint-disable-next-line prefer-destructuring
         projectAssessment.value = response.data[0]
@@ -257,7 +202,7 @@ export default {
         }
       })
 
-    store.dispatch('app-fa/fetchProjectAttachments', { taskId: router.currentRoute.params.id })
+    store.dispatch('app-fa-upload-assessment/fetchProjectAttachments', { taskId: router.currentRoute.params.id })
       .then(response => {
         projectAttachments.value = response.data
       })
@@ -267,7 +212,7 @@ export default {
         }
       })
 
-    store.dispatch('app-fa/fetchAdminData')
+    store.dispatch('app-fa-upload-assessment/fetchAdminData')
       .then(response => {
         adminData.value = response.data
       })
@@ -281,15 +226,19 @@ export default {
       })
 
     const latestScoringFormAttachment = () => {
-      store.dispatch('app-fa/getLatestAttachmentByType', { taskId: router.currentRoute.params.id, fileType: 'scoring_form' })
+      isLoading.value = true
+
+      store.dispatch('app-fa-upload-assessment/getLatestAttachmentByType', { taskId: router.currentRoute.params.id, fileType: 'fa_scoring_form' })
         .then(response => {
           scoringForm.value = response.data
 
-          store.dispatch('app-fa/downloadLinkByAttachmentId', {
+          store.dispatch('app-fa-upload-assessment/downloadLinkByAttachmentId', {
             taskId: router.currentRoute.params.id,
             attachmentId: scoringForm.value.id,
           })
             .then(resp => {
+              isLoading.value = false
+
               const downloadLink = document.createElement('a')
               downloadLink.href = resp.data.url
               downloadLink.download = resp.data.filename
@@ -299,6 +248,8 @@ export default {
               document.body.removeChild(downloadLink)
             })
             .catch(err => {
+              isLoading.value = false
+
               if (err.response.status === 404) {
                 console.error(err)
               }
@@ -308,6 +259,8 @@ export default {
             })
         })
         .catch(error => {
+          isLoading.value = false
+
           if (error.response.status === 404) {
             scoringForm.value = undefined
           }
@@ -321,7 +274,6 @@ export default {
       projectAssessment,
       projectAttachments,
       latestScoringFormAttachment,
-      downloadAllFiles,
       isLoading,
     }
   },
@@ -358,7 +310,6 @@ export default {
       this.$http.post(`/engine-rest/new-building/final_assessment/${router.currentRoute.params.id}/assessment_attachment`, request, config).then(res => {
         this.result = JSON.parse(JSON.stringify(res.data))
         this.isLoading = false
-        this.rerenderAssessment()
         this.showToast('success', 'Saved', 'Assessment successfully submitted')
       }).catch(() => {
         this.isLoading = false
@@ -387,7 +338,6 @@ export default {
       this.isLoading = true
       this.$http.delete(`/engine-rest/new-building/assessment_attachment/${attachment.id}`).then(() => {
         this.isLoading = false
-        this.rerenderAssessment()
         this.showToast('success', 'Deleted', 'Attachment successfully delete')
       }).catch(() => {
         this.isLoading = false

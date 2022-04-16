@@ -166,7 +166,7 @@ export default {
     },
   },
   setup() {
-    const DR_APP_STORE_MODULE_NAME = 'app-dr'
+    const DR_APP_STORE_MODULE_NAME = 'app-dr-eligible-review'
     const eligibleApprove = ref(JSON.parse('{}'))
 
     // Register module
@@ -177,7 +177,7 @@ export default {
       if (store.hasModule(DR_APP_STORE_MODULE_NAME)) store.unregisterModule(DR_APP_STORE_MODULE_NAME)
     })
 
-    store.dispatch('app-dr/postDREligibleApprove', { taskId: router.currentRoute.params.id })
+    store.dispatch('app-dr-eligible-review/postDREligibleApprove', { taskId: router.currentRoute.params.id })
       .then(response => {
         eligibleApprove.value = response.data
       })

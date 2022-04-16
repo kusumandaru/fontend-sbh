@@ -101,7 +101,7 @@ export default {
   created() {
   },
   setup() {
-    const DR_APP_STORE_MODULE_NAME = 'app-dr'
+    const DR_APP_STORE_MODULE_NAME = 'app-dr-card-analytic'
     const blankProjectAssessment = {
       temporary_score: 0,
       potential_score: 0,
@@ -184,7 +184,7 @@ export default {
       if (store.hasModule(DR_APP_STORE_MODULE_NAME)) store.unregisterModule(DR_APP_STORE_MODULE_NAME)
     })
 
-    store.dispatch('app-dr/fetchProjectAssessment', { taskId: router.currentRoute.params.id })
+    store.dispatch('app-dr-card-analytic/fetchProjectAssessment', { taskId: router.currentRoute.params.id })
       .then(response => {
         // eslint-disable-next-line prefer-destructuring
         projectAssessment.value = response.data[0]

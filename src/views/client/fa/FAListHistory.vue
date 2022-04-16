@@ -102,6 +102,9 @@
                 :rerender-upload-assessment="forceRerenderUploadAssessment"
                 :read-only="readOnly"
               />
+              <!-- Spacer -->
+              <hr class="project-spacing">
+              <scoring-document />
             </div>
           </div>
         </b-card-body>
@@ -138,6 +141,7 @@ import FATab from './FATab.vue'
 import CardAnalyticGoalOverview from './CardAnalyticGoalOverview.vue'
 import CardStatistic from './CardStatistic.vue'
 import UploadAssessment from './UploadAssessment.vue'
+import ScoringDocument from './ScoringDocument.vue'
 import Alert from './Alert.vue'
 
 export default {
@@ -149,6 +153,7 @@ export default {
     CardAnalyticGoalOverview,
     CardStatistic,
     UploadAssessment,
+    ScoringDocument,
     Alert,
   },
   directives: {

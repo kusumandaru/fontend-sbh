@@ -1,8 +1,8 @@
-<!--Upload Dokument Penilaian -->
+<!--Dokumen Penilaian -->
 <template>
   <b-col md="12">
     <b-modal
-      id="upload-assessment-modal "
+      id="scoring-document-modal"
       v-model.lazy="isLoading"
       modal-class="modal-success"
       centered
@@ -19,30 +19,22 @@
         </h5>
       </b-card-text>
     </b-modal>
-    <b-form-group>
+
+    <b-card no-body>
       <b-card-text
-        v-if="attachmentExist"
         class="mb-0"
       >
-        <b-card no-body>
-          <b-table
-            responsive
-            :items="projectAttachments"
-            :fields="attachmentFields"
-            class="mb-0"
-          >
-            <template #cell(filename)="doc">
-              <b-link
-                class="font-weight-bold d-block text-nowrap"
-                @click="getAttachment(doc.item)"
-              >
-                {{ doc.value }}
-              </b-link>
-            </template>
-          </b-table>
-        </b-card>
+        <span class="font-weight-bold" />
+        <b-button
+          variant="light"
+          :disabled="isLoading"
+          @click="downloadAllFiles()"
+        >
+          <feather-icon icon="ArchiveIcon" />
+          Download All Design Recognition Document
+        </b-button>
       </b-card-text>
-    </b-form-group>
+    </b-card>
   </b-col>
 </template>
 
@@ -50,10 +42,8 @@
 import {
   BCardText,
   BCol,
-  BFormGroup,
-  BTable,
+  BButton,
   BModal,
-  BLink,
   BCard,
   BSpinner,
 } from 'bootstrap-vue'
@@ -70,25 +60,16 @@ export default {
   components: {
     BCardText,
     BCol,
-    BFormGroup,
-    BTable,
+    BButton,
     BModal,
-    BLink,
     BCard,
     BSpinner,
   },
   directives: {
     Ripple,
   },
-  props: {
-    rerenderUploadAssessment: {
-      type: Function,
-      default: () => {},
-    },
-  },
   data() {
     return {
-      isLoading: false,
       attachmentFields: [
         { key: 'filename', label: 'Document Name' },
         { key: 'version', label: 'Version' },
@@ -104,7 +85,7 @@ export default {
   created() {
   },
   setup() {
-    const DR_APP_STORE_MODULE_NAME = 'app-dr-upload-assessment'
+    const DR_APP_STORE_MODULE_NAME = 'app-dr-scoring-form'
     const blankProjectAssessment = {
       temporary_score: 0,
       potential_score: 0,
@@ -128,6 +109,52 @@ export default {
 
     const isLoading = ref(null)
 
+    const downloadAllFiles = () => {
+      isLoading.value = true
+      store.dispatch('app-dr-scoring-form/fetchAdminData')
+        .then(response => {
+          adminData.value = response.data
+          store.dispatch('app-dr-scoring-form/downloadAllScoringFiles', {
+            id: router.currentRoute.params.id,
+            templateId: adminData.value.dr_template_id,
+          })
+            .then(resp => {
+              isLoading.value = false
+
+              const blob = new Blob([resp.data], { type: 'application/zip' })
+              const url = window.URL.createObjectURL(blob)
+
+              // window.open(url)
+              const downloadLink = document.createElement('a')
+              downloadLink.href = url
+
+              document.body.appendChild(downloadLink)
+              downloadLink.click()
+              document.body.removeChild(downloadLink)
+            })
+            .catch(err => {
+              isLoading.value = false
+
+              if (err.response.status === 404) {
+                console.error(err)
+              }
+              if (err.response.status === 500) {
+                console.error(err)
+              }
+            })
+        })
+        .catch(error => {
+          isLoading.value = false
+
+          if (error.response.status === 404) {
+            adminData.value = undefined
+          }
+          if (error.response.status === 500) {
+            adminData.value = undefined
+          }
+        })
+    }
+
     // Register module
     if (!store.hasModule(DR_APP_STORE_MODULE_NAME)) store.registerModule(DR_APP_STORE_MODULE_NAME, masterDrStoreModule)
 
@@ -136,7 +163,7 @@ export default {
       if (store.hasModule(DR_APP_STORE_MODULE_NAME)) store.unregisterModule(DR_APP_STORE_MODULE_NAME)
     })
 
-    store.dispatch('app-dr-upload-assessment/fetchProjectAssessment', { taskId: router.currentRoute.params.id })
+    store.dispatch('app-dr-scoring-form/fetchProjectAssessment', { taskId: router.currentRoute.params.id })
       .then(response => {
         // eslint-disable-next-line prefer-destructuring
         projectAssessment.value = response.data[0]
@@ -147,7 +174,7 @@ export default {
         }
       })
 
-    store.dispatch('app-dr-upload-assessment/fetchProjectAttachments', { taskId: router.currentRoute.params.id })
+    store.dispatch('app-dr-scoring-form/fetchProjectAttachments', { taskId: router.currentRoute.params.id })
       .then(response => {
         projectAttachments.value = response.data
       })
@@ -157,29 +184,14 @@ export default {
         }
       })
 
-    store.dispatch('app-dr-upload-assessment/fetchAdminData')
-      .then(response => {
-        adminData.value = response.data
-      })
-      .catch(error => {
-        if (error.response.status === 404) {
-          adminData.value = undefined
-        }
-        if (error.response.status === 500) {
-          adminData.value = undefined
-        }
-      })
-
     return {
       projectAssessment,
       projectAttachments,
+      downloadAllFiles,
       isLoading,
     }
   },
   methods: {
-    rerenderAssessment() {
-      this.rerenderUploadAssessment()
-    },
     showToast(variant, titleToast, description) {
       this.$toast({
         component: ToastificationContent,
