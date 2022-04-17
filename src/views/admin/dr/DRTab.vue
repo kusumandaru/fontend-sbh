@@ -174,7 +174,7 @@ export default {
   created() {
   },
   setup() {
-    const DR_APP_STORE_MODULE_NAME = 'app-dr'
+    const DR_APP_STORE_MODULE_NAME = 'app-dr-tab'
     const transactionFetch = ref(JSON.parse('{}'))
     const projectAssessments = ref(JSON.parse('{}'))
     const masterEvaluations = ref(JSON.parse('[]'))
@@ -188,7 +188,7 @@ export default {
       if (store.hasModule(DR_APP_STORE_MODULE_NAME)) store.unregisterModule(DR_APP_STORE_MODULE_NAME)
     })
 
-    store.dispatch('app-dr/fetchDesignRecognition', { taskId: router.currentRoute.params.id })
+    store.dispatch('app-dr-tab/fetchDesignRecognition', { taskId: router.currentRoute.params.id })
       .then(response => {
         transactionFetch.value = response.data
         // eslint-disable-next-line prefer-destructuring

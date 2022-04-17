@@ -433,18 +433,6 @@
             Panduan Registered Project Declaration
           </b-button>
 
-          <!-- Button: Scoring Form-->
-          <b-button
-            v-if="scoringFormAttachmentShow"
-            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-            variant="secondary"
-            class="mb-75"
-            block
-            @click="latestScoringFormAttachment"
-          >
-            Form Penilaian
-          </b-button>
-
           <!-- Button: DR Revision-->
           <b-button
             v-if="drRevisionShow"
@@ -727,9 +715,6 @@ export default {
     registrationLetterAttachmentShow() {
       return !(this.aboveFirstPaymentTasks.includes(this.projectData.definition_key))
     },
-    scoringFormAttachmentShow() {
-      return (this.submissionTasks.includes(this.projectData.definition_key))
-    },
     drRevisionShow() {
       return ['design-recognition-trial-revision'].includes(this.projectData.definition_key)
     },
@@ -837,7 +822,8 @@ export default {
     const faEvaluationDocument = ref(null)
     const signPost = ref(null)
     const approvalBuildingRelease = ref(null)
-    const scoringForm = ref(null)
+    const drScoringForm = ref(null)
+    const faScoringForm = ref(null)
     const isLoading = ref(null)
 
     const PROJECT_APP_STORE_MODULE_NAME = 'app-project'
@@ -863,6 +849,8 @@ export default {
       agreement_letter_document: agreementLetterDocument,
       sign_post: signPost,
       approval_building_release: approvalBuildingRelease,
+      dr_scoring_form: drScoringForm,
+      fa_scoring_form: faScoringForm,
     })
 
     const evaluationAttachments = ref({
@@ -1066,67 +1054,6 @@ export default {
         })
     }
 
-    const scoringFormAttachment = () => {
-      store.dispatch('app-project/downloadMasterLink', {
-        filename: 'scoring_form',
-      })
-        .then(response => {
-          // window.open(response.data.url)
-          const downloadLink = document.createElement('a')
-          downloadLink.href = response.data.url
-          downloadLink.download = response.data.filename
-
-          document.body.appendChild(downloadLink)
-          downloadLink.click()
-          document.body.removeChild(downloadLink)
-        })
-        .catch(error => {
-          if (error.response.status === 404) {
-            console.error(error)
-          }
-          if (error.response.status === 500) {
-            console.error(error)
-          }
-        })
-    }
-
-    const latestScoringFormAttachment = () => {
-      store.dispatch('app-project/getLatestAttachmentByType', { taskId: router.currentRoute.params.id, fileType: 'scoring_form' })
-        .then(response => {
-          scoringForm.value = response.data
-
-          store.dispatch('app-project/downloadLinkByAttachmentId', {
-            taskId: projectData.value.task_id,
-            attachmentId: scoringForm.value.id,
-          })
-            .then(resp => {
-              const downloadLink = document.createElement('a')
-              downloadLink.href = resp.data.url
-              downloadLink.download = resp.data.filename
-
-              document.body.appendChild(downloadLink)
-              downloadLink.click()
-              document.body.removeChild(downloadLink)
-            })
-            .catch(err => {
-              if (err.response.status === 404) {
-                console.error(err)
-              }
-              if (err.response.status === 500) {
-                console.error(err)
-              }
-            })
-        })
-        .catch(error => {
-          if (error.response.status === 404) {
-            scoringForm.value = undefined
-          }
-          if (error.response.status === 500) {
-            scoringForm.value = undefined
-          }
-        })
-    }
-
     const registeredProjectAttachment = () => {
       store.dispatch('app-project/downloadRegisteredProjectAttachment', {
         id: projectData.value.task_id,
@@ -1235,8 +1162,6 @@ export default {
       downloadAllFiles,
       eligibleStatement,
       registeredProject,
-      scoringFormAttachment,
-      latestScoringFormAttachment,
       registeredProjectAttachment,
       designRecognitionSubmission,
       designRecognitionHistory,
@@ -1248,7 +1173,6 @@ export default {
       aboveCheckBuildingTasks,
       aboveFirstPaymentTasks,
       submissionTasks,
-      scoringForm,
       isLoading,
     }
   },

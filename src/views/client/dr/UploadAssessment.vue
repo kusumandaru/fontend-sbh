@@ -84,28 +84,6 @@
         </b-card>
       </b-card-text>
     </b-form-group>
-
-    <!-- Spacer -->
-    <hr class="project-spacing">
-
-    <b-card
-      no-body
-      style="background: #f6f6f6"
-    >
-      <b-card-text
-        class="mb-0"
-      >
-        <span class="font-weight-bold" />
-        <b-button
-          variant="light"
-          :disabled="isLoading"
-          @click="downloadAllFiles()"
-        >
-          <feather-icon icon="ArchiveIcon" />
-          Download All Design Recognition Document
-        </b-button>
-      </b-card-text>
-    </b-card>
   </b-col>
 </template>
 
@@ -179,7 +157,7 @@ export default {
   created() {
   },
   setup() {
-    const DR_APP_STORE_MODULE_NAME = 'app-dr'
+    const DR_APP_STORE_MODULE_NAME = 'app-dr-upload-assessment'
     const blankProjectAssessment = {
       temporary_score: 0,
       potential_score: 0,
@@ -203,39 +181,6 @@ export default {
     const scoringForm = ref(null)
     const isLoading = ref(null)
 
-    const downloadAllFiles = () => {
-      isLoading.value = true
-
-      store.dispatch('app-dr/downloadAllScoringFiles', {
-        id: router.currentRoute.params.id,
-        templateId: adminData.value.dr_template_id,
-      })
-        .then(response => {
-          isLoading.value = false
-
-          const blob = new Blob([response.data], { type: 'application/zip' })
-          const url = window.URL.createObjectURL(blob)
-
-          // window.open(url)
-          const downloadLink = document.createElement('a')
-          downloadLink.href = url
-
-          document.body.appendChild(downloadLink)
-          downloadLink.click()
-          document.body.removeChild(downloadLink)
-        })
-        .catch(error => {
-          isLoading.value = false
-
-          if (error.response.status === 404) {
-            console.error(error)
-          }
-          if (error.response.status === 500) {
-            console.error(error)
-          }
-        })
-    }
-
     // Register module
     if (!store.hasModule(DR_APP_STORE_MODULE_NAME)) store.registerModule(DR_APP_STORE_MODULE_NAME, masterDrStoreModule)
 
@@ -244,7 +189,7 @@ export default {
       if (store.hasModule(DR_APP_STORE_MODULE_NAME)) store.unregisterModule(DR_APP_STORE_MODULE_NAME)
     })
 
-    store.dispatch('app-dr/fetchProjectAssessment', { taskId: router.currentRoute.params.id })
+    store.dispatch('app-dr-upload-assessment/fetchProjectAssessment', { taskId: router.currentRoute.params.id })
       .then(response => {
         // eslint-disable-next-line prefer-destructuring
         projectAssessment.value = response.data[0]
@@ -255,7 +200,7 @@ export default {
         }
       })
 
-    store.dispatch('app-dr/fetchProjectAttachments', { taskId: router.currentRoute.params.id })
+    store.dispatch('app-dr-upload-assessment/fetchProjectAttachments', { taskId: router.currentRoute.params.id })
       .then(response => {
         projectAttachments.value = response.data
       })
@@ -265,7 +210,7 @@ export default {
         }
       })
 
-    store.dispatch('app-dr/fetchAdminData')
+    store.dispatch('app-dr-upload-assessment/fetchAdminData')
       .then(response => {
         adminData.value = response.data
       })
@@ -279,15 +224,17 @@ export default {
       })
 
     const latestScoringFormAttachment = () => {
-      store.dispatch('app-dr/getLatestAttachmentByType', { taskId: router.currentRoute.params.id, fileType: 'scoring_form' })
+      isLoading.value = true
+
+      store.dispatch('app-dr-upload-assessment/getLatestAttachmentByType', { taskId: router.currentRoute.params.id, fileType: 'dr_scoring_form' })
         .then(response => {
           scoringForm.value = response.data
-          console.log(scoringForm)
-          store.dispatch('app-dr/downloadLinkByAttachmentId', {
+          store.dispatch('app-dr-upload-assessment/downloadLinkByAttachmentId', {
             taskId: router.currentRoute.params.id,
             attachmentId: scoringForm.value.id,
           })
             .then(resp => {
+              isLoading.value = false
               const downloadLink = document.createElement('a')
               downloadLink.href = resp.data.url
               downloadLink.download = resp.data.filename
@@ -297,6 +244,7 @@ export default {
               document.body.removeChild(downloadLink)
             })
             .catch(err => {
+              isLoading.value = false
               if (err.response.status === 404) {
                 console.error(err)
               }
@@ -306,6 +254,8 @@ export default {
             })
         })
         .catch(error => {
+          isLoading.value = false
+
           if (error.response.status === 404) {
             scoringForm.value = undefined
           }
@@ -319,7 +269,6 @@ export default {
       projectAssessment,
       projectAttachments,
       latestScoringFormAttachment,
-      downloadAllFiles,
       isLoading,
     }
   },

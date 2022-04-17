@@ -70,7 +70,6 @@ export default {
   },
   data() {
     return {
-      isLoading: false,
       attachmentFields: [
         { key: 'filename', label: 'Document Name' },
         { key: 'version', label: 'Version' },
@@ -86,7 +85,7 @@ export default {
   created() {
   },
   setup() {
-    const DR_APP_STORE_MODULE_NAME = 'app-dr'
+    const DR_APP_STORE_MODULE_NAME = 'app-dr-scoring-form'
     const blankProjectAssessment = {
       temporary_score: 0,
       potential_score: 0,
@@ -113,10 +112,10 @@ export default {
     const downloadAllFiles = () => {
       isLoading.value = true
 
-      store.dispatch('app-dr/fetchAdminData')
+      store.dispatch('app-dr-scoring-form/fetchAdminData')
         .then(response => {
           adminData.value = response.data
-          store.dispatch('app-dr/downloadAllScoringFiles', {
+          store.dispatch('app-dr-scoring-form/downloadAllScoringFiles', {
             id: router.currentRoute.params.id,
             templateId: adminData.value.dr_template_id,
           })
@@ -163,7 +162,7 @@ export default {
       if (store.hasModule(DR_APP_STORE_MODULE_NAME)) store.unregisterModule(DR_APP_STORE_MODULE_NAME)
     })
 
-    store.dispatch('app-dr/fetchProjectAssessment', { taskId: router.currentRoute.params.id })
+    store.dispatch('app-dr-scoring-form/fetchProjectAssessment', { taskId: router.currentRoute.params.id })
       .then(response => {
         // eslint-disable-next-line prefer-destructuring
         projectAssessment.value = response.data[0]
@@ -174,7 +173,7 @@ export default {
         }
       })
 
-    store.dispatch('app-dr/fetchProjectAttachments', { taskId: router.currentRoute.params.id })
+    store.dispatch('app-dr-scoring-form/fetchProjectAttachments', { taskId: router.currentRoute.params.id })
       .then(response => {
         projectAttachments.value = response.data
       })
@@ -192,9 +191,6 @@ export default {
     }
   },
   methods: {
-    rerenderAssessment() {
-      this.rerenderUploadAssessment()
-    },
     showToast(variant, titleToast, description) {
       this.$toast({
         component: ToastificationContent,

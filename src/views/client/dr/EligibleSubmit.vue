@@ -118,7 +118,7 @@ export default {
     },
   },
   setup() {
-    const DR_APP_STORE_MODULE_NAME = 'app-dr'
+    const DR_APP_STORE_MODULE_NAME = 'app-dr-eligible-submit'
     const eligibleSubmission = ref(JSON.parse('{}'))
 
     // Register module
@@ -129,7 +129,7 @@ export default {
       if (store.hasModule(DR_APP_STORE_MODULE_NAME)) store.unregisterModule(DR_APP_STORE_MODULE_NAME)
     })
 
-    store.dispatch('app-dr/postDREligibleSubmission', { taskId: router.currentRoute.params.id })
+    store.dispatch('app-dr-eligible-submit/postDREligibleSubmission', { taskId: router.currentRoute.params.id })
       .then(response => {
         eligibleSubmission.value = response.data
       })
