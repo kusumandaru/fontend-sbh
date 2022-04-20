@@ -142,6 +142,35 @@
               </validation-provider>
             </b-col>
 
+            <!-- Score Modifier -->
+            <b-col
+              cols="12"
+              md="4"
+            >
+              <validation-provider
+                #default="validationContext"
+                name="Score Modifier"
+                rules="required"
+              >
+                <b-form-group
+                  label="Score Modifier"
+                  label-for="score-modifier"
+                >
+                  <b-form-input
+                    id="score"
+                    v-model="exerciseData.score_modifier"
+                    :state="getValidationState(validationContext)"
+                    type="number"
+                    trim
+                  />
+
+                  <b-form-invalid-feedback>
+                    {{ validationContext.errors[0] }}
+                  </b-form-invalid-feedback>
+                </b-form-group>
+              </validation-provider>
+            </b-col>
+
             <!-- Field: Active-->
             <b-col
               cols="12"
@@ -255,6 +284,7 @@ export default {
       exerciseData.value.masterEvaluationID = exerciseData.value.master_evaluation_id
       exerciseData.value.exerciseType = exerciseData.value.exercise_type
       exerciseData.value.maxScore = exerciseData.value.max_score
+      exerciseData.value.scoreModifier = exerciseData.value.score_modifier
 
       store.dispatch('app-exercise/editExercise', { exerciseId: router.currentRoute.params.exerciseId, exerciseData: exerciseData.value })
         .then(() => {

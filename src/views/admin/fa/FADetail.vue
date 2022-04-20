@@ -40,6 +40,10 @@
         </div>
       </b-card>
 
+      <b-card v-if="eligibleScoreModifier(exercise)">
+        Apabila memilih penilaian ini akan mengakibatkan total score berubah {{ exercise.exercise.score_modifier }}
+      </b-card>
+
       <!-- collapse -->
       <app-collapse
         id="f-a-detail"
@@ -738,6 +742,9 @@ export default {
       if (this.$refs[`collapse-item-ref-${criteriaId}`] !== undefined) {
         this.$refs[`collapse-item-ref-${criteriaId}`][0].updateVisible(true)
       }
+    },
+    eligibleScoreModifier(exercise) {
+      return exercise.exercise.score_modifier !== 0
     },
   },
 }
