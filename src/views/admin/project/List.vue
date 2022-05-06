@@ -216,6 +216,10 @@ export default {
           },
         },
         {
+          label: 'Tenant',
+          field: 'tenant_id',
+        },
+        {
           label: 'Certification Type',
           field: 'certification_type',
           filterOptions: {
@@ -409,7 +413,7 @@ export default {
   },
   methods: {
     retrieveProjects() {
-      this.$http.get('engine-rest/new-building/tasks/pagi')
+      this.$http.get('engine-rest/new-building/tasks/admin/pagi')
         .then(res => {
           this.rows = res.data.sbh_tasks
           this.totalRecords = res.data.count
@@ -485,7 +489,7 @@ export default {
       request.filter.buildingName = request.filter.building_name
       request.filter.certificationType = request.filter.certification_type
 
-      this.$http.post('engine-rest/new-building/tasks/pagi', request)
+      this.$http.post('engine-rest/new-building/tasks/admin/pagi', request)
         .then(res => {
           this.totalRecords = res.data.count
           this.rows = res.data.sbh_tasks

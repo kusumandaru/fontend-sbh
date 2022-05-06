@@ -1,5 +1,9 @@
 <template>
   <section class="project-preview-wrapper">
+    <!-- error -->
+    <error :key="errorKey" />
+    <!-- error -->
+
     <b-row
       v-if="projectData"
       class="project-preview"
@@ -433,6 +437,18 @@
             Panduan Registered Project Declaration
           </b-button>
 
+          <!-- Button: Design Recognition History-->
+          <b-button
+            v-if="designRecognitionHistoryShow"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="info"
+            class="mb-75"
+            block
+            @click="designRecognitionHistory"
+          >
+            Design Recognition History
+          </b-button>
+
           <!-- Button: DR Revision-->
           <b-button
             v-if="drRevisionShow"
@@ -527,18 +543,6 @@
             @click="designRecognitionSubmission"
           >
             Design Recognition Submission
-          </b-button>
-
-          <!-- Button: Design Recognition History-->
-          <b-button
-            v-if="designRecognitionHistoryShow"
-            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-            variant="info"
-            class="mb-75"
-            block
-            @click="designRecognitionHistory"
-          >
-            Design Recognition History
           </b-button>
 
           <!-- Button: On Site Revision Submission -->
@@ -648,6 +652,7 @@ import Ripple from 'vue-ripple-directive'
 import projectStoreModule from '@/views/projectStoreModule'
 import fileDownload from 'js-file-download'
 import Alert from './Alert.vue'
+import Error from './Error.vue'
 
 export default {
   directives: {
@@ -670,10 +675,12 @@ export default {
     AppCollapse,
     AppCollapseItem,
     Alert,
+    Error,
   },
   data() {
     return {
       alertKey: 0,
+      errorKey: 0,
       projectAttachmentFields: [
         { key: 'filename', label: 'Document Name' },
         { key: 'version', label: 'Version' },
@@ -876,13 +883,60 @@ export default {
       if (store.hasModule(PROJECT_APP_STORE_MODULE_NAME)) store.unregisterModule(PROJECT_APP_STORE_MODULE_NAME)
     })
 
-    store.dispatch('app-project/fetchProject', { id: router.currentRoute.params.id })
+    store.dispatch('app-project/fetchClientProject', { id: router.currentRoute.params.id })
       .then(response => {
+        console.log(response)
         projectData.value = response.data
         paymentProps.blank = false
         paymentProps.src = response.data.proof_of_payment_url
+
+        Object.keys(registeredAttachments.value).forEach(key => {
+          store.dispatch('app-project/getAttachmentsByType', { taskId: router.currentRoute.params.id, fileType: key })
+            .then(resp => {
+              registeredAttachments.value[key] = resp.data
+            })
+            .catch(error => {
+              if (error.response.status === 404) {
+                registeredAttachments.value[key] = undefined
+              }
+              if (error.response.status === 500) {
+                registeredAttachments.value[key] = undefined
+              }
+            })
+        })
+
+        Object.keys(eligibilityAttachments.value).forEach(key => {
+          store.dispatch('app-project/getAttachmentsByType', { taskId: router.currentRoute.params.id, fileType: key })
+            .then(resp => {
+              eligibilityAttachments.value[key] = resp.data
+            })
+            .catch(error => {
+              if (error.response.status === 404) {
+                eligibilityAttachments.value[key] = undefined
+              }
+              if (error.response.status === 500) {
+                eligibilityAttachments.value[key] = undefined
+              }
+            })
+        })
+
+        Object.keys(evaluationAttachments.value).forEach(key => {
+          store.dispatch('app-project/getAttachmentsByType', { taskId: router.currentRoute.params.id, fileType: key })
+            .then(resp => {
+              evaluationAttachments.value[key] = resp.data
+            })
+            .catch(error => {
+              if (error.response.status === 404) {
+                evaluationAttachments.value[key] = undefined
+              }
+              if (error.response.status === 500) {
+                evaluationAttachments.value[key] = undefined
+              }
+            })
+        })
       })
       .catch(error => {
+        console.error(error)
         if (error.response.status === 404) {
           projectData.value = undefined
         }
@@ -893,51 +947,6 @@ export default {
           projectData.value = undefined
         }
       })
-
-    Object.keys(registeredAttachments.value).forEach(key => {
-      store.dispatch('app-project/getAttachmentsByType', { taskId: router.currentRoute.params.id, fileType: key })
-        .then(response => {
-          registeredAttachments.value[key] = response.data
-        })
-        .catch(error => {
-          if (error.response.status === 404) {
-            registeredAttachments.value[key] = undefined
-          }
-          if (error.response.status === 500) {
-            registeredAttachments.value[key] = undefined
-          }
-        })
-    })
-
-    Object.keys(eligibilityAttachments.value).forEach(key => {
-      store.dispatch('app-project/getAttachmentsByType', { taskId: router.currentRoute.params.id, fileType: key })
-        .then(response => {
-          eligibilityAttachments.value[key] = response.data
-        })
-        .catch(error => {
-          if (error.response.status === 404) {
-            eligibilityAttachments.value[key] = undefined
-          }
-          if (error.response.status === 500) {
-            eligibilityAttachments.value[key] = undefined
-          }
-        })
-    })
-
-    Object.keys(evaluationAttachments.value).forEach(key => {
-      store.dispatch('app-project/getAttachmentsByType', { taskId: router.currentRoute.params.id, fileType: key })
-        .then(response => {
-          evaluationAttachments.value[key] = response.data
-        })
-        .catch(error => {
-          if (error.response.status === 404) {
-            evaluationAttachments.value[key] = undefined
-          }
-          if (error.response.status === 500) {
-            evaluationAttachments.value[key] = undefined
-          }
-        })
-    })
 
     const printProject = () => {
       window.print()

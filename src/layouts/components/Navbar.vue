@@ -33,6 +33,7 @@
               {{ userData.fullName || userData.username }}
             </p>
             <span class="user-status">{{ userData.roles.join() }}</span>
+            <span class="user-status">{{ userData.tenant }}</span>
           </div>
           <b-avatar
             size="40"
@@ -53,7 +54,7 @@
           <span>Profile</span>
         </b-dropdown-item>
 
-        <b-dropdown-item link-class="d-flex align-items-center">
+        <!-- <b-dropdown-item link-class="d-flex align-items-center">
           <feather-icon
             size="16"
             icon="MailIcon"
@@ -78,7 +79,7 @@
             class="mr-50"
           />
           <span>Chat</span>
-        </b-dropdown-item>
+        </b-dropdown-item> -->
 
         <b-dropdown-divider />
 

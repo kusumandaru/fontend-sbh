@@ -14,10 +14,18 @@ export default {
           .catch(error => reject(error))
       })
     },
-    fetchProject(ctx, { id }) {
+    fetchAdminProject(ctx, { id }) {
       return new Promise((resolve, reject) => {
         axios
-          .get(`engine-rest/new-building/variables/${id}`)
+          .get(`engine-rest/new-building/variables/admin/${id}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    fetchClientProject(ctx, { id }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`engine-rest/new-building/variables/client/${id}`)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })

@@ -40,7 +40,7 @@
                   :variant="eligibleSubmission.eligible ? 'primary' : 'danger'"
                   class="mt-2 mt-lg-3"
                   :disabled="!eligibleSubmission.eligible"
-                  @click="submitProjectDR"
+                  @click="submitProjectDR('Submit')"
                 >
                   Submit Design Recognition
                 </b-button>
@@ -84,11 +84,15 @@ import {
 import {
   ref, onUnmounted,
 } from '@vue/composition-api'
+import Vue from 'vue'
+import VueSweetalert2 from 'vue-sweetalert2'
 import router from '@/router'
 import store from '@/store'
 import Ripple from 'vue-ripple-directive'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 import masterDrStoreModule from './masterDrStoreModule'
+
+Vue.use(VueSweetalert2)
 
 export default {
   components: {
@@ -155,17 +159,32 @@ export default {
         },
       })
     },
-    submitProjectDR() {
-      this.isLoading = true
+    submitProjectDR(approvalType) {
+      this.$swal({
+        title: 'Are you sure?',
+        text: 'Submit Design Recognition',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: approvalType,
+        customClass: {
+          confirmButton: 'btn btn-primary',
+          cancelButton: 'btn btn-outline-danger ml-1',
+        },
+        buttonsStyling: false,
+      }).then(result => {
+        if (result.value) {
+          this.isLoading = true
 
-      this.$http.post(`/engine-rest/new-building/design_recognition/${router.currentRoute.params.id}/submission`).then(res => {
-        this.result = JSON.parse(JSON.stringify(res.data))
-        this.isLoading = false
-        this.showToast('success', 'Saved', 'DR successfully submitted')
-        this.successShow = true
-      }).catch(() => {
-        this.isLoading = false
-        this.showToast('danger', 'Cannot Save', 'There is error when submit data, contact administrator')
+          this.$http.post(`/engine-rest/new-building/design_recognition/${router.currentRoute.params.id}/submission`).then(res => {
+            this.result = JSON.parse(JSON.stringify(res.data))
+            this.isLoading = false
+            this.showToast('success', 'Saved', 'DR successfully submitted')
+            this.successShow = true
+          }).catch(() => {
+            this.isLoading = false
+            this.showToast('danger', 'Cannot Save', 'There is error when submit data, contact administrator')
+          })
+        }
       })
     },
     gotoIndex() {
