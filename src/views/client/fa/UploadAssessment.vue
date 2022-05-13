@@ -310,9 +310,11 @@ export default {
       this.$http.post(`/engine-rest/new-building/final_assessment/${router.currentRoute.params.id}/assessment_attachment`, request, config).then(res => {
         this.result = JSON.parse(JSON.stringify(res.data))
         this.isLoading = false
+        this.rerenderAssessment()
         this.showToast('success', 'Saved', 'Assessment successfully submitted')
       }).catch(() => {
         this.isLoading = false
+        this.rerenderAssessment()
         this.showToast('danger', 'Cannot Save', 'There is error when submit data, contact administrator')
       })
     },
@@ -338,6 +340,7 @@ export default {
       this.isLoading = true
       this.$http.delete(`/engine-rest/new-building/assessment_attachment/${attachment.id}`).then(() => {
         this.isLoading = false
+        this.rerenderAssessment()
         this.showToast('success', 'Deleted', 'Attachment successfully delete')
       }).catch(() => {
         this.isLoading = false

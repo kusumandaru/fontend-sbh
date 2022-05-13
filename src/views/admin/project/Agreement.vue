@@ -251,7 +251,7 @@ export default {
       if (store.hasModule(PROJECT_APP_STORE_MODULE_NAME)) store.unregisterModule(PROJECT_APP_STORE_MODULE_NAME)
     })
 
-    store.dispatch('app-project/fetchProject', { id: router.currentRoute.params.id })
+    store.dispatch('app-project/fetchAdminProject', { id: router.currentRoute.params.id })
       .then(response => {
         projectData.value = response.data
         selectedDesignRecognition.id = response.data.design_recognition.toString()

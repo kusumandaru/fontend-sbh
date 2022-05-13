@@ -7,8 +7,8 @@
     <!-- This tabs content will not be mounted until the tab is shown -->
     <!-- and will be un-mounted when hidden -->
     <b-tab
-      v-for="(evaluation,index) in masterEvaluations"
-      :key="index"
+      v-for="(evaluation) in masterEvaluations"
+      :key="evaluation.id"
       :title="evaluation.name"
       :read-only="readOnly"
       lazy
@@ -182,6 +182,7 @@ export default {
   watch: {
   },
   created() {
+    this.$root.$refs.drtab = this
   },
   setup() {
     const DR_APP_STORE_MODULE_NAME = 'app-dr-tab'

@@ -1,24 +1,8 @@
 <template>
   <section class="project-preview-wrapper">
-    <!-- Alert: No item found -->
-    <b-alert
-      variant="danger"
-      :show="projectData === undefined"
-    >
-      <h4 class="alert-heading">
-        Error fetching project data
-      </h4>
-      <div class="alert-body">
-        No project found with this project id. Check
-        <b-link
-          class="alert-link"
-          :to="{ name: 'admin-project-list'}"
-        >
-          project List
-        </b-link>
-        for other projects.
-      </div>
-    </b-alert>
+    <!-- error -->
+    <error :key="errorKey" />
+    <!-- error -->
 
     <b-row
       v-if="projectData"
@@ -156,6 +140,12 @@
                       <b-card-text class="mb-0">
                         <span class="font-weight-bold">Gross Floor Area:</span>
                         <span class="ml-75">{{ projectData.gross_floor_area }}</span>
+                      </b-card-text>
+                    </b-row>
+                    <b-row>
+                      <b-card-text class="mb-0">
+                        <span class="font-weight-bold">Tenant:</span>
+                        <span class="ml-75">{{ projectData.tenant }}</span>
                       </b-card-text>
                     </b-row>
                   </b-card-body>
@@ -416,6 +406,30 @@
             Reject
           </b-button>
 
+          <!-- Button: Design Recognition History-->
+          <b-button
+            v-if="designRecognitionHistoryShow"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="info"
+            class="mb-75"
+            block
+            @click="designRecognitionHistory"
+          >
+            Design Recognition History
+          </b-button>
+
+          <!-- Button: Final Assessment History-->
+          <b-button
+            v-if="finalAssessmentHistoryShow"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="info"
+            class="mb-75"
+            block
+            @click="finalAssessmentHistory"
+          >
+            Final Assessment History
+          </b-button>
+
           <!-- Button: Continue to FA -->
           <b-button
             v-if="continueFAShow"
@@ -488,18 +502,6 @@
             Design Recognition Review
           </b-button>
 
-          <!-- Button: Design Recognition History-->
-          <b-button
-            v-if="designRecognitionHistoryShow"
-            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-            variant="info"
-            class="mb-75"
-            block
-            @click="designRecognitionHistory"
-          >
-            Design Recognition History
-          </b-button>
-
           <!-- Button: Design Recognition Evaluation Assessment-->
           <b-button
             v-if="designRecognitionEvaluationAssessmentShow"
@@ -522,18 +524,6 @@
             @click="finalAssessmentReview"
           >
             Final Assessment Review
-          </b-button>
-
-          <!-- Button: Final Assessment History-->
-          <b-button
-            v-if="finalAssessmentHistoryShow"
-            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-            variant="info"
-            class="mb-75"
-            block
-            @click="finalAssessmentHistory"
-          >
-            Final Assessment History
           </b-button>
 
           <!-- Button:Final Assessment Evaluation Assessment-->
@@ -573,7 +563,7 @@ import {
 import store from '@/store'
 import router from '@/router'
 import {
-  BRow, BCol, BCard, BCardBody, BCardText, BButton, BAlert, BLink, VBToggle, BCardTitle, BCardSubTitle, BTable, BForm, BSpinner,
+  BRow, BCol, BCard, BCardBody, BCardText, BButton, BLink, VBToggle, BCardTitle, BCardSubTitle, BTable, BForm, BSpinner,
 } from 'bootstrap-vue'
 import AppCollapse from '@core/components/app-collapse/AppCollapse.vue'
 import AppCollapseItem from '@core/components/app-collapse/AppCollapseItem.vue'
@@ -582,6 +572,7 @@ import Ripple from 'vue-ripple-directive'
 import projectStoreModule from '@/views/projectStoreModule'
 import ProjectSidebarReject from '@/views/admin/project/SidebarReject.vue'
 import fileDownload from 'js-file-download'
+import Error from './Error.vue'
 
 export default {
   directives: {
@@ -597,7 +588,6 @@ export default {
     BCardSubTitle,
     BCardText,
     BButton,
-    BAlert,
     BLink,
     BTable,
     BForm,
@@ -607,6 +597,7 @@ export default {
 
     Logo,
     ProjectSidebarReject,
+    Error,
   },
   data() {
     return {
@@ -792,11 +783,56 @@ export default {
       if (store.hasModule(PROJECT_APP_STORE_MODULE_NAME)) store.unregisterModule(PROJECT_APP_STORE_MODULE_NAME)
     })
 
-    store.dispatch('app-project/fetchProject', { id: router.currentRoute.params.id })
+    store.dispatch('app-project/fetchAdminProject', { id: router.currentRoute.params.id })
       .then(response => {
         projectData.value = response.data
         paymentProps.blank = false
         paymentProps.src = response.data.proof_of_payment_url
+
+        Object.keys(registeredAttachments.value).forEach(key => {
+          store.dispatch('app-project/getAttachmentsByType', { taskId: router.currentRoute.params.id, fileType: key })
+            .then(resp => {
+              registeredAttachments.value[key] = resp.data
+            })
+            .catch(error => {
+              if (error.response.status === 404) {
+                registeredAttachments.value[key] = undefined
+              }
+              if (error.response.status === 500) {
+                registeredAttachments.value[key] = undefined
+              }
+            })
+        })
+
+        Object.keys(eligibilityAttachments.value).forEach(key => {
+          store.dispatch('app-project/getAttachmentsByType', { taskId: router.currentRoute.params.id, fileType: key })
+            .then(resp => {
+              eligibilityAttachments.value[key] = resp.data
+            })
+            .catch(error => {
+              if (error.response.status === 404) {
+                eligibilityAttachments.value[key] = undefined
+              }
+              if (error.response.status === 500) {
+                eligibilityAttachments.value[key] = undefined
+              }
+            })
+        })
+
+        Object.keys(evaluationAttachments.value).forEach(key => {
+          store.dispatch('app-project/getAttachmentsByType', { taskId: router.currentRoute.params.id, fileType: key })
+            .then(resp => {
+              evaluationAttachments.value[key] = resp.data
+            })
+            .catch(error => {
+              if (error.response.status === 404) {
+                evaluationAttachments.value[key] = undefined
+              }
+              if (error.response.status === 500) {
+                evaluationAttachments.value[key] = undefined
+              }
+            })
+        })
       })
       .catch(error => {
         if (error.response.status === 404) {
@@ -809,51 +845,6 @@ export default {
           projectData.value = undefined
         }
       })
-
-    Object.keys(registeredAttachments.value).forEach(key => {
-      store.dispatch('app-project/getAttachmentsByType', { taskId: router.currentRoute.params.id, fileType: key })
-        .then(response => {
-          registeredAttachments.value[key] = response.data
-        })
-        .catch(error => {
-          if (error.response.status === 404) {
-            registeredAttachments.value[key] = undefined
-          }
-          if (error.response.status === 500) {
-            registeredAttachments.value[key] = undefined
-          }
-        })
-    })
-
-    Object.keys(eligibilityAttachments.value).forEach(key => {
-      store.dispatch('app-project/getAttachmentsByType', { taskId: router.currentRoute.params.id, fileType: key })
-        .then(response => {
-          eligibilityAttachments.value[key] = response.data
-        })
-        .catch(error => {
-          if (error.response.status === 404) {
-            eligibilityAttachments.value[key] = undefined
-          }
-          if (error.response.status === 500) {
-            eligibilityAttachments.value[key] = undefined
-          }
-        })
-    })
-
-    Object.keys(evaluationAttachments.value).forEach(key => {
-      store.dispatch('app-project/getAttachmentsByType', { taskId: router.currentRoute.params.id, fileType: key })
-        .then(response => {
-          evaluationAttachments.value[key] = response.data
-        })
-        .catch(error => {
-          if (error.response.status === 404) {
-            evaluationAttachments.value[key] = undefined
-          }
-          if (error.response.status === 500) {
-            evaluationAttachments.value[key] = undefined
-          }
-        })
-    })
 
     const printProject = () => {
       window.print()

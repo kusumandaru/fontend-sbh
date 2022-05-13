@@ -1,26 +1,31 @@
 <template>
-  <!-- alert -->
+  <!-- error -->
   <b-col
-    v-if="projectData.approved == false"
+    v-if="errorMessage"
     cols="12"
     class="mt-75"
   >
     <b-alert
       show
-      variant="warning"
+      variant="danger"
       class="mb-50"
     >
       <h4 class="alert-heading">
-        Your request is Rejected
+        Error Occured
       </h4>
       <div class="alert-body">
-        <b-link class="alert-link">
-          {{ projectData.rejected_reason }}
+        {{ errorMessage }} Check
+        <b-link
+          class="alert-link"
+          :to="{ name: 'admin-project-list'}"
+        >
+          project List
         </b-link>
+        for other projects.
       </div>
     </b-alert>
   </b-col>
-  <!--/ alert -->
+  <!--/ error -->
 </template>
 
 <script>
@@ -48,13 +53,14 @@ export default {
   },
   data() {
     return {
-      alertKey: 0,
+      errorKey: 0,
     }
   },
   computed: {
   },
   setup() {
     const projectData = ref({})
+    const errorMessage = ref(undefined)
     const PROJECT_APP_STORE_MODULE_NAME = 'app-project'
 
     // Register module
@@ -68,8 +74,10 @@ export default {
     store.dispatch('app-project/fetchClientProject', { id: router.currentRoute.params.id })
       .then(response => {
         projectData.value = response.data
+        errorMessage.value = undefined
       })
       .catch(error => {
+        errorMessage.value = error.response.data.message
         if (error.response.status === 404) {
           projectData.value = undefined
         }
@@ -80,6 +88,7 @@ export default {
 
     return {
       projectData,
+      errorMessage,
     }
   },
 }

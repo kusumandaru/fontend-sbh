@@ -39,10 +39,10 @@
           class="px-xl-2 mx-auto"
         >
           <b-card-title class="mb-1">
-            Adventure starts here 🚀
+            Register your tenant here 🚀
           </b-card-title>
           <b-card-text class="mb-2">
-            Make your app management easy and fun!
+            Start certification here
           </b-card-text>
 
           <!-- form -->
@@ -54,23 +54,67 @@
               class="auth-register-form mt-2"
               @submit.prevent="register"
             >
-              <!-- name -->
+              <!-- first name -->
               <b-form-group
-                label="Nama"
-                label-for="register-name"
+                label="First Name"
+                label-for="register-first-name"
               >
                 <validation-provider
                   #default="{ errors }"
-                  name="name"
-                  vid="name"
+                  name="firstname"
+                  vid="firstname"
                   rules="required"
                 >
                   <b-form-input
-                    id="register-name"
-                    v-model="name"
-                    name="register-name"
+                    id="register-first-name"
+                    v-model="firstName"
+                    name="register-first-name"
                     :state="errors.length > 0 ? false:null"
-                    placeholder="johndoe"
+                    placeholder="John"
+                  />
+                  <small class="text-danger">{{ errors[0] }}</small>
+                </validation-provider>
+              </b-form-group>
+
+              <!-- last name -->
+              <b-form-group
+                label="Last Name"
+                label-for="register-last-name"
+              >
+                <validation-provider
+                  #default="{ errors }"
+                  name="lastname"
+                  vid="lastname"
+                  rules="required"
+                >
+                  <b-form-input
+                    id="register-last-name"
+                    v-model="lastName"
+                    name="register-last-name"
+                    :state="errors.length > 0 ? false:null"
+                    placeholder="Doe"
+                  />
+                  <small class="text-danger">{{ errors[0] }}</small>
+                </validation-provider>
+              </b-form-group>
+
+              <!-- tenant name -->
+              <b-form-group
+                label="Company / Tenant Name"
+                label-for="register-tenant-name"
+              >
+                <validation-provider
+                  #default="{ errors }"
+                  name="tenantname"
+                  vid="tenantname"
+                  rules="required"
+                >
+                  <b-form-input
+                    id="register-tenant-name"
+                    v-model="tenantName"
+                    name="register-tenant-name"
+                    :state="errors.length > 0 ? false:null"
+                    placeholder="PT Satria Perkasa"
                   />
                   <small class="text-danger">{{ errors[0] }}</small>
                 </validation-provider>
@@ -241,7 +285,9 @@ export default {
   data() {
     return {
       status: '',
-      name: '',
+      firstName: '',
+      lastName: '',
+      tenanttName: '',
       userEmail: '',
       password: '',
       sideImg: require('@/assets/images/pages/register-v2.svg'),
@@ -268,7 +314,9 @@ export default {
       this.$refs.registerForm.validate().then(success => {
         if (success) {
           useJwt.register({
-            name: this.name,
+            firstName: this.firstName,
+            lastName: this.lastName,
+            tenantName: this.tenantName,
             email: this.userEmail,
             password: this.password,
           })

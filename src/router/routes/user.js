@@ -15,4 +15,20 @@ export default [
       resource: 'auth',
     },
   },
+  {
+    path: '/user/edit',
+    name: 'user-edit',
+    component: () => import('@/views/user/users-edit/UsersEdit.vue'),
+    meta: {
+      pageTitle: 'User',
+      breadcrumb: [
+        {
+          text: 'User',
+          active: true,
+        },
+      ],
+      action: 'read',
+      resource: 'auth',
+    },
+  },
 ]

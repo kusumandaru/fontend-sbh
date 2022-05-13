@@ -309,6 +309,7 @@ export default {
         this.showToast('success', 'Saved', 'Assessment successfully submitted')
       }).catch(() => {
         this.isLoading = false
+        this.rerenderAssessment()
         this.showToast('danger', 'Cannot Save', 'There is error when submit data, contact administrator')
       })
     },

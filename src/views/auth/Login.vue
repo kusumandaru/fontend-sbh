@@ -44,7 +44,7 @@
             Welcome to Greenship Certification!
           </b-card-title>
           <b-card-text class="mb-2">
-            Please sign-in to your account and start the adventure
+            Please sign-in to your account and start certification
           </b-card-text>
 
           <!-- form -->
@@ -65,14 +65,14 @@
                   #default="{ errors }"
                   name="Email"
                   vid="email"
-                  rules="required|email"
+                  rules="required"
                 >
                   <b-form-input
                     id="login-email"
                     v-model="userEmail"
                     :state="errors.length > 0 ? false:null"
                     name="login-email"
-                    placeholder="john@example.com"
+                    placeholder="nama@email.com"
                   />
                   <small class="text-danger">{{ errors[0] }}</small>
                 </validation-provider>
@@ -141,7 +141,7 @@
           </validation-observer>
 
           <b-card-text class="text-center mt-2">
-            <span>New on our platform? </span>
+            <span>New on our site? </span>
             <b-link :to="{name:'auth-register'}">
               <span>&nbsp;Create an account</span>
             </b-link>
@@ -282,7 +282,7 @@ export default {
                       title: `Welcome ${userData.fullName || userData.username}`,
                       icon: 'CoffeeIcon',
                       variant: 'success',
-                      text: `You have successfully logged in as ${userData.role}. Now you can start to explore!`,
+                      text: `You have successfully logged in as ${userData.roles.join()}. Now you can start to explore!`,
                     },
                   })
                 })
