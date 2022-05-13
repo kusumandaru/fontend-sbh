@@ -39,13 +39,16 @@
             size="40"
             variant="light-primary"
             badge
-            :src="require('@/assets/images/avatars/13-small.png')"
+            :src="avatarUrl"
             class="badge-minimal"
             badge-variant="success"
           />
         </template>
 
-        <b-dropdown-item link-class="d-flex align-items-center">
+        <b-dropdown-item
+          link-class="d-flex align-items-center"
+          @click="profileShow"
+        >
           <feather-icon
             size="16"
             icon="UserIcon"
@@ -53,33 +56,6 @@
           />
           <span>Profile</span>
         </b-dropdown-item>
-
-        <!-- <b-dropdown-item link-class="d-flex align-items-center">
-          <feather-icon
-            size="16"
-            icon="MailIcon"
-            class="mr-50"
-          />
-          <span>Inbox</span>
-        </b-dropdown-item>
-
-        <b-dropdown-item link-class="d-flex align-items-center">
-          <feather-icon
-            size="16"
-            icon="CheckSquareIcon"
-            class="mr-50"
-          />
-          <span>Task</span>
-        </b-dropdown-item>
-
-        <b-dropdown-item link-class="d-flex align-items-center">
-          <feather-icon
-            size="16"
-            icon="MessageSquareIcon"
-            class="mr-50"
-          />
-          <span>Chat</span>
-        </b-dropdown-item> -->
 
         <b-dropdown-divider />
 
@@ -105,7 +81,12 @@ import {
 } from 'bootstrap-vue'
 import DarkToggler from '@core/layouts/components/app-navbar/components/DarkToggler.vue'
 import { initialAbility } from '@/libs/acl/config'
+import {
+  ref, onUnmounted,
+} from '@vue/composition-api'
+import store from '@/store'
 import useJwt from '@/auth/jwt/useJwt'
+import userStoreModule from './userStoreModule'
 
 export default {
   components: {
@@ -130,6 +111,31 @@ export default {
       userData: JSON.parse(localStorage.getItem('userData')),
     }
   },
+  setup() {
+    const avatarUrl = ref(null)
+
+    const USER_APP_STORE_MODULE_NAME = 'app-user'
+
+    // Register module
+    if (!store.hasModule(USER_APP_STORE_MODULE_NAME)) store.registerModule(USER_APP_STORE_MODULE_NAME, userStoreModule)
+
+    // UnRegister on leave
+    onUnmounted(() => {
+      if (store.hasModule(USER_APP_STORE_MODULE_NAME)) store.unregisterModule(USER_APP_STORE_MODULE_NAME)
+    })
+
+    store.dispatch('app-user/fetchUserAvatar')
+      .then(response => { avatarUrl.value = response.data.url })
+      .catch(error => {
+        if (error.response.status === 404) {
+          avatarUrl.value = undefined
+        }
+      })
+
+    return {
+      avatarUrl,
+    }
+  },
   methods: {
     logout() {
       // Remove userData from localStorage
@@ -145,6 +151,9 @@ export default {
 
       // Redirect to login page
       this.$router.push({ name: 'auth-login' })
+    },
+    profileShow() {
+      this.$router.push({ name: 'user-edit' })
     },
   },
 }
