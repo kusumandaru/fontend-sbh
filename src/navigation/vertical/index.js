@@ -6,13 +6,13 @@ export default [
     resource: 'auth',
     action: 'read',
   },
-  {
-    title: 'User List',
-    route: 'user-list',
-    icon: 'UserIcon',
-    resource: 'user',
-    action: 'manage',
-  },
+  // {
+  //   title: 'User List',
+  //   route: 'user-list',
+  //   icon: 'UserIcon',
+  //   resource: 'user',
+  //   action: 'manage',
+  // },
   {
     title: 'Create Project',
     route: 'project-register',
@@ -32,6 +32,13 @@ export default [
     route: 'client-project-list',
     icon: 'BookIcon',
     resource: 'client-project',
+    action: 'manage',
+  },
+  {
+    title: 'List User',
+    route: 'client-user-list',
+    icon: 'BookIcon',
+    resource: 'client-admin',
     action: 'manage',
   },
   {

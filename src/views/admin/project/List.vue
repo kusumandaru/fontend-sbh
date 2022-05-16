@@ -217,7 +217,7 @@ export default {
         },
         {
           label: 'Tenant',
-          field: 'tenant_id',
+          field: 'tenant_name',
         },
         {
           label: 'Certification Type',

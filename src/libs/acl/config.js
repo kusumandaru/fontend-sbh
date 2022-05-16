@@ -34,6 +34,20 @@ export const roleAbility = {
       resource: 'home',
     },
   ],
+  superuser: [
+    {
+      action: 'manage',
+      subject: 'client-project',
+    },
+    {
+      action: 'manage',
+      subject: 'client-admin',
+    },
+    {
+      action: 'read',
+      resource: 'home',
+    },
+  ],
 }
 
 export const _ = undefined

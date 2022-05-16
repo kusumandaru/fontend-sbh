@@ -29,6 +29,11 @@ export default [
         icon: 'BookIcon',
       },
       {
+        title: 'List User',
+        route: 'client-user-list',
+        icon: 'BookIcon',
+      },
+      {
         title: 'Master Data',
         icon: 'SettingsIcon',
         children: [
