@@ -10,7 +10,6 @@ import adminUser from './routes/admin/user'
 import userProject from './routes/user/project'
 import userUser from './routes/user/user'
 
-
 Vue.use(VueRouter)
 
 const router = new VueRouter({

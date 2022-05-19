@@ -38,5 +38,29 @@ export default {
           .catch(error => reject(error))
       })
     },
+    fetchTenantProjectUser() {
+      return new Promise((resolve, reject) => {
+        axios
+          .get('/engine-rest/user/tenant_project_users')
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    fetchTenantTask(ctx, { userId }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/engine-rest/new-building/tasks/tenant/${userId}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    fetchProjectUser(ctx, { userId }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/engine-rest/user/project_users/${userId}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
   },
 }

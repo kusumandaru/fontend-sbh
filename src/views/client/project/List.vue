@@ -96,6 +96,7 @@
           <span>
             <div class="icon-wrapper">
               <feather-icon
+                v-if="props.row.assigned"
                 :id="`project-row-${props.row.id}-preview-icon`"
                 icon="EyeIcon"
                 size="16"
