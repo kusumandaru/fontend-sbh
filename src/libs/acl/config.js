@@ -24,6 +24,16 @@ export const roleAbility = {
       resource: 'home',
     },
   ],
+  verificator: [
+    {
+      action: 'manage',
+      subject: 'project',
+    },
+    {
+      action: 'read',
+      resource: 'home',
+    },
+  ],
   user: [
     {
       action: 'manage',

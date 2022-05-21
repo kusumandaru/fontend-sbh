@@ -257,7 +257,7 @@ export default {
       this.$refs.loginForm.validate().then(success => {
         if (success) {
           useJwt.login({
-            username: this.userEmail,
+            email: this.userEmail,
             password: this.password,
           })
             .then(response => {

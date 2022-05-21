@@ -163,6 +163,73 @@
                 </b-form-group>
               </validation-provider>
             </b-col>
+
+            <!-- Field: Group-->
+            <b-col
+              cols="12"
+              md="4"
+            >
+              <validation-provider
+                #default="validationContext"
+                name="Group"
+                rules="required"
+              >
+                <b-form-group
+                  label="Group"
+                  label-for="group"
+                >
+                  <v-select
+                    v-model="userData.group_id"
+                    :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                    :options="groupOptions"
+                    :reduce="val => val.id"
+                    :clearable="false"
+                    label="name"
+                    code="id"
+                  >
+                    <template #option="{ name }">
+                      <span> {{ name }}</span>
+                    </template>
+                  </v-select>
+                  <b-form-invalid-feedback>
+                    {{ validationContext.errors[0] }}
+                  </b-form-invalid-feedback>
+                </b-form-group>
+              </validation-provider>
+            </b-col>
+
+            <!-- Field: Tenant-->
+            <b-col
+              cols="12"
+              md="4"
+            >
+              <validation-provider
+                #default="validationContext"
+                name="Tenant"
+              >
+                <b-form-group
+                  label="Tenant"
+                  label-for="tenant"
+                >
+                  <v-select
+                    v-model="userData.tenant_id"
+                    :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                    :options="tenantOptions"
+                    :reduce="val => val.id"
+                    :clearable="false"
+                    label="name"
+                    code="id"
+                  >
+                    <template #option="{ name }">
+                      <span> {{ name }}</span>
+                    </template>
+                  </v-select>
+                  <b-form-invalid-feedback>
+                    {{ validationContext.errors[0] }}
+                  </b-form-invalid-feedback>
+                </b-form-group>
+              </validation-provider>
+            </b-col>
           </b-row>
           <div class="d-flex mt-2">
             <b-button
@@ -184,53 +251,6 @@
           </div>
         </b-form>
       </validation-observer>
-
-      <!-- PERMISSION TABLE -->
-      <b-card
-        no-body
-        class="border mt-1"
-      >
-        <b-card-header class="p-1">
-          <b-card-title class="font-medium-2">
-            <feather-icon
-              icon="LockIcon"
-              size="18"
-            />
-            <span class="align-middle ml-50">Project Permission</span>
-          </b-card-title>
-        </b-card-header>
-        <b-form-checkbox
-          v-model="selectAllTenantTask"
-        >
-          Select All Tenant
-        </b-form-checkbox>
-        <b-table
-          striped
-          responsive
-          class="mb-0"
-          :items="tenantTaskData"
-          :fields="tenantFields"
-        >
-          <template #cell(filename)="doc">
-            {{ doc.value }}
-          </template>
-          <template #cell(selected_process_instance)="row">
-            <b-form-checkbox
-              v-model="row.item.assigned"
-            />
-          </template>
-        </b-table>
-        <div class="d-flex mt-2">
-          <b-button
-            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-            variant="primary"
-            class="mr-2"
-            @click="assignProject"
-          >
-            Assign Project
-          </b-button>
-        </div>
-      </b-card>
     </div>
   </component>
 </template>
@@ -293,28 +313,9 @@ export default {
   },
   data() {
     return {
-      tenantFields: [
-        { key: 'selected_process_instance', label: 'Assign' },
-        { key: 'name', label: 'Task Name' },
-        { key: 'building_name', label: 'Building Name' },
-        { key: 'building_type_name', label: 'Building Type' },
-      ],
     }
   },
   computed: {
-    selectAllTenantTask: {
-      /* eslint-disable object-shorthand */
-      get() {
-        const assignedTenantTaskData = this.tenantTaskData.filter(tenantTask => tenantTask.assigned === true)
-        return this.tenantTaskData ? assignedTenantTaskData.length === this.tenantTaskData.length : false
-      },
-      set(value) {
-        if (value) {
-          this.tenantTaskData.forEach(taskData => { taskData.assigned = value }) // eslint-disable-line no-param-reassign
-        }
-      },
-      /* eslint-enable object-shorthand */
-    },
   },
   setup() {
     const blankUserData = {
@@ -325,21 +326,26 @@ export default {
       active: true,
     }
     const userData = ref(JSON.parse(JSON.stringify(blankUserData)))
-    const tenantTaskData = ref(JSON.parse('[]'))
+    const groupOptions = ref(JSON.parse('[]'))
+    const tenantOptions = ref(JSON.parse('[]'))
 
     const resetuserData = () => {
       userData.value = JSON.parse(JSON.stringify(blankUserData))
     }
-    const USER_APP_STORE_MODULE_NAME = 'app-user-tenant'
+    const USER_APP_STORE_MODULE_NAME = 'app-user-admin'
 
     const onSubmit = () => {
       userData.value.firstName = userData.value.first_name
       userData.value.lastName = userData.value.last_name
       userData.value.tenantOwner = userData.value.tenant_owner
+      userData.value.groupId = userData.value.group_id
+      userData.value.tenantId = userData.value.tenant_id
+      userData.value.tenant = null
+      userData.value.group = null
 
-      store.dispatch('app-user-tenant/editUser', { userId: router.currentRoute.params.userId, userData: userData.value })
+      store.dispatch('app-user-admin/editUser', { userId: router.currentRoute.params.userId, userData: userData.value })
         .then(() => {
-          router.push({ name: 'client-user-list' })
+          router.push({ name: 'admin-user-list' })
         })
     }
 
@@ -351,7 +357,7 @@ export default {
       if (store.hasModule(USER_APP_STORE_MODULE_NAME)) store.unregisterModule(USER_APP_STORE_MODULE_NAME)
     })
 
-    store.dispatch('app-user-tenant/fetchUser', { userId: router.currentRoute.params.userId })
+    store.dispatch('app-user-admin/fetchUser', { userId: router.currentRoute.params.userId })
       .then(response => { userData.value = response.data })
       .catch(error => {
         if (error.response.status === 404) {
@@ -359,11 +365,19 @@ export default {
         }
       })
 
-    store.dispatch('app-user-tenant/fetchTenantTask', { userId: router.currentRoute.params.userId })
-      .then(response => { tenantTaskData.value = response.data })
+    store.dispatch('app-user-admin/fetchGroups')
+      .then(response => { groupOptions.value = response.data })
       .catch(error => {
         if (error.response.status === 404) {
-          tenantTaskData.value = undefined
+          groupOptions.value = undefined
+        }
+      })
+
+    store.dispatch('app-user-admin/fetchTenants')
+      .then(response => { tenantOptions.value = response.data })
+      .catch(error => {
+        if (error.response.status === 404) {
+          tenantOptions.value = undefined
         }
       })
 
@@ -375,12 +389,13 @@ export default {
     return {
       blankUserData,
       userData,
-      tenantTaskData,
       onSubmit,
       resetuserData,
       refFormObserver,
       getValidationState,
       resetForm,
+      groupOptions,
+      tenantOptions,
     }
   },
   methods: {
@@ -396,25 +411,7 @@ export default {
       })
     },
     cancel() {
-      router.push({ name: 'client-user-list' })
-    },
-    assignProject() {
-      const processInstanceIds = this.tenantTaskData.filter(tenantTask => tenantTask.assigned === true).map(tenantTask => tenantTask.process_instance_id)
-      const request = new URLSearchParams()
-      request.append('project_ids', processInstanceIds.join(','))
-
-      const config = {
-        header: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      }
-      this.$http.patch(`/engine-rest/user/project_users/${router.currentRoute.params.userId}`, request, config).then(() => {
-        this.isLoading = false
-        this.showToast('success', 'Saved', 'Attachment successfully saved')
-        router.go()
-      }).catch(() => {
-        this.showToast('danger', 'Cannot Save', 'There is error when submit attachment, contact administrator')
-      })
+      router.push({ name: 'admin-user-list' })
     },
   },
 }

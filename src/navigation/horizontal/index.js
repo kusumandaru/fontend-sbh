@@ -10,7 +10,7 @@ export default [
       },
       {
         title: 'User List',
-        route: 'user-list',
+        route: 'admin-user-list',
         icon: 'UserIcon',
       },
       {

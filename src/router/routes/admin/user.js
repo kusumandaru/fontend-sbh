@@ -1,13 +1,29 @@
 export default [
   {
-    path: '/admin/user',
-    name: 'user-list',
-    component: () => import('@/views/User.vue'),
+    path: '/admin/user/list',
+    name: 'admin-user-list',
+    component: () => import('@/views/admin/user/List.vue'),
     meta: {
-      pageTitle: 'User List',
+      pageTitle: 'List User',
       breadcrumb: [
         {
-          text: 'User List',
+          text: 'List User',
+          active: true,
+        },
+      ],
+      action: 'read',
+      resource: 'user',
+    },
+  },
+  {
+    path: '/admin/user/:userId/edit',
+    name: 'admin-user-edit',
+    component: () => import('@/views/admin/user/UserEdit.vue'),
+    meta: {
+      pageTitle: 'User Edit',
+      breadcrumb: [
+        {
+          text: 'User Edit',
           active: true,
         },
       ],

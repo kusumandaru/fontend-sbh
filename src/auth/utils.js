@@ -24,5 +24,6 @@ export const getHomeRouteForLoggedInUser = userRole => {
   if (userRole === 'camunda-admin') return '/'
   if (userRole === 'user') return '/'
   if (userRole === 'superuser') return '/'
+  if (userRole === 'verificator') return '/'
   return { name: 'auth-login' }
 }

@@ -6,13 +6,13 @@ export default [
     resource: 'auth',
     action: 'read',
   },
-  // {
-  //   title: 'User List',
-  //   route: 'user-list',
-  //   icon: 'UserIcon',
-  //   resource: 'user',
-  //   action: 'manage',
-  // },
+  {
+    title: 'User List',
+    route: 'admin-user-list',
+    icon: 'UserIcon',
+    resource: 'user',
+    action: 'manage',
+  },
   {
     title: 'Create Project',
     route: 'project-register',
