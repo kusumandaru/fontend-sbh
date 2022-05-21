@@ -10,7 +10,7 @@ export default [
       },
       {
         title: 'User List',
-        route: 'user-list',
+        route: 'admin-user-list',
         icon: 'UserIcon',
       },
       {
@@ -26,6 +26,11 @@ export default [
       {
         title: 'List Client Project',
         route: 'client-project-list',
+        icon: 'BookIcon',
+      },
+      {
+        title: 'List User',
+        route: 'client-user-list',
         icon: 'BookIcon',
       },
       {

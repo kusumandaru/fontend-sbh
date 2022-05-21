@@ -96,6 +96,7 @@
           <span>
             <div class="icon-wrapper">
               <feather-icon
+                v-if="props.row.assigned"
                 :id="`project-row-${props.row.id}-preview-icon`"
                 icon="EyeIcon"
                 size="16"
@@ -351,17 +352,17 @@ export default {
         'design-recognition-evaluation-assessment': 'admin',
         'design-recognition-trial': 'admin',
         'design-recognition-trial-revision': 'client',
-        'design-recognition-revision-review': 'admin',
+        'design-recognition-revision-review': 'verificator',
         'design-recognition-letter': 'admin',
         'final-assessment-submission': 'client',
         'third-payment-fa': 'client',
         'check-third-payment-fa': 'admin',
-        'final-assessment-review': 'admin',
-        'on-site-verification': 'admin',
+        'final-assessment-review': 'verificator',
+        'on-site-verification': 'verificator',
         'on-site-revision-submission': 'client',
-        'final-assessment-evaluation-assessment': 'admin',
+        'final-assessment-evaluation-assessment': 'verificator',
         'final-assessment-trial-revision': 'client',
-        'final-assessment-revision-review': 'admin',
+        'final-assessment-revision-review': 'verificator',
         'final-assessment-letter': 'client',
         /* eslint-enable key-spacing */
       }

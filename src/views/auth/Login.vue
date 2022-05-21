@@ -257,7 +257,7 @@ export default {
       this.$refs.loginForm.validate().then(success => {
         if (success) {
           useJwt.login({
-            username: this.userEmail,
+            email: this.userEmail,
             password: this.password,
           })
             .then(response => {
@@ -287,8 +287,18 @@ export default {
                   })
                 })
             })
-            .catch(error => {
-              this.$refs.loginForm.setErrors(error.response.data.error)
+            .catch(() => {
+              // this.$refs.loginForm.setErrors(error.response.data.error)
+              this.$toast({
+                component: ToastificationContent,
+                position: 'top-right',
+                props: {
+                  title: 'Invalid login',
+                  icon: 'CoffeeIcon',
+                  variant: 'error',
+                  text: 'User or password not found or match',
+                },
+              })
             })
         }
       })

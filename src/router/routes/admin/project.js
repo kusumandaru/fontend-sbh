@@ -40,34 +40,34 @@ export default [
     name: 'admin-project-on-site-verification',
     component: () => import('@/views/admin/project/OnSiteVerification.vue'),
   },
-  {
-    path: '/admin/project/dr/assesment/:id',
-    name: 'admin-project-dr-assessment',
-    component: () => import('@/views/admin/dr/DRList.vue'),
-  },
+  // {
+  //   path: '/admin/project/dr/assesment/:id',
+  //   name: 'admin-project-dr-assessment',
+  //   component: () => import('@/views/admin/dr/DRList.vue'),
+  // },
   {
     path: '/admin/project/dr/history/:id',
     name: 'admin-project-dr-history',
     component: () => import('@/views/admin/dr/DRListHistory.vue'),
   },
-  {
-    path: '/admin/project/fa/assesment/:id',
-    name: 'admin-project-fa-assessment',
-    component: () => import('@/views/admin/fa/FAList.vue'),
-  },
+  // {
+  //   path: '/admin/project/fa/assesment/:id',
+  //   name: 'admin-project-fa-assessment',
+  //   component: () => import('@/views/admin/fa/FAList.vue'),
+  // },
   {
     path: '/admin/project/fa/history/:id',
     name: 'admin-project-fa-history',
     component: () => import('@/views/admin/fa/FAListHistory.vue'),
   },
-  {
-    path: '/admin/project/dr_evaluation_assessment/:id',
-    name: 'admin-project-dr-evaluation-assessment',
-    component: () => import('@/views/admin/project/DREvaluationAssessment.vue'),
-  },
-  {
-    path: '/admin/project/fa_evaluation_assessment/:id',
-    name: 'admin-project-fa-evaluation-assessment',
-    component: () => import('@/views/admin/project/FAEvaluationAssessment.vue'),
-  },
+  // {
+  //   path: '/admin/project/dr_evaluation_assessment/:id',
+  //   name: 'admin-project-dr-evaluation-assessment',
+  //   component: () => import('@/views/admin/project/DREvaluationAssessment.vue'),
+  // },
+  // {
+  //   path: '/admin/project/fa_evaluation_assessment/:id',
+  //   name: 'admin-project-fa-evaluation-assessment',
+  //   component: () => import('@/views/admin/project/FAEvaluationAssessment.vue'),
+  // },
 ]

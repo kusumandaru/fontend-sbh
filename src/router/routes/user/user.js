@@ -1,8 +1,8 @@
 export default [
   {
-    path: '/admin/user/list',
-    name: 'admin-user-list',
-    component: () => import('@/views/admin/user/List.vue'),
+    path: '/client/user/list',
+    name: 'client-user-list',
+    component: () => import('@/views/client/user/List.vue'),
     meta: {
       pageTitle: 'List User',
       breadcrumb: [
@@ -12,13 +12,13 @@ export default [
         },
       ],
       action: 'read',
-      resource: 'user',
+      resource: 'client-project',
     },
   },
   {
-    path: '/admin/user/:userId/edit',
-    name: 'admin-user-edit',
-    component: () => import('@/views/admin/user/UserEdit.vue'),
+    path: '/client/user/:userId/edit',
+    name: 'client-user-edit',
+    component: () => import('@/views/client/user/UserEdit.vue'),
     meta: {
       pageTitle: 'User Edit',
       breadcrumb: [
@@ -28,7 +28,7 @@ export default [
         },
       ],
       action: 'manage',
-      resource: 'user',
+      resource: 'client-project',
     },
   },
 ]

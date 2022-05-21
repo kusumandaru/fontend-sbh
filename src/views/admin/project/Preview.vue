@@ -612,14 +612,17 @@ export default {
         { task: 'design-recognition-evaluation-assessment', role: 'client', title: 'Menunggu hasil sidang EAB DR' },
         { task: 'final-assessment-evaluation-assessment', role: 'client', title: 'Menunggu hasil sidang EAB FA' },
       ],
+      userData: JSON.parse(localStorage.getItem('userData')),
+      alertKey: 0,
+      errorKey: 0,
     }
   },
   computed: {
     approveShow() {
-      return this.adminTasks.includes(this.projectData.definition_key)
+      return this.adminTasks.includes(this.projectData.definition_key) && this.userData.roles.join() !== 'verificator'
     },
     rejectShow() {
-      return this.adminTasks.includes(this.projectData.definition_key)
+      return this.adminTasks.includes(this.projectData.definition_key) && this.userData.roles.join() !== 'verificator'
     },
     continueFAShow() {
       return ['design-recognition-letter'].includes(this.projectData.definition_key)
@@ -634,10 +637,10 @@ export default {
       return ['check-second-payment'].includes(this.projectData.definition_key)
     },
     onSiteVerificationShow() {
-      return ['on-site-verification'].includes(this.projectData.definition_key)
+      return ['on-site-verification'].includes(this.projectData.definition_key) && this.userData.roles.join() === 'verificator'
     },
     designRecognitionReviewShow() {
-      return ['design-recognition-review'].includes(this.projectData.definition_key)
+      return ['design-recognition-review'].includes(this.projectData.definition_key) && this.userData.roles.join() === 'verificator'
     },
     designRecognitionHistoryShow() {
       return this.designRecognitionHistoryTasks.includes(this.projectData.definition_key) && this.projectData.design_recognition
@@ -646,7 +649,7 @@ export default {
       return ['design-recognition-evaluation-assessment'].includes(this.projectData.definition_key)
     },
     finalAssessmentReviewShow() {
-      return ['final-assessment-review'].includes(this.projectData.definition_key)
+      return ['final-assessment-review'].includes(this.projectData.definition_key) && this.userData.roles.join() === 'verificator'
     },
     finalAssessmentHistoryShow() {
       return this.finalAssessmentHistoryTasks.includes(this.projectData.definition_key)

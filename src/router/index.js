@@ -8,6 +8,8 @@ import adminMaster from './routes/admin/master'
 import adminProject from './routes/admin/project'
 import adminUser from './routes/admin/user'
 import userProject from './routes/user/project'
+import userUser from './routes/user/user'
+import verificatorProject from './routes/verificator/project'
 
 Vue.use(VueRouter)
 
@@ -40,6 +42,8 @@ const router = new VueRouter({
     ...adminProject,
     ...adminUser,
     ...userProject,
+    ...userUser,
+    ...verificatorProject,
     {
       path: '/error-401',
       name: 'not-authorized',

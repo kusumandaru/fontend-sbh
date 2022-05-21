@@ -22,6 +22,8 @@ export const getUserData = () => JSON.parse(localStorage.getItem('userData'))
  */
 export const getHomeRouteForLoggedInUser = userRole => {
   if (userRole === 'camunda-admin') return '/'
-  if (userRole === 'user') return { name: 'profile' }
+  if (userRole === 'user') return '/'
+  if (userRole === 'superuser') return '/'
+  if (userRole === 'verificator') return '/'
   return { name: 'auth-login' }
 }
