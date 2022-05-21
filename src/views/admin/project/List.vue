@@ -351,7 +351,7 @@ export default {
         'design-recognition-submission': 'client',
         'third-payment': 'client',
         'check-third-payment': 'client',
-        'design-recognition-review': 'admin',
+        'design-recognition-review': 'verificator',
         'design-recognition-evaluation-assessment': 'admin',
         'design-recognition-trial': 'admin',
         'design-recognition-trial-revision': 'client',
