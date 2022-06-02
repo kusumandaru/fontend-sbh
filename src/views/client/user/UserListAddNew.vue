@@ -35,7 +35,7 @@
         <!-- Form -->
         <b-form
           class="p-2"
-          @submit.prevent="handleSubmit(onSubmit)"
+          @submit.prevent="handleSubmit(submitUser)"
           @reset.prevent="resetForm"
         >
           <!-- First Name -->
@@ -112,7 +112,7 @@
           <validation-provider
             #default="validationContext"
             name="Password"
-            rules="required"
+            rules="required|password"
           >
             <b-form-group
               label="Password"
@@ -126,6 +126,27 @@
                 trim
               />
 
+              <b-form-invalid-feedback>
+                {{ validationContext.errors[0] }}
+              </b-form-invalid-feedback>
+            </b-form-group>
+          </validation-provider>
+
+          <validation-provider
+            #default="validationContext"
+            name="Password Confirm"
+            rules="required|confirmed:Password"
+          >
+            <b-form-group
+              label="Password Confirm"
+              label-for="password"
+            >
+              <b-form-input
+                v-model="userData.passwordConf"
+                :state="getValidationState(validationContext)"
+                type="password"
+                placeholder="Confirm Password"
+              />
               <b-form-invalid-feedback>
                 {{ validationContext.errors[0] }}
               </b-form-invalid-feedback>
@@ -164,8 +185,14 @@ import {
 } from 'bootstrap-vue'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import { ref } from '@vue/composition-api'
-import { required, alphaNum, email } from '@validations'
+import {
+  required,
+  alphaNum,
+  email,
+  password,
+} from '@validations'
 import formValidation from '@core/comp-functions/forms/form-validation'
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 import Ripple from 'vue-ripple-directive'
 import store from '@/store'
 
@@ -200,7 +227,38 @@ export default {
       required,
       alphaNum,
       email,
+      password,
     }
+  },
+  methods: {
+    showToast(variant, titleToast, description) {
+      this.$toast({
+        component: ToastificationContent,
+        props: {
+          title: titleToast,
+          icon: 'BellIcon',
+          text: description,
+          variant,
+        },
+      })
+    },
+    submitUser() {
+      this.$http.post('/engine-rest/user/members', this.userData)
+        .then(() => {
+          this.$emit('refetch-data')
+          this.$emit('update:is-add-new-user-sidebar-active', false)
+        }).catch(error => {
+          if (error.response.status === 400) {
+            this.showToast('danger', 'Cannot Create User', error.response.data.message)
+          }
+          if (error.response.status === 404) {
+            this.showToast('danger', 'Cannot Create User', error.response.data.message)
+          }
+          if (error.response.status === 500) {
+            this.showToast('danger', 'Cannot Create User', error.response.data.message)
+          }
+        })
+    },
   },
   setup(props, { emit }) {
     const blankUserData = {
@@ -219,6 +277,13 @@ export default {
         .then(() => {
           emit('refetch-data')
           emit('update:is-add-new-user-sidebar-active', false)
+        }).catch(error => {
+          if (error.response.status === 400) {
+            this.showToast('danger', 'Cannot Create User', error.response.data.message)
+          }
+          if (error.response.status === 404) {
+            this.showToast('danger', 'Cannot Create User', error.response.data.message)
+          }
         })
     }
 

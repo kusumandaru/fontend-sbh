@@ -41,6 +41,20 @@
           class="mt-2 pt-75"
         />
       </b-tab>
+      <b-tab>
+        <template #title>
+          <feather-icon
+            icon="UserIcon"
+            size="16"
+            class="mr-0 mr-sm-50"
+          />
+          <span class="d-none d-sm-inline">Reset Password</span>
+        </template>
+        <user-edit-tab-password
+          :user-data="userData"
+          class="mt-2 pt-75"
+        />
+      </b-tab>
     </b-tabs>
   </component>
 </template>
@@ -53,6 +67,7 @@ import { ref, onUnmounted } from '@vue/composition-api'
 import store from '@/store'
 import userStoreModule from './userStoreModule'
 import UserEditTabAccount from './UserEditTabAccount.vue'
+import UserEditTabPassword from './UserEditTabPassword.vue'
 
 export default {
   components: {
@@ -63,6 +78,7 @@ export default {
     BLink,
 
     UserEditTabAccount,
+    UserEditTabPassword,
   },
   setup() {
     const userData = ref(null)
