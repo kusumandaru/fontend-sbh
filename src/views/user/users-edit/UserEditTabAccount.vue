@@ -188,6 +188,7 @@
 
           <!-- Field: Company -->
           <b-col
+            v-if="userData.tenant"
             cols="12"
             md="4"
           >
