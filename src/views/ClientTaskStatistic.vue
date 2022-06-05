@@ -17,16 +17,16 @@
       <h6 class="mb-75" />
       <div class="business-items">
         <div
-          v-for="businessItem in businessItems"
-          :key="businessItem.id"
+          v-for="statisticItem in statisticItems"
+          :key="statisticItem.id"
           class="business-item"
         >
           <div class="d-flex align-items-center justify-content-between">
             <h6 class="mb-0">
-              {{ businessItem.id }}
+              {{ toTitleCase(statisticItem.id) }}
             </h6>
-            <b-badge :variant="businessItem.badgeColor">
-              {{ businessItem.instances }}
+            <b-badge :variant="statisticItem.badgeColor">
+              {{ statisticItem.instances }}
             </b-badge>
           </div>
         </div>
@@ -55,20 +55,7 @@ export default {
   },
   data() {
     return {
-      businessItems: [
-        {
-          option: 'Option #1', money: '+$39', badgeColor: 'light-success', checked: false,
-        },
-        {
-          option: 'Option #2', money: '+85', badgeColor: 'light-primary', checked: true,
-        },
-        {
-          option: 'Option #3', money: '+$199', badgeColor: 'light-success', checked: false,
-        },
-        {
-          option: 'Option #4', money: '+$459', badgeColor: 'light-success', checked: false,
-        },
-      ],
+      statisticItems: [],
     }
   },
   created() {
@@ -76,8 +63,11 @@ export default {
   },
   methods: {
     retrieveStatistic() {
-      this.$http.get('engine-rest/process-definition/key/new-building-process/statistics')
-        .then(res => { this.businessItems = res.data })
+      this.$http.get('engine-rest/new-building/tasks/statistics')
+        .then(res => { this.statisticItems = res.data })
+    },
+    toTitleCase(word) {
+      return word.split('-').map(item => item.charAt(0).toUpperCase() + item.substring(1)).join(' ')
     },
   },
 }

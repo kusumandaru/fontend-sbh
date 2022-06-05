@@ -28,12 +28,20 @@
         class="dropdown-user"
       >
         <template #button-content>
-          <div class="d-sm-flex d-none user-nav">
+          <div
+            v-if="userData"
+            class="d-sm-flex d-none user-nav"
+          >
             <p class="user-name font-weight-bolder mb-0">
-              {{ userData.fullName || userData.username }}
+              {{ userData.full_name || userData.username }}
             </p>
-            <span class="user-status">{{ userData.roles.join() }}</span>
-            <span class="user-status">{{ userData.tenant }}</span>
+            <span class="user-status">{{ userData.group.name }}</span>
+            <span
+              v-if="userData.tenant"
+              class="user-status"
+            >
+              {{ userData.tenant.name }}
+            </span>
           </div>
           <b-avatar
             size="40"
@@ -108,11 +116,12 @@ export default {
   },
   data() {
     return {
-      userData: JSON.parse(localStorage.getItem('userData')),
+      // userData: JSON.parse(localStorage.getItem('userData')),
     }
   },
   setup() {
     const avatarUrl = ref(null)
+    const userData = ref(null)
 
     const USER_APP_STORE_MODULE_NAME = 'app-user'
 
@@ -124,16 +133,28 @@ export default {
       if (store.hasModule(USER_APP_STORE_MODULE_NAME)) store.unregisterModule(USER_APP_STORE_MODULE_NAME)
     })
 
-    store.dispatch('app-user/fetchUserAvatar')
-      .then(response => { avatarUrl.value = response.data.url })
+    store.dispatch('app-user/fetchUser')
+      .then(response => {
+        userData.value = response.data
+        if (userData.value.avatar_url) {
+          store.dispatch('app-user/fetchUserAvatar')
+            .then(resp => { avatarUrl.value = resp.data.url })
+            .catch(error => {
+              if (error.response.status === 404) {
+                avatarUrl.value = undefined
+              }
+            })
+        }
+      })
       .catch(error => {
         if (error.response.status === 404) {
-          avatarUrl.value = undefined
+          userData.value = undefined
         }
       })
 
     return {
       avatarUrl,
+      userData,
     }
   },
   methods: {
