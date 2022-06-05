@@ -45,6 +45,8 @@ Vue.prototype.$rollbar = new Rollbar({
   accessToken: '07bfdbba08e04b94b49248851302ba30',
   captureUncaught: true,
   captureUnhandledRejections: true,
+  captureUsername: true,
+  enabled: true,
   payload: {
     environment: 'development',
     // Track your events to a specific version of code for better visibility into version health
