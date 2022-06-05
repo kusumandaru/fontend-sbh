@@ -4,7 +4,7 @@
       COPYRIGHT  © {{ new Date().getFullYear() }}
       <b-link
         class="ml-25"
-        href="http://sertifikasibangunanhijau.com/"
+        href="https://sertifikasibangunanhijau.com"
         target="_blank"
       >Sertifikasi Bangunan Hijau</b-link>
       <span class="d-none d-sm-inline-block">, All rights Reserved</span>
