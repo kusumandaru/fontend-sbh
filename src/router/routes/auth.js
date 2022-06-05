@@ -21,4 +21,26 @@ export default [
       redirectIfLoggedIn: true,
     },
   },
+  {
+    path: '/forgot-password',
+    name: 'auth-forgot-password',
+    component: () => import('@/views/auth/ForgotPassword.vue'),
+    meta: {
+      layout: 'full',
+      action: 'read',
+      resource: 'auth',
+      redirectIfLoggedIn: false,
+    },
+  },
+  {
+    path: '/reset_password/:id',
+    name: 'auth-reset-password',
+    component: () => import('@/views/auth/ResetPassword.vue'),
+    meta: {
+      layout: 'full',
+      action: 'read',
+      resource: 'auth',
+      redirectIfLoggedIn: true,
+    },
+  },
 ]

@@ -104,9 +104,9 @@
                 <b-form-input
                   id="password-confirm"
                   v-model="repeatPassword"
-                  :type="password"
+                  :type="password2FieldType"
                   class="form-control-merge"
-                  :state="errors.length > 0 ? false:null"
+                  :state="validationContext.errors.length > 0 ? false:null"
                   name="password-confirm"
                   placeholder="············"
                 />
@@ -242,6 +242,9 @@ export default {
             this.result = JSON.parse(JSON.stringify(res.data))
             this.successShow = true
             this.isLoading = false
+
+            this.showToast('success', 'Password changed', 'successfully')
+            this.reloadPage()
           }).catch(error => {
             this.isLoading = false
             console.error(error)

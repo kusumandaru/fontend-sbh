@@ -1,7 +1,6 @@
 <template>
   <div class="auth-wrapper auth-v2">
     <b-row class="auth-inner m-0">
-
       <!-- Brand logo-->
       <b-link class="brand-logo">
         <vuexy-logo />
@@ -38,131 +37,43 @@
           class="px-xl-2 mx-auto"
         >
           <b-card-title class="mb-1">
-            Register your tenant here 🚀
+            Reset your password
           </b-card-title>
           <b-card-text class="mb-2">
-            Start certification here
+            Here
           </b-card-text>
 
           <!-- form -->
           <validation-observer
-            ref="registerForm"
+            ref="resetPasswordForm"
             #default="{invalid}"
           >
             <b-form
               class="auth-register-form mt-2"
-              @submit.prevent="register"
+              @submit.prevent="savePassword"
             >
-              <!-- first name -->
-              <b-form-group
-                label="First Name"
-                label-for="register-first-name"
-              >
-                <validation-provider
-                  #default="{ errors }"
-                  name="firstname"
-                  vid="firstname"
-                  rules="required"
-                >
-                  <b-form-input
-                    id="register-first-name"
-                    v-model="firstName"
-                    name="register-first-name"
-                    :state="errors.length > 0 ? false:null"
-                    placeholder="John"
-                  />
-                  <small class="text-danger">{{ errors[0] }}</small>
-                </validation-provider>
-              </b-form-group>
-
-              <!-- last name -->
-              <b-form-group
-                label="Last Name"
-                label-for="register-last-name"
-              >
-                <validation-provider
-                  #default="{ errors }"
-                  name="lastname"
-                  vid="lastname"
-                  rules="required"
-                >
-                  <b-form-input
-                    id="register-last-name"
-                    v-model="lastName"
-                    name="register-last-name"
-                    :state="errors.length > 0 ? false:null"
-                    placeholder="Doe"
-                  />
-                  <small class="text-danger">{{ errors[0] }}</small>
-                </validation-provider>
-              </b-form-group>
-
-              <!-- tenant name -->
-              <b-form-group
-                label="Company / Tenant Name"
-                label-for="register-tenant-name"
-              >
-                <validation-provider
-                  #default="{ errors }"
-                  name="tenantname"
-                  vid="tenantname"
-                  rules="required"
-                >
-                  <b-form-input
-                    id="register-tenant-name"
-                    v-model="tenantName"
-                    name="register-tenant-name"
-                    :state="errors.length > 0 ? false:null"
-                    placeholder="PT Satria Perkasa"
-                  />
-                  <small class="text-danger">{{ errors[0] }}</small>
-                </validation-provider>
-              </b-form-group>
-
-              <!-- email -->
-              <b-form-group
-                label="Email"
-                label-for="register-email"
-              >
-                <validation-provider
-                  #default="{ errors }"
-                  name="Email"
-                  vid="email"
-                  rules="required|email"
-                >
-                  <b-form-input
-                    id="register-email"
-                    v-model="userEmail"
-                    name="register-email"
-                    :state="errors.length > 0 ? false:null"
-                    placeholder="john@example.com"
-                  />
-                  <small class="text-danger">{{ errors[0] }}</small>
-                </validation-provider>
-              </b-form-group>
-
               <!-- password -->
               <b-form-group
                 label-for="register-password"
                 label="Password"
               >
                 <validation-provider
-                  #default="{ errors }"
-                  name="Password"
+                  #default="validationContext"
+                  name="New Password"
                   vid="password"
                   rules="required|password"
                 >
                   <b-input-group
                     class="input-group-merge"
-                    :class="errors.length > 0 ? 'is-invalid':null"
+                    :class="validationContext.errors.length > 0 ? 'is-invalid':null"
                   >
                     <b-form-input
-                      id="register-password"
-                      v-model="registerPassword"
+                      id="new-password"
+                      v-model="newPassword"
                       class="form-control-merge"
                       :type="passwordFieldType"
-                      :state="errors.length > 0 ? false:null"
-                      name="register-password"
+                      :state="validationContext.errors.length > 0 ? false:null"
+                      name="new-password"
                       placeholder="············"
                     />
                     <b-input-group-append is-text>
@@ -173,7 +84,7 @@
                       />
                     </b-input-group-append>
                   </b-input-group>
-                  <small class="text-danger">{{ errors[0] }}</small>
+                  <small class="text-danger">{{ validationContext.errors[0] }}</small>
                 </validation-provider>
               </b-form-group>
 
@@ -211,24 +122,13 @@
                 </validation-provider>
               </b-form-group>
 
-              <b-form-group>
-                <b-form-checkbox
-                  id="register-privacy-policy"
-                  v-model="status"
-                  name="checkbox-1"
-                >
-                  I agree to
-                  <b-link>privacy policy & terms</b-link>
-                </b-form-checkbox>
-              </b-form-group>
-
               <b-button
                 variant="primary"
                 block
                 type="submit"
                 :disabled="invalid"
               >
-                Sign up
+                Reset Password
               </b-button>
             </b-form>
           </validation-observer>
@@ -285,14 +185,13 @@
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import VuexyLogo from '@core/layouts/components/Logo.vue'
 import {
-  BRow, BCol, BLink, BButton, BForm, BFormCheckbox, BFormGroup, BFormInput, BInputGroup, BInputGroupAppend, BImg, BCardTitle, BCardText,
+  BRow, BCol, BLink, BButton, BForm, BFormGroup, BFormInput, BInputGroup, BInputGroupAppend, BImg, BCardTitle, BCardText,
 } from 'bootstrap-vue'
 import { required, email, password } from '@validations'
 import { togglePasswordVisibility } from '@core/mixins/ui/forms'
 import store from '@/store/index'
-import useJwt from '@/auth/jwt/useJwt'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
-import { roleAbility, initialAbility } from '@/libs/acl/config'
+import router from '@/router'
 
 export default {
   components: {
@@ -305,7 +204,6 @@ export default {
     BForm,
     BCardText,
     BCardTitle,
-    BFormCheckbox,
     BFormGroup,
     BFormInput,
     BInputGroup,
@@ -317,14 +215,9 @@ export default {
   mixins: [togglePasswordVisibility],
   data() {
     return {
-      status: '',
-      firstName: '',
-      lastName: '',
-      tenanttName: '',
-      userEmail: '',
-      registerPassword: '',
+      userToken: null,
+      newPassword: '',
       repeatPassword: '',
-      tenantName: '',
       sideImg: require('@/assets/images/pages/register-v2.svg'),
       // validation
       required,
@@ -345,6 +238,9 @@ export default {
       return this.sideImg
     },
   },
+  created() {
+    this.retrieveToken()
+  },
   methods: {
     showToast(variant, titleToast, description) {
       this.$toast({
@@ -357,39 +253,53 @@ export default {
         },
       })
     },
-    register() {
-      this.$refs.registerForm.validate().then(success => {
-        if (success) {
-          useJwt.register({
-            firstName: this.firstName,
-            lastName: this.lastName,
-            tenantName: this.tenantName,
-            email: this.userEmail,
-            password: this.registerPassword,
+    retrieveToken() {
+      this.$http.get(`engine-rest/user/reset_password/${router.currentRoute.params.id}`)
+        .then(res => {
+          this.userToken = res.data
+        }).catch(error => {
+          this.$toast({
+            component: ToastificationContent,
+            position: 'top-right',
+            props: {
+              title: 'Invalid token',
+              icon: 'CoffeeIcon',
+              variant: 'error',
+              text: error.response.data.message,
+            },
           })
-            .then(response => {
-              useJwt.setToken(response.data.accessToken)
-              useJwt.setRefreshToken(response.data.refreshToken)
-              localStorage.setItem('userData', JSON.stringify(response.data.userData))
-              const data = roleAbility[response.data.userData.roles]
-              this.$ability.update(initialAbility.concat(data))
-              this.$router.replace('/')
-                .then(() => {
-                  this.$toast({
-                    component: ToastificationContent,
-                    position: 'top-right',
-                    props: {
-                      title: `Welcome ${response.data.fullName || response.data.username}`,
-                      icon: 'CoffeeIcon',
-                      variant: 'success',
-                      text: `You have successfully logged in as ${response.data.roles[0]}. Now you can start to explore!`,
-                    },
-                  })
-                })
-            })
-            .catch(error => {
-              this.showToast('danger', 'Cannot Save', error.response.data.error)
-            })
+
+          this.$router.push({ name: 'auth-login' })
+        })
+    },
+    savePassword() {
+      this.$refs.resetPasswordForm.validate().then(success => {
+        if (success) {
+          this.isLoading = true
+
+          const request = new URLSearchParams()
+          request.append('password', this.newPassword)
+          request.append('token', router.currentRoute.params.id)
+
+          const config = {
+            header: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+          }
+
+          this.$http.patch('/engine-rest/user/reset_password', request, config).then(res => {
+            this.result = JSON.parse(JSON.stringify(res.data))
+            this.successShow = true
+            this.isLoading = false
+
+            this.$router.push({ name: 'auth-login' })
+          }).catch(error => {
+            this.isLoading = false
+            console.error(error)
+            this.showToast('danger', 'Cannot Reset Password', error.response.data.message)
+          })
+        } else {
+          this.showToast('danger', 'Cannot Reset Password', 'There is any empty data')
         }
       })
     },
