@@ -4,8 +4,8 @@
       :is-add-new-evaluation-sidebar-active.sync="isAddNewEvaluationSidebarActive"
       @refetch-data="refetchData"
     />
-    <building-document-list-add-new
-      :is-add-new-building-document-sidebar-active.sync="isAddNewBuildingDocumentSidebarActive"
+    <level-list-add-new
+      :is-add-new-level-sidebar-active.sync="isAddNewLevelSidebarActive"
       @refetch-data="refetchData"
     />
 
@@ -169,10 +169,10 @@
       </template>
     </vue-good-table>
 
-    <!-- Building Document -->
+    <!-- Level -->
     <b-card-body>
-      <b-card-title>Building Document</b-card-title>
-      <b-card-sub-title>Field for upload building document</b-card-sub-title>
+      <b-card-title>Level Score</b-card-title>
+      <b-card-sub-title>Field for set score level</b-card-sub-title>
     </b-card-body>
     <!-- input search -->
     <div class="custom-search d-flex justify-content-end">
@@ -190,9 +190,9 @@
             />
             <b-button
               variant="primary"
-              @click="isAddNewBuildingDocumentSidebarActive = true"
+              @click="isAddNewLevelSidebarActive = true"
             >
-              <span class="text-nowrap">Add Building Document</span>
+              <span class="text-nowrap">Add Level</span>
             </b-button>
           </div>
         </b-col>
@@ -200,9 +200,9 @@
     </div>
     <!-- table -->
     <vue-good-table
-      :ref="refBuildingDocumentListTable"
-      :columns="buildingDocumentColumns"
-      :rows="buildingDocumentRows"
+      :ref="refLevelListTable"
+      :columns="levelColumns"
+      :rows="levelRows"
       :rtl="direction"
       :search-options="{
         enabled: true,
@@ -216,18 +216,8 @@
         slot="table-row"
         slot-scope="props"
       >
-        <!-- Column: Project Type -->
-        <div
-          v-if="props.column.field === 'project_type'"
-          class="text-nowrap"
-        >
-          <b-badge :variant="resolveProjectTypeVariant(props.row.project_type)">
-            {{ resolveProjectTypeTranslation(props.row.project_type) }}
-          </b-badge>
-        </div>
-
         <!-- Column: Action -->
-        <span v-else-if="props.column.field === 'action'">
+        <span v-if="props.column.field === 'action'">
           <span>
             <b-dropdown
               variant="link"
@@ -236,15 +226,15 @@
             >
               <template v-slot:button-content>
                 <feather-icon
-                  :id="`project-row-${props.row.id}-building-document-icon-edit`"
+                  :id="`project-row-${props.row.id}-level-icon-edit`"
                   icon="EditIcon"
                   size="16"
                   class="mx-1"
-                  @click="$router.push({ name: 'admin-building-document-edit', params: { buildingDocumentId: props.row.id }})"
+                  @click="$router.push({ name: 'admin-level-edit', params: { levelId: props.row.id }})"
                 />
                 <b-tooltip
                   title="Building Document Update"
-                  :target="`project-row-${props.row.id}-building-document-icon-edit`"
+                  :target="`project-row-${props.row.id}-level-icon-edit`"
                 />
               </template>
             </b-dropdown>
@@ -305,7 +295,6 @@
         </div>
       </template>
     </vue-good-table>
-
   </div>
 </template>
 
@@ -323,7 +312,7 @@ import ToastificationContent from '@core/components/toastification/Toastificatio
 import useEvaluationsList from './useEvaluationsList'
 import masterStoreModule from './masterStoreModule'
 import EvaluationListAddNew from './EvaluationListAddNew.vue'
-import BuildingDocumentListAddNew from './BuildingDocumentListAddNew.vue'
+import LevelListAddNew from './LevelListAddNew.vue'
 
 export default {
   components: {
@@ -342,7 +331,8 @@ export default {
     BCardText,
     BTooltip,
     EvaluationListAddNew,
-    BuildingDocumentListAddNew,
+    LevelListAddNew,
+
   },
   setup() {
     const EVALUATION_APP_STORE_MODULE_NAME = 'app-evaluation'
@@ -356,7 +346,7 @@ export default {
     })
 
     const isAddNewEvaluationSidebarActive = ref(false)
-    const isAddNewBuildingDocumentSidebarActive = ref(false)
+    const isAddNewLevelSidebarActive = ref(false)
 
     const {
       resolveProjectTypeIcon,
@@ -364,14 +354,14 @@ export default {
       resolveProjectTypeTranslation,
       refetchData,
       refEvaluationListTable,
-      refBuildingDocumentListTable,
+      refLevelListTable,
     } = useEvaluationsList()
     return {
       // Sidebar
       isAddNewEvaluationSidebarActive,
-      isAddNewBuildingDocumentSidebarActive,
+      isAddNewLevelSidebarActive,
       refEvaluationListTable,
-      refBuildingDocumentListTable,
+      refLevelListTable,
       resolveProjectTypeIcon,
       resolveProjectTypeVariant,
       resolveProjectTypeTranslation,
@@ -414,18 +404,23 @@ export default {
           field: 'action',
         },
       ],
-      buildingDocumentColumns: [
+      evaluationRows: [],
+      levelColumns: [
         {
-          label: 'Building Document Name',
+          label: 'Level Name',
           field: 'name',
           filterOptions: {
             enabled: true,
-            placeholder: 'Search Building Document',
+            placeholder: 'Search Level',
           },
         },
         {
-          label: 'Mandatory',
-          field: 'mandatory',
+          label: 'Minimum Score',
+          field: 'minimum_score',
+        },
+        {
+          label: 'Percentage',
+          field: 'percentage',
         },
         {
           label: 'Active',
@@ -440,9 +435,7 @@ export default {
           field: 'action',
         },
       ],
-      evaluationRows: [],
-      buildingDocumentRows: [],
-
+      levelRows: [],
       options: {
         propertiesPanel: {},
         additionalModules: [],
@@ -465,7 +458,7 @@ export default {
   created() {
     this.retrieveTemplate()
     this.retrieveEvaluations()
-    this.retrieveBuildingDocument()
+    this.retrieveLevels()
   },
   methods: {
     retrieveTemplate() {
@@ -486,9 +479,9 @@ export default {
       this.$http.get(`engine-rest/master-project/templates/${router.currentRoute.params.templateId}/evaluations`)
         .then(res => { this.evaluationRows = res.data })
     },
-    retrieveBuildingDocument() {
-      this.$http.get(`engine-rest/new-building/project/document_buildings/${router.currentRoute.params.templateId}/master_template`)
-        .then(res => { this.buildingDocumentRows = res.data })
+    retrieveLevels() {
+      this.$http.get(`engine-rest/master-project/templates/${router.currentRoute.params.templateId}/levels`)
+        .then(res => { this.levelRows = res.data })
     },
     /* eslint-disable object-shorthand */
     handleError(err) {

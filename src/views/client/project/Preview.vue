@@ -413,18 +413,6 @@
             Draft Perjanjian Sertifikasi Greenship
           </b-button>
 
-          <!-- Button: Perjanjian Sertifikasi Greenship-->
-          <b-button
-            v-if="registrationLetterShow"
-            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-            variant="secondary"
-            class="mb-75"
-            block
-            @click="registeredProject"
-          >
-            Perjanjian Sertifikasi Greenship
-          </b-button>
-
           <!-- Button: Perjanjian Sertifikasi Greenship Attachment-->
           <b-button
             v-if="registrationLetterAttachmentShow"
@@ -715,9 +703,6 @@ export default {
     },
     eligibilityStatementShow() {
       return !(this.aboveCheckBuildingTasks.includes(this.projectData.definition_key))
-    },
-    registrationLetterShow() {
-      return !(this.aboveFirstPaymentTasks.includes(this.projectData.definition_key))
     },
     registrationLetterAttachmentShow() {
       return !(this.aboveFirstPaymentTasks.includes(this.projectData.definition_key))

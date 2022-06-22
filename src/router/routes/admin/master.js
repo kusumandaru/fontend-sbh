@@ -176,7 +176,50 @@ export default [
     },
   },
   {
-    path: '/admin/master/vendor/:vendorId/templates',
+    path: '/admin/master/vendor/:vendorId/certifications',
+    name: 'admin-certification-list',
+    component: () => import('@/views/admin/master/CertificationList.vue'),
+    meta: {
+      pageTitle: 'List Certification',
+      breadcrumb: [
+        {
+          text: 'List Vendor',
+          to: '/admin/master/vendor',
+        },
+        {
+          text: 'List Certification',
+          active: true,
+        },
+      ],
+      action: 'read',
+      resource: 'master',
+    },
+  },
+  {
+    path: '/admin/master/vendor/:vendorId/certifications/:certificationTypeId/edit',
+    name: 'admin-certification-edit',
+    component: () => import('@/views/admin/master/CertificationEdit.vue'),
+    meta: {
+      pageTitle: 'Update Template',
+      breadcrumb: [
+        {
+          text: 'List Vendor',
+          to: '/admin/master/vendor',
+        },
+        {
+          text: 'List Certification',
+        },
+        {
+          text: 'Update Certification',
+          active: true,
+        },
+      ],
+      action: 'read',
+      resource: 'master',
+    },
+  },
+  {
+    path: '/admin/master/vendor/:vendorId/certifications/:certificationTypeId/templates',
     name: 'admin-template-list',
     component: () => import('@/views/admin/master/TemplateList.vue'),
     meta: {
@@ -185,6 +228,9 @@ export default [
         {
           text: 'List Vendor',
           to: '/admin/master/vendor',
+        },
+        {
+          text: 'List Certification',
         },
         {
           text: 'List Template',
@@ -196,7 +242,7 @@ export default [
     },
   },
   {
-    path: '/admin/master/vendor/:vendorId/templates/:templateId/edit',
+    path: '/admin/master/vendor/:vendorId/certifications/:certificationTypeIdtemplates/:templateId/edit',
     name: 'admin-template-edit',
     component: () => import('@/views/admin/master/TemplateEdit.vue'),
     meta: {
@@ -210,6 +256,9 @@ export default [
           text: 'List Template',
         },
         {
+          text: 'List Certification',
+        },
+        {
           text: 'Update Vendor',
           active: true,
         },
@@ -219,7 +268,7 @@ export default [
     },
   },
   {
-    path: '/admin/master/vendor/:vendorId/templates/:templateId/building_document/:buildingDocumentId/edit',
+    path: '/admin/master/vendor/:vendorId/certifications/:certificationTypeId/building_document/:buildingDocumentId/edit',
     name: 'admin-building-document-edit',
     component: () => import('@/views/admin/master/BuildingDocumentEdit.vue'),
     meta: {
@@ -239,7 +288,7 @@ export default [
     },
   },
   {
-    path: '/admin/master/vendor/:vendorId/templates/:templateId/evaluations',
+    path: '/admin/master/vendor/:vendorId/certifications/:certificationTypeId/templates/:templateId/evaluations',
     name: 'admin-evaluation-list',
     component: () => import('@/views/admin/master/EvaluationList.vue'),
     meta: {
@@ -262,7 +311,7 @@ export default [
     },
   },
   {
-    path: '/admin/master/vendor/:vendorId/templates/:templateId/evaluations/:evaluationId/edit',
+    path: '/admin/master/vendor/:vendorId/certifications/:certificationTypeId/templates/:templateId/evaluations/:evaluationId/edit',
     name: 'admin-evaluation-edit',
     component: () => import('@/views/admin/master/EvaluationEdit.vue'),
     meta: {
@@ -288,7 +337,33 @@ export default [
     },
   },
   {
-    path: '/admin/master/vendor/:vendorId/templates/:templateId/evaluations/:evaluationId/exercises',
+    path: '/admin/master/vendor/:vendorId/certifications/:certificationTypeId/templates/:templateId/levels/:levelId/edit',
+    name: 'admin-level-edit',
+    component: () => import('@/views/admin/master/LevelEdit.vue'),
+    meta: {
+      pageTitle: 'Update Level',
+      breadcrumb: [
+        {
+          text: 'List Vendor',
+          to: '/admin/master/vendor',
+        },
+        {
+          text: 'List Template',
+        },
+        {
+          text: 'List Evaluation',
+        },
+        {
+          text: 'Update Level',
+          active: true,
+        },
+      ],
+      action: 'read',
+      resource: 'master',
+    },
+  },
+  {
+    path: '/admin/master/vendor/:vendorId/certifications/:certificationTypeId/templates/:templateId/evaluations/:evaluationId/exercises',
     name: 'admin-exercise-list',
     component: () => import('@/views/admin/master/ExerciseList.vue'),
     meta: {
@@ -314,7 +389,7 @@ export default [
     },
   },
   {
-    path: '/admin/master/vendor/:vendorId/templates/:templateId/evaluations/:evaluationId/exercises/:exerciseId/edit',
+    path: '/admin/master/vendor/:vendorId/certifications/:certificationTypeId/templates/:templateId/evaluations/:evaluationId/exercises/:exerciseId/edit',
     name: 'admin-exercise-edit',
     component: () => import('@/views/admin/master/ExerciseEdit.vue'),
     meta: {
@@ -343,7 +418,7 @@ export default [
     },
   },
   {
-    path: '/admin/master/vendor/:vendorId/templates/:templateId/evaluations/:evaluationId/exercises/:exerciseId/criterias',
+    path: '/admin/master/vendor/:vendorId/certifications/:certificationTypeId/templates/:templateId/evaluations/:evaluationId/exercises/:exerciseId/criterias',
     name: 'admin-criteria-list',
     component: () => import('@/views/admin/master/CriteriaList.vue'),
     meta: {
@@ -372,7 +447,7 @@ export default [
     },
   },
   {
-    path: '/admin/master/vendor/:vendorId/templates/:templateId/evaluations/:evaluationId/exercises/:exerciseId/criterias/:criteriaId/edit',
+    path: '/admin/master/vendor/:vendorId/certifications/:certificationTypeId/templates/:templateId/evaluations/:evaluationId/exercises/:exerciseId/criterias/:criteriaId/edit',
     name: 'admin-criteria-edit',
     component: () => import('@/views/admin/master/CriteriaEdit.vue'),
     meta: {
@@ -404,7 +479,7 @@ export default [
     },
   },
   {
-    path: '/admin/master/vendor/:vendorId/templates/:templateId/evaluations/:evaluationId/exercises/:exerciseId/criterias/:criteriaId/documents',
+    path: '/admin/master/vendor/:vendorId/certifications/:certificationTypeId/templates/:templateId/evaluations/:evaluationId/exercises/:exerciseId/criterias/:criteriaId/documents',
     name: 'admin-document-list',
     component: () => import('@/views/admin/master/DocumentList.vue'),
     meta: {
@@ -433,7 +508,7 @@ export default [
     },
   },
   {
-    path: '/admin/master/vendor/:vendorId/templates/:templateId/evaluations/:evaluationId/exercises/:exerciseId/criterias/:criteriaId/documents/:documentId/edit',
+    path: '/admin/master/vendor/:vendorId/certifications/:certificationTypeId/templates/:templateId/evaluations/:evaluationId/exercises/:exerciseId/criterias/:criteriaId/documents/:documentId/edit',
     name: 'admin-document-edit',
     component: () => import('@/views/admin/master/DocumentEdit.vue'),
     meta: {
@@ -468,7 +543,7 @@ export default [
     },
   },
   {
-    path: '/admin/master/vendor/:vendorId/templates/:templateId/evaluations/:evaluationId/exercises/:exerciseId/criterias/:criteriaId/blockers/',
+    path: '/admin/master/vendor/:vendorId/certifications/:certificationTypeId/templates/:templateId/evaluations/:evaluationId/exercises/:exerciseId/criterias/:criteriaId/blockers/',
     name: 'admin-blocker-correlation',
     component: () => import('@/views/admin/master/BlockerCorrelation.vue'),
     meta: {

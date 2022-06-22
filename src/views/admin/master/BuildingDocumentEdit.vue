@@ -73,7 +73,7 @@
                   <b-form-input
                     id="building-document-code"
                     v-model="buildingDocumentData.code"
-                    readonly="true"
+                    :readonly="readOnly"
                   />
                   <b-form-invalid-feedback>
                     {{ validationContext.errors[0] }}
@@ -244,7 +244,7 @@ export default {
       code: null,
       placeholder: null,
       object_type: null,
-      master_template_id: null,
+      master_certification_id: null,
 
     }
     const buildingDocumentData = ref(JSON.parse(JSON.stringify(blankBuildingDocumentData)))
@@ -252,14 +252,15 @@ export default {
       buildingDocumentData.value = JSON.parse(JSON.stringify(blankBuildingDocumentData))
     }
     const BUILDING_DOCUMENT_APP_STORE_MODULE_NAME = 'app-building-document'
+    const readOnly = true
 
     const onSubmit = () => {
-      buildingDocumentData.value.masterTemplateID = buildingDocumentData.value.master_template_id
+      buildingDocumentData.value.masterCertificationTypeID = buildingDocumentData.value.master_certification_type_id
       buildingDocumentData.value.objectType = buildingDocumentData.value.object_type
 
       store.dispatch('app-building-document/editBuildingDocument', { buildingDocumentId: router.currentRoute.params.buildingDocumentId, buildingDocumentData: buildingDocumentData.value })
         .then(() => {
-          router.push({ name: 'admin-evaluation-list' })
+          router.push({ name: 'admin-template-list' })
         })
     }
 
@@ -292,6 +293,7 @@ export default {
       refFormObserver,
       getValidationState,
       resetForm,
+      readOnly,
     }
   },
   methods: {

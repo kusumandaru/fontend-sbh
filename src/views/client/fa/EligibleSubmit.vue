@@ -38,6 +38,8 @@
                 <b-button
                   v-ripple.400="'rgba(255, 255, 255, 0.15)'"
                   :variant="eligibleSubmission.eligible ? 'primary' : 'danger'"
+                  size="lg"
+                  block
                   class="mt-2 mt-lg-3"
                   :disabled="!eligibleSubmission.eligible"
                   @click="submitProjectFA('Submit')"

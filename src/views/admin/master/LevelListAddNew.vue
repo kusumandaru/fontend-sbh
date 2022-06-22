@@ -1,7 +1,7 @@
 <template>
   <b-sidebar
-    id="add-new-building-document-sidebar"
-    :visible="isAddNewBuildingDocumentSidebarActive"
+    id="add-new-level-sidebar"
+    :visible="isAddNewLevelSidebarActive"
     bg-variant="white"
     sidebar-class="sidebar-lg"
     shadow
@@ -9,13 +9,13 @@
     no-header
     right
     @hidden="resetForm"
-    @change="(val) => $emit('update:is-add-new-building-document-sidebar-active', val)"
+    @change="(val) => $emit('update:is-add-new-level-sidebar-active', val)"
   >
     <template #default="{ hide }">
       <!-- Header -->
       <div class="d-flex justify-content-between align-items-center content-sidebar-header px-2 py-1">
         <h5 class="mb-0">
-          Add New Building Document
+          Add New Level
         </h5>
 
         <feather-icon
@@ -45,12 +45,12 @@
             rules="required"
           >
             <b-form-group
-              label="Building Document Name"
+              label="Name"
               label-for="name"
             >
               <b-form-input
-                id="nameId"
-                v-model="buildingDocumentData.name"
+                id="name"
+                v-model="LevelData.name"
                 :state="getValidationState(validationContext)"
                 trim
               />
@@ -61,20 +61,19 @@
             </b-form-group>
           </validation-provider>
 
-          <!-- Code -->
+          <!-- Minimum Score -->
           <validation-provider
             #default="validationContext"
-            name="Code"
-            rules="required|alpha-dash"
+            name="Minimum Score"
+            rules="required|integer"
           >
             <b-form-group
-              label="Building Document Code"
-              description="use alphabet and underscore, cannot edited"
-              label-for="code"
+              label="Minimum Score"
+              label-for="minimum-score"
             >
               <b-form-input
-                id="code"
-                v-model="buildingDocumentData.code"
+                id="minimum-score"
+                v-model="LevelData.minimumScore"
                 :state="getValidationState(validationContext)"
                 trim
               />
@@ -85,47 +84,22 @@
             </b-form-group>
           </validation-provider>
 
-          <!-- Placeholder -->
+          <!-- Percentage -->
           <validation-provider
             #default="validationContext"
-            name="Placeholder"
-            rules="required"
+            name="Percentage"
+            rules="required|integer"
           >
             <b-form-group
-              label="Building Document Placeholder"
-              label-for="placeholder"
+              label="Percentage"
+              label-for="percentage"
             >
               <b-form-input
-                id="placeholder"
-                v-model="buildingDocumentData.placeholder"
+                id="percentage"
+                v-model="LevelData.minimum_score"
                 :state="getValidationState(validationContext)"
                 trim
               />
-
-              <b-form-invalid-feedback>
-                {{ validationContext.errors[0] }}
-              </b-form-invalid-feedback>
-            </b-form-group>
-          </validation-provider>
-
-          <!-- Mandatory -->
-          <validation-provider
-            #default="validationContext"
-            name="Mandatory"
-            rules="required"
-          >
-            <b-form-group
-              label="Building Document Mandatory"
-              label-for="mandatory"
-            >
-              <b-form-checkbox
-                id="mandatory"
-                v-model="buildingDocumentData.mandatory"
-                switch
-                inline
-              >
-                Mandatory
-              </b-form-checkbox>
 
               <b-form-invalid-feedback>
                 {{ validationContext.errors[0] }}
@@ -137,21 +111,19 @@
           <validation-provider
             #default="validationContext"
             name="Active"
-            rules="required"
           >
             <b-form-group
-              label="Building Document Active"
+              label="Active"
               label-for="active"
             >
               <b-form-checkbox
-                id="active"
-                v-model="buildingDocumentData.active"
+                id="Level-active"
+                v-model="LevelData.active"
                 switch
                 inline
               >
                 Active
               </b-form-checkbox>
-
               <b-form-invalid-feedback>
                 {{ validationContext.errors[0] }}
               </b-form-invalid-feedback>
@@ -177,7 +149,6 @@
               Cancel
             </b-button>
           </div>
-
         </b-form>
       </validation-observer>
     </template>
@@ -192,10 +163,9 @@ import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import { ref } from '@vue/composition-api'
 import {
   required,
-  regex,
   alphaNum,
-  alphaDash,
   email,
+  integer,
 } from '@validations'
 import router from '@/router'
 import formValidation from '@core/comp-functions/forms/form-validation'
@@ -211,7 +181,6 @@ export default {
     BFormInput,
     BFormInvalidFeedback,
     BButton,
-
     // Form Validation
     ValidationProvider,
     ValidationObserver,
@@ -220,11 +189,11 @@ export default {
     Ripple,
   },
   model: {
-    prop: 'isAddNewBuildingDocumentSidebarActive',
-    event: 'update:is-add-new-building-document-sidebar-active',
+    prop: 'isAddNewLevelSidebarActive',
+    event: 'update:is-add-new-level-sidebar-active',
   },
   props: {
-    isAddNewBuildingDocumentSidebarActive: {
+    isAddNewLevelSidebarActive: {
       type: Boolean,
       required: true,
     },
@@ -232,34 +201,30 @@ export default {
   data() {
     return {
       required,
-      regex,
       alphaNum,
-      alphaDash,
       email,
+      integer,
     }
   },
   setup(props, { emit }) {
-    const blankBuildingDocumentData = {
+    const blankLevelData = {
       name: '',
-      code: '',
-      placeholder: '',
-      masterCertificationTypeID: router.currentRoute.params.certificationTypeId,
-      objectType: 'file',
-      mandatory: null,
-      active: null,
+      minimumScore: 0,
+      percentage: 0,
+      masterTemplateID: `${router.currentRoute.params.templateId}`,
+      active: true,
     }
-    const provinceOptions = ref(JSON.parse('[]'))
-    const buildingDocumentData = ref(JSON.parse(JSON.stringify(blankBuildingDocumentData)))
 
-    const resetBuildingData = () => {
-      buildingDocumentData.value = JSON.parse(JSON.stringify(blankBuildingDocumentData))
+    const LevelData = ref(JSON.parse(JSON.stringify(blankLevelData)))
+    const resetLevelData = () => {
+      LevelData.value = JSON.parse(JSON.stringify(blankLevelData))
     }
 
     const onSubmit = () => {
-      store.dispatch('app-evaluation/addBuildingDocument', buildingDocumentData.value)
+      store.dispatch('app-level/addLevel', LevelData.value)
         .then(() => {
           emit('refetch-data')
-          emit('update:is-add-new-building-document-sidebar-active', false)
+          emit('update:is-add-new-level-sidebar-active', false)
         })
     }
 
@@ -267,16 +232,15 @@ export default {
       refFormObserver,
       getValidationState,
       resetForm,
-    } = formValidation(resetBuildingData)
+    } = formValidation(resetLevelData)
 
     return {
-      buildingDocumentData,
+      LevelData,
       onSubmit,
 
       refFormObserver,
       getValidationState,
       resetForm,
-      provinceOptions,
     }
   },
 }
@@ -285,7 +249,7 @@ export default {
 <style lang="scss">
 @import '@core/scss/vue/libs/vue-select.scss';
 
-#add-new-building-document-sidebar {
+#add-new-level-sidebar {
   .vs__dropdown-menu {
     max-height: 200px !important;
   }

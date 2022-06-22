@@ -1,28 +1,27 @@
 <template>
-  <component :is="exerciseData === undefined ? 'div' : 'b-card'">
-
+  <component :is="levelData === undefined ? 'div' : 'b-card'">
     <!-- Alert: No item found -->
     <b-alert
       variant="danger"
-      :show="exerciseData === undefined"
+      :show="levelData === undefined"
     >
       <h4 class="alert-heading">
-        Error fetching exercise data
+        Error fetching level data
       </h4>
       <div class="alert-body">
-        No exercise found with this exercise id. Check
+        No level found with this level id. Check
         <b-link
           class="alert-link"
-          :to="{ name: 'admin-exercise-list'}"
+          :to="{ name: 'admin-level-list'}"
         >
-          Exercise List
+          Level List
         </b-link>
-        for other exercises.
+        for other levels.
       </div>
     </b-alert>
 
     <div>
-      <!-- Exercise Info: Input Fields -->
+      <!-- Level Info: Input Fields -->
       <validation-observer
         #default="{ handleSubmit }"
         ref="refFormObserver"
@@ -32,31 +31,6 @@
           @reset.prevent="resetForm"
         >
           <b-row>
-            <!-- Field: Code -->
-            <b-col
-              cols="12"
-              md="4"
-            >
-              <validation-provider
-                #default="validationContext"
-                name="Code"
-                rules="required"
-              >
-                <b-form-group
-                  label="Code"
-                  label-for="code"
-                >
-                  <b-form-input
-                    id="code"
-                    v-model="exerciseData.code"
-                  />
-                  <b-form-invalid-feedback>
-                    {{ validationContext.errors[0] }}
-                  </b-form-invalid-feedback>
-                </b-form-group>
-              </validation-provider>
-            </b-col>
-
             <!-- Field: Name -->
             <b-col
               cols="12"
@@ -73,7 +47,7 @@
                 >
                   <b-form-input
                     id="name"
-                    v-model="exerciseData.name"
+                    v-model="levelData.name"
                   />
                   <b-form-invalid-feedback>
                     {{ validationContext.errors[0] }}
@@ -82,59 +56,24 @@
               </validation-provider>
             </b-col>
 
-            <!-- Exercise Type -->
+            <!-- Field: Minimum Score -->
             <b-col
               cols="12"
               md="4"
             >
               <validation-provider
                 #default="validationContext"
-                name="Exercise Type"
-                rules="required"
+                name="Minimum Score"
+                rules="required|integer"
               >
                 <b-form-group
-                  label="Exercise Type"
-                  label-for="exercise-type"
-                >
-                  <v-select
-                    v-model="exerciseData.exercise_type"
-                    :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                    :options="exerciseTypeOptions"
-                    :reduce="val => val.value"
-                    :clearable="false"
-                    input-id="exercise-type"
-                  />
-
-                  <b-form-invalid-feedback>
-                    {{ validationContext.errors[0] }}
-                  </b-form-invalid-feedback>
-                </b-form-group>
-              </validation-provider>
-            </b-col>
-
-            <!-- Max Score -->
-            <b-col
-              cols="12"
-              md="4"
-            >
-              <validation-provider
-                v-if="validationMaxScore"
-                #default="validationContext"
-                name="Score"
-                :rules="validationMaxScore ? 'required' : ''"
-              >
-                <b-form-group
-                  label="Max Score"
-                  label-for="max-score"
+                  label="Minimum Score"
+                  label-for="minimum_score"
                 >
                   <b-form-input
-                    id="score"
-                    v-model="exerciseData.max_score"
-                    :state="getValidationState(validationContext)"
-                    type="number"
-                    trim
+                    id="minimum_score"
+                    v-model="levelData.minimum_score"
                   />
-
                   <b-form-invalid-feedback>
                     {{ validationContext.errors[0] }}
                   </b-form-invalid-feedback>
@@ -142,28 +81,24 @@
               </validation-provider>
             </b-col>
 
-            <!-- Score Modifier -->
+            <!-- Field: Percentage -->
             <b-col
               cols="12"
               md="4"
             >
               <validation-provider
                 #default="validationContext"
-                name="Score Modifier"
-                rules="required"
+                name="Percentage"
+                rules="required|integer"
               >
                 <b-form-group
-                  label="Score Modifier"
-                  label-for="score-modifier"
+                  label="Percentage"
+                  label-for="percentage"
                 >
                   <b-form-input
-                    id="score"
-                    v-model="exerciseData.score_modifier"
-                    :state="getValidationState(validationContext)"
-                    type="number"
-                    trim
+                    id="percentage"
+                    v-model="levelData.percentage"
                   />
-
                   <b-form-invalid-feedback>
                     {{ validationContext.errors[0] }}
                   </b-form-invalid-feedback>
@@ -178,15 +113,15 @@
             >
               <validation-provider
                 #default="validationContext"
-                name="Exercise Active"
+                name="Level Active"
               >
                 <b-form-group
-                  label="Exercise Active"
-                  label-for="exercise-active"
+                  label="Level Active"
+                  label-for="level-active"
                 >
                   <b-form-checkbox
-                    id="exercise-active"
-                    v-model="exerciseData.active"
+                    id="level-active"
+                    v-model="levelData.active"
                     switch
                     inline
                   >
@@ -262,34 +197,26 @@ export default {
     Ripple,
   },
   setup() {
-    const blankExerciseData = {
-      code: '',
+    const blankLevelData = {
       name: '',
-      master_evaluation_id: '',
+      percentage: 0,
+      minimum_score: 0,
+      master_template_id: `${router.currentRoute.params.templateId}`,
       active: true,
-      max_score: null,
-      exercise_type: '',
     }
 
-    const exerciseData = ref(JSON.parse(JSON.stringify(blankExerciseData)))
-    const resetexerciseData = () => {
-      exerciseData.value = JSON.parse(JSON.stringify(blankExerciseData))
+    const levelData = ref(JSON.parse(JSON.stringify(blankLevelData)))
+    const resetlevelData = () => {
+      levelData.value = JSON.parse(JSON.stringify(blankLevelData))
     }
-    const exerciseTypeOptions = [
-      { label: 'Prequisite', value: 'prequisite' },
-      { label: 'Score', value: 'score' },
-    ]
-    const USER_APP_STORE_MODULE_NAME = 'app-exercise'
+    const USER_APP_STORE_MODULE_NAME = 'app-level'
     const onSubmit = () => {
-      exerciseData.value.masterEvaluationID = exerciseData.value.master_evaluation_id
-      exerciseData.value.exerciseType = exerciseData.value.exercise_type
-      exerciseData.value.maxScore = exerciseData.value.max_score
-      exerciseData.value.scoreModifier = exerciseData.value.score_modifier
-      exerciseData.value.createdBy = 'system'
+      levelData.value.masterTemplateID = levelData.value.master_template_id
+      levelData.value.minimumScore = levelData.value.minimum_score
 
-      store.dispatch('app-exercise/editExercise', { exerciseId: router.currentRoute.params.exerciseId, exerciseData: exerciseData.value })
+      store.dispatch('app-level/editLevel', { levelId: router.currentRoute.params.levelId, levelData: levelData.value })
         .then(() => {
-          router.push({ name: 'admin-exercise-list' })
+          router.push({ name: 'admin-evaluation-list' })
         })
     }
 
@@ -301,11 +228,11 @@ export default {
       if (store.hasModule(USER_APP_STORE_MODULE_NAME)) store.unregisterModule(USER_APP_STORE_MODULE_NAME)
     })
 
-    store.dispatch('app-exercise/fetchExercise', { exerciseId: router.currentRoute.params.exerciseId })
-      .then(response => { exerciseData.value = response.data })
+    store.dispatch('app-level/fetchLevel', { levelId: router.currentRoute.params.levelId })
+      .then(response => { levelData.value = response.data })
       .catch(error => {
         if (error.response.status === 404) {
-          exerciseData.value = undefined
+          levelData.value = undefined
         }
       })
 
@@ -313,26 +240,20 @@ export default {
       refFormObserver,
       getValidationState,
       resetForm,
-    } = formValidation(resetexerciseData)
+    } = formValidation(resetlevelData)
     return {
-      blankExerciseData,
-      exerciseData,
-      exerciseTypeOptions,
+      blankLevelData,
+      levelData,
       onSubmit,
-      resetexerciseData,
+      resetlevelData,
       refFormObserver,
       getValidationState,
       resetForm,
     }
   },
-  computed: {
-    validationMaxScore() {
-      return this.exerciseData.exercise_type !== 'prequisite'
-    },
-  },
   methods: {
     cancel() {
-      router.push({ name: 'admin-exercise-list' })
+      router.push({ name: 'admin-evaluation-list' })
     },
   },
 }
@@ -341,7 +262,7 @@ export default {
 <style lang="scss">
 @import '@core/scss/vue/libs/vue-select.scss';
 
-#add-new-exercise-sidebar {
+#add-new-level-sidebar {
   .vs__dropdown-menu {
     max-height: 200px !important;
   }

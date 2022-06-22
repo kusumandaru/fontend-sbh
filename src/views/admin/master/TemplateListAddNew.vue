@@ -192,6 +192,7 @@ export default {
       projectType: '',
       projectVersion: '',
       masterVendorID: `${router.currentRoute.params.vendorId}`,
+      masterCertificationTypeID: `${router.currentRoute.params.certificationTypeId}`,
       active: true,
     }
 

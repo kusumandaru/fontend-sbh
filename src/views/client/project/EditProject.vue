@@ -12,12 +12,12 @@
               rules="required"
             >
               <v-select
-                id="certificationType"
+                id="certification_type_id"
                 v-model="selectedCertification"
                 :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                label="name"
+                label="certification_name"
                 :options="certificationOption"
-                :selectable="option => ! option.id.includes('select_value')"
+                :selectable="option => ! option.certification_code.includes('select_value')"
               />
               <small class="text-danger">{{ errors[0] }}</small>
             </validation-provider>
@@ -482,9 +482,7 @@ export default {
   },
   data() {
     return {
-      certificationOption: [
-        { id: 'new_building', name: 'New Building' },
-      ],
+      certificationOption: [],
       buildingOption: [],
       provinceOption: [],
       cityOption: [],
@@ -540,8 +538,8 @@ export default {
 
     let buildingAddress = ref('')
     const selectedCertification = reactive({
-      id: 'new_building',
-      name: 'New Building',
+      id: '',
+      certification_name: '',
     })
     const selectedBuilding = reactive({
       id: '',
@@ -589,6 +587,7 @@ export default {
         selectedProvince.name = response.data.province_name
         selectedCity.id = response.data.city
         selectedCity.name = response.data.city_name
+        selectedCertification.id = response.data.certification_type_id
         selectedBuilding.id = response.data.building_type
         selectedBuilding.name_id = response.data.building_type_name
         buildingAddress = response.data.building_address
@@ -665,6 +664,7 @@ export default {
     },
   },
   created() {
+    this.getCertificationTypes()
     this.getBuildingTypes()
     this.getProvinces()
   },
@@ -692,6 +692,13 @@ export default {
         console.error(error)
       })
     },
+    getCertificationTypes() {
+      this.$http.get('/engine-rest/master-project/certification_types').then(res => {
+        this.certificationOption = JSON.parse(JSON.stringify(res.data))
+      }).catch(error => {
+        console.error(error)
+      })
+    },
     getBuildingTypes() {
       this.$http.get('/engine-rest/master/building_types').then(res => {
         this.buildingOption = JSON.parse(JSON.stringify(res.data))
@@ -715,7 +722,7 @@ export default {
         if (success) {
           this.isLoading = true
           const request = new FormData()
-          request.append('certification_type', this.selectedCertification.id)
+          request.append('certification_type_id', this.selectedCertification.id)
           request.append('building_type', this.selectedBuilding.id)
           request.append('building_name', this.projectData.building_name)
           request.append('owner', this.projectData.owner)

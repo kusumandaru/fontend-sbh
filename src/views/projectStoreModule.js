@@ -158,10 +158,10 @@ export default {
           .catch(error => reject(error))
       })
     },
-    fetchBuildingDocumentsByMasterTemplateID(ctx, { templateId }) {
+    fetchBuildingDocumentsByMasterCertificationTypeID(ctx, { masterCertificationTypeID }) {
       return new Promise((resolve, reject) => {
         axios
-          .get(`/engine-rest/new-building/project/active_document_buildings/${templateId}`)
+          .get(`/engine-rest/new-building/project/active_document_buildings/${masterCertificationTypeID}`)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })
@@ -186,6 +186,40 @@ export default {
       return new Promise((resolve, reject) => {
         axios
           .get('/engine-rest/master-project/levels')
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    deleteProject(ctx, { id, reason }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .delete(`/engine-rest/new-building/tasks/${id}/reason/${reason}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    fetchHistory(ctx, { id }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`engine-rest/new-building/tasks/history/${id}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    rollbackProject(ctx, { id, startedActivityId, ancestorActivityInstanceId }) {
+      return new Promise((resolve, reject) => {
+        const request = new FormData()
+        request.append('task_id', id)
+        request.append('started_activity_id', startedActivityId)
+        request.append('ancestor_activity_instance_id', ancestorActivityInstanceId)
+
+        const config = {
+          header: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+        axios
+          .post('/engine-rest/new-building/tasks/rollback', request, config)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })

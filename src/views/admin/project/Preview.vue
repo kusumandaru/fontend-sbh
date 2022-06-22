@@ -4,6 +4,12 @@
     <error :key="errorKey" />
     <!-- error -->
 
+    <rollback-project
+      :is-rollback-sidebar-active="isRollbackSidebarActive"
+      :history-options="historyOptions"
+      @refetch-data="refetchData"
+    />
+
     <b-row
       v-if="projectData"
       class="project-preview"
@@ -548,6 +554,37 @@
           >
             Print
           </b-button>
+
+          <!-- Spacer -->
+          <hr class="project-spacing">
+          <!-- Spacer -->
+          <hr class="project-spacing">
+          <!-- Spacer -->
+          <hr class="project-spacing">
+
+          <!-- Button: Delete -->
+          <b-button
+            v-if="deleteShow"
+            v-ripple.400="'rgba(186, 191, 199, 0.15)'"
+            variant="warning"
+            class="mb-75"
+            block
+            @click="deleteProject"
+          >
+            Delete
+          </b-button>
+
+          <!-- Button: Rollback Project -->
+          <b-button
+            v-if="rollbackShow"
+            v-ripple.400="'rgba(186, 191, 199, 0.15)'"
+            variant="warning"
+            class="mb-75"
+            block
+            @click="isRollbackSidebarActive = true"
+          >
+            Rollback Project
+          </b-button>
         </b-card>
       </b-col>
     </b-row>
@@ -567,12 +604,19 @@ import {
 } from 'bootstrap-vue'
 import AppCollapse from '@core/components/app-collapse/AppCollapse.vue'
 import AppCollapseItem from '@core/components/app-collapse/AppCollapseItem.vue'
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 import Logo from '@core/layouts/components/Logo.vue'
+import Vue from 'vue'
+import VueSweetalert2 from 'vue-sweetalert2'
 import Ripple from 'vue-ripple-directive'
 import projectStoreModule from '@/views/projectStoreModule'
 import ProjectSidebarReject from '@/views/admin/project/SidebarReject.vue'
 import fileDownload from 'js-file-download'
+import rollback from './rollback'
 import Error from './Error.vue'
+import RollbackProject from './RollbackProject.vue'
+
+Vue.use(VueSweetalert2)
 
 export default {
   directives: {
@@ -598,6 +642,7 @@ export default {
     Logo,
     ProjectSidebarReject,
     Error,
+    RollbackProject,
   },
   data() {
     return {
@@ -609,8 +654,8 @@ export default {
       taskDescription: [
         { task: 'design-recognition-trial', role: 'admin', title: 'Apabila diapprove akan langsung ke Design Recognition Letter, bila direject akan masuk ke revisi DR' },
         { task: 'design-recognition-trial-revision', role: 'client', title: 'Revisi DR oleh client' },
-        { task: 'design-recognition-evaluation-assessment', role: 'client', title: 'Menunggu hasil sidang EAB DR' },
-        { task: 'final-assessment-evaluation-assessment', role: 'client', title: 'Menunggu hasil sidang EAB FA' },
+        { task: 'design-recognition-evaluation-assessment', role: 'admin', title: 'Menunggu hasil sidang EAB DR' },
+        { task: 'final-assessment-evaluation-assessment', role: 'admin', title: 'Menunggu hasil sidang EAB FA' },
       ],
       userData: JSON.parse(localStorage.getItem('userData')),
       alertKey: 0,
@@ -656,6 +701,12 @@ export default {
     },
     finalAssessmentEvaluationAssessmentShow() {
       return ['final-assessment-evaluation-assessment'].includes(this.projectData.definition_key)
+    },
+    deleteShow() {
+      return !['final-assessment-letter'].includes(this.projectData.definition_key) && this.userData.roles.join() === 'camunda-admin'
+    },
+    rollbackShow() {
+      return !['final-assessment-letter'].includes(this.projectData.definition_key) && this.userData.roles.join() === 'camunda-admin'
     },
     taskDescriptionBody() {
       // eslint-disable-next-line
@@ -710,6 +761,7 @@ export default {
   },
   setup() {
     const projectData = ref(null)
+    const reason = ref(null)
     const proofOfPayments = ref(null)
     const buildingPlan = ref(null)
     const rtRw = ref(null)
@@ -737,6 +789,9 @@ export default {
     const claim = ref(null)
     const PROJECT_APP_STORE_MODULE_NAME = 'app-project'
     const isLoading = ref(null)
+
+    const historyOptions = ref([])
+    const isRollbackSidebarActive = ref(false)
 
     const eligibilityAttachments = ref({
       proof_of_payment: proofOfPayments,
@@ -785,6 +840,22 @@ export default {
     onUnmounted(() => {
       if (store.hasModule(PROJECT_APP_STORE_MODULE_NAME)) store.unregisterModule(PROJECT_APP_STORE_MODULE_NAME)
     })
+
+    store.dispatch('app-project/fetchHistory', { id: router.currentRoute.params.id })
+      .then(response => {
+        historyOptions.value = response.data
+        if (historyOptions.value.length > 0) {
+          historyOptions.value.shift()
+        }
+      })
+      .catch(error => {
+        if (error.response.status === 404) {
+          historyOptions.value = undefined
+        }
+        if (error.response.status === 500) {
+          historyOptions.value = undefined
+        }
+      })
 
     store.dispatch('app-project/fetchAdminProject', { id: router.currentRoute.params.id })
       .then(response => {
@@ -944,6 +1015,41 @@ export default {
         })
     }
 
+    const deleteProject = () => {
+      Vue.swal({
+        title: 'Are you sure?',
+        text: 'Delete this project',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Delete',
+        customClass: {
+          confirmButton: 'btn btn-danger',
+          cancelButton: 'btn btn-outline-primary ml-1',
+        },
+        buttonsStyling: false,
+      }).then(result => {
+        if (result.value) {
+          isLoading.value = true
+
+          store.dispatch('app-project/deleteProject', {
+            id: projectData.value.task_id,
+            reason: reason.value,
+          })
+            .then(() => {
+              isLoading.value = false
+              this.showToast('success', 'Saved', 'Successfully delete project')
+            })
+            .catch(error => {
+              isLoading.value = false
+              this.showToast('danger', 'Cannot Delete', error.response.data.message)
+            })
+            .finally(() => {
+              router.push({ name: 'admin-project-list' })
+            })
+        }
+      })
+    }
+
     const agreementPage = () => {
       router.push({ name: 'admin-project-agreement', params: { id: router.currentRoute.params.id } })
     }
@@ -990,6 +1096,9 @@ export default {
     const designRecognitionHistoryTasks = ['third-payment', 'check-third-payment', 'design-recognition-evaluation-assessment', 'design-recognition-trial-revision', 'design-recognition-revision-review', 'design-recognition-letter', 'final-assessment-submission', 'final-assessment-review', 'third-payment-fa', 'check-third-payment-fa', 'on-site-verification', 'on-site-revision-submission', 'final-assessment-evaluation-assessment', 'final-assessment-trial-revision', 'final-assessment-revision-review', 'final-assessment-letter']
     const finalAssessmentHistoryTasks = ['third-payment-fa', 'check-third-payment-fa', 'on-site-revision-submission', 'final-assessment-evaluation-assessment', 'final-assessment-trial-revision', 'final-assessment-revision-review', 'final-assessment-letter']
 
+    const {
+      refetchData,
+    } = rollback()
     return {
       projectData,
       eligibilityAttachments,
@@ -1005,6 +1114,7 @@ export default {
       secondPaymentConfirmationPage,
       onSiteVerificationPage,
       printProject,
+      deleteProject,
       paymentProps,
       approveTask,
       downloadFileByAttachment,
@@ -1017,7 +1127,9 @@ export default {
       finalAssessmentHistory,
       finalAssessmentEvaluationAssessment,
       isLoading,
-
+      isRollbackSidebarActive,
+      historyOptions,
+      refetchData,
     }
   },
   methods: {
@@ -1027,6 +1139,17 @@ export default {
     filteredAttachment(attachment) {
       // eslint-disable-next-line no-unused-vars
       return Object.fromEntries(Object.entries(attachment).filter(([k, v]) => v != null && v.length > 0))
+    },
+    showToast(variant, titleToast, description) {
+      this.$toast({
+        component: ToastificationContent,
+        props: {
+          title: titleToast,
+          icon: 'BellIcon',
+          text: description,
+          variant,
+        },
+      })
     },
   },
 }
