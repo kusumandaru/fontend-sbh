@@ -12,12 +12,12 @@
               rules="required"
             >
               <v-select
-                id="certification_type"
+                id="certification_type_id"
                 v-model="selectedCertification"
                 :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                label="name"
+                label="certification_name"
                 :options="certificationOption"
-                :selectable="option => ! option.id.includes('select_value')"
+                :selectable="option => ! option.certification_code.includes('select_value')"
               />
               <small class="text-danger">{{ errors[0] }}</small>
             </validation-provider>
@@ -471,9 +471,7 @@ export default {
   data() {
     return {
       selectedCertification: '',
-      certificationOption: [
-        { id: 'new_building', name: 'New Building' },
-      ],
+      certificationOption: [],
       selectedBuilding: '',
       buildingOption: [],
       selectedProvince: '',
@@ -549,6 +547,7 @@ export default {
     },
   },
   created() {
+    this.getCertificationTypes()
     this.getBuildingTypes()
     this.getProvinces()
   },
@@ -565,6 +564,20 @@ export default {
       this.personInCharge = ''
       this.grossFloorArea = 0
     },
+    getCertificationTypes() {
+      this.$http.get('/engine-rest/master-project/certification_types').then(res => {
+        this.certificationOption = JSON.parse(JSON.stringify(res.data))
+      }).catch(error => {
+        console.error(error)
+      })
+    },
+    getBuildingTypes() {
+      this.$http.get('/engine-rest/master/building_types').then(res => {
+        this.buildingOption = JSON.parse(JSON.stringify(res.data))
+      }).catch(error => {
+        console.error(error)
+      })
+    },
     getProvinces() {
       this.$http.get('/engine-rest/master/provinces').then(res => {
         this.provinceOption = JSON.parse(JSON.stringify(res.data))
@@ -575,13 +588,6 @@ export default {
     getCities(value) {
       this.$http.get(`/engine-rest/master/provinces/${value.id}/cities`).then(res => {
         this.cityOption = JSON.parse(JSON.stringify(res.data))
-      }).catch(error => {
-        console.error(error)
-      })
-    },
-    getBuildingTypes() {
-      this.$http.get('/engine-rest/master/building_types').then(res => {
-        this.buildingOption = JSON.parse(JSON.stringify(res.data))
       }).catch(error => {
         console.error(error)
       })
@@ -609,7 +615,7 @@ export default {
         if (success) {
           this.isLoading = true
           const request = new FormData()
-          request.append('certification_type', this.selectedCertification.id)
+          request.append('certification_type_id', this.selectedCertification.id)
           request.append('building_type', this.selectedBuilding.id)
           request.append('building_name', this.buildingName)
           request.append('owner', this.owner)

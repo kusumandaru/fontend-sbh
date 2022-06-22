@@ -1,7 +1,7 @@
 <template>
   <b-sidebar
-    id="add-new-building-document-sidebar"
-    :visible="isAddNewBuildingDocumentSidebarActive"
+    id="add-new-certification-sidebar"
+    :visible="isAddNewCertificationSidebarActive"
     bg-variant="white"
     sidebar-class="sidebar-lg"
     shadow
@@ -9,13 +9,13 @@
     no-header
     right
     @hidden="resetForm"
-    @change="(val) => $emit('update:is-add-new-building-document-sidebar-active', val)"
+    @change="(val) => $emit('update:is-add-new-certification-sidebar-active', val)"
   >
     <template #default="{ hide }">
       <!-- Header -->
       <div class="d-flex justify-content-between align-items-center content-sidebar-header px-2 py-1">
         <h5 class="mb-0">
-          Add New Building Document
+          Add New Certification
         </h5>
 
         <feather-icon
@@ -38,43 +38,21 @@
           @submit.prevent="handleSubmit(onSubmit)"
           @reset.prevent="resetForm"
         >
-          <!-- Name -->
+
+          <!-- Certification Code -->
           <validation-provider
             #default="validationContext"
-            name="Name"
-            rules="required"
-          >
-            <b-form-group
-              label="Building Document Name"
-              label-for="name"
-            >
-              <b-form-input
-                id="nameId"
-                v-model="buildingDocumentData.name"
-                :state="getValidationState(validationContext)"
-                trim
-              />
-
-              <b-form-invalid-feedback>
-                {{ validationContext.errors[0] }}
-              </b-form-invalid-feedback>
-            </b-form-group>
-          </validation-provider>
-
-          <!-- Code -->
-          <validation-provider
-            #default="validationContext"
-            name="Code"
+            name="Certification Code"
             rules="required|alpha-dash"
           >
             <b-form-group
-              label="Building Document Code"
-              description="use alphabet and underscore, cannot edited"
-              label-for="code"
+              label="Certification Code"
+              label-for="certification-code"
+              description="use alphabet and underscore"
             >
               <b-form-input
-                id="code"
-                v-model="buildingDocumentData.code"
+                id="certification-code"
+                v-model="certificationData.certificationCode"
                 :state="getValidationState(validationContext)"
                 trim
               />
@@ -85,47 +63,22 @@
             </b-form-group>
           </validation-provider>
 
-          <!-- Placeholder -->
+          <!-- Certification Name -->
           <validation-provider
             #default="validationContext"
-            name="Placeholder"
+            name="Certification Name"
             rules="required"
           >
             <b-form-group
-              label="Building Document Placeholder"
-              label-for="placeholder"
+              label="Certification Name"
+              label-for="certification-name"
             >
               <b-form-input
-                id="placeholder"
-                v-model="buildingDocumentData.placeholder"
+                id="certification-name"
+                v-model="certificationData.certificationName"
                 :state="getValidationState(validationContext)"
                 trim
               />
-
-              <b-form-invalid-feedback>
-                {{ validationContext.errors[0] }}
-              </b-form-invalid-feedback>
-            </b-form-group>
-          </validation-provider>
-
-          <!-- Mandatory -->
-          <validation-provider
-            #default="validationContext"
-            name="Mandatory"
-            rules="required"
-          >
-            <b-form-group
-              label="Building Document Mandatory"
-              label-for="mandatory"
-            >
-              <b-form-checkbox
-                id="mandatory"
-                v-model="buildingDocumentData.mandatory"
-                switch
-                inline
-              >
-                Mandatory
-              </b-form-checkbox>
 
               <b-form-invalid-feedback>
                 {{ validationContext.errors[0] }}
@@ -137,21 +90,19 @@
           <validation-provider
             #default="validationContext"
             name="Active"
-            rules="required"
           >
             <b-form-group
-              label="Building Document Active"
+              label="Active"
               label-for="active"
             >
               <b-form-checkbox
-                id="active"
-                v-model="buildingDocumentData.active"
+                id="template-active"
+                v-model="certificationData.active"
                 switch
                 inline
               >
                 Active
               </b-form-checkbox>
-
               <b-form-invalid-feedback>
                 {{ validationContext.errors[0] }}
               </b-form-invalid-feedback>
@@ -192,13 +143,12 @@ import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import { ref } from '@vue/composition-api'
 import {
   required,
-  regex,
   alphaNum,
-  alphaDash,
   email,
+  alphaDash,
 } from '@validations'
-import router from '@/router'
 import formValidation from '@core/comp-functions/forms/form-validation'
+import router from '@/router'
 import Ripple from 'vue-ripple-directive'
 import store from '@/store'
 
@@ -211,7 +161,6 @@ export default {
     BFormInput,
     BFormInvalidFeedback,
     BButton,
-
     // Form Validation
     ValidationProvider,
     ValidationObserver,
@@ -220,11 +169,11 @@ export default {
     Ripple,
   },
   model: {
-    prop: 'isAddNewBuildingDocumentSidebarActive',
-    event: 'update:is-add-new-building-document-sidebar-active',
+    prop: 'isAddNewCertificationSidebarActive',
+    event: 'update:is-add-new-certification-sidebar-active',
   },
   props: {
-    isAddNewBuildingDocumentSidebarActive: {
+    isAddNewCertificationSidebarActive: {
       type: Boolean,
       required: true,
     },
@@ -232,34 +181,29 @@ export default {
   data() {
     return {
       required,
-      regex,
       alphaNum,
-      alphaDash,
       email,
+      alphaDash,
     }
   },
   setup(props, { emit }) {
-    const blankBuildingDocumentData = {
-      name: '',
-      code: '',
-      placeholder: '',
-      masterCertificationTypeID: router.currentRoute.params.certificationTypeId,
-      objectType: 'file',
-      mandatory: null,
-      active: null,
+    const blankCertificationData = {
+      certificationCode: '',
+      certificationName: '',
+      masterVendorID: `${router.currentRoute.params.vendorId}`,
+      active: true,
     }
-    const provinceOptions = ref(JSON.parse('[]'))
-    const buildingDocumentData = ref(JSON.parse(JSON.stringify(blankBuildingDocumentData)))
 
-    const resetBuildingData = () => {
-      buildingDocumentData.value = JSON.parse(JSON.stringify(blankBuildingDocumentData))
+    const certificationData = ref(JSON.parse(JSON.stringify(blankCertificationData)))
+    const resetCertificationData = () => {
+      certificationData.value = JSON.parse(JSON.stringify(blankCertificationData))
     }
 
     const onSubmit = () => {
-      store.dispatch('app-evaluation/addBuildingDocument', buildingDocumentData.value)
+      store.dispatch('app-certification/addCertification', certificationData.value)
         .then(() => {
           emit('refetch-data')
-          emit('update:is-add-new-building-document-sidebar-active', false)
+          emit('update:is-add-new-certification-sidebar-active', false)
         })
     }
 
@@ -267,16 +211,15 @@ export default {
       refFormObserver,
       getValidationState,
       resetForm,
-    } = formValidation(resetBuildingData)
+    } = formValidation(resetCertificationData)
 
     return {
-      buildingDocumentData,
+      certificationData,
       onSubmit,
 
       refFormObserver,
       getValidationState,
       resetForm,
-      provinceOptions,
     }
   },
 }
@@ -285,7 +228,7 @@ export default {
 <style lang="scss">
 @import '@core/scss/vue/libs/vue-select.scss';
 
-#add-new-building-document-sidebar {
+#add-new-certification-sidebar {
   .vs__dropdown-menu {
     max-height: 200px !important;
   }

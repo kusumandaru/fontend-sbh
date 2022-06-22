@@ -197,6 +197,7 @@ export default {
       templateData.value.projectVersion = templateData.value.project_version
       templateData.value.projectType = templateData.value.project_type
       templateData.value.masterVendorID = templateData.value.master_vendor_id
+      templateData.value.masterCertificationTypeID = templateData.value.master_certification_type_id
 
       store.dispatch('app-template/editTemplate', { templateId: router.currentRoute.params.templateId, templateData: templateData.value })
         .then(() => {

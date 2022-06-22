@@ -228,7 +228,7 @@ export default {
         }
       })
 
-    store.dispatch('app-dr-card-analytic/fetchMasterLevel')
+    store.dispatch('app-dr-card-analytic/fetchMasterLevelsByTaskId', { taskId: router.currentRoute.params.id })
       .then(response => {
         // eslint-disable-next-line prefer-destructuring
         masterLevels.value = response.data

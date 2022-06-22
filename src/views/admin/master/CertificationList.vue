@@ -1,9 +1,35 @@
 <template>
   <div>
-    <vendor-list-add-new
-      :is-add-new-vendor-sidebar-active.sync="isAddNewVendorSidebarActive"
+    <certification-list-add-new
+      :is-add-new-certification-sidebar-active.sync="isAddNewCertificationSidebarActive"
+      :project-type-options="projectTypeOptions"
       @refetch-data="refetchData"
     />
+
+    <!-- card 3 -->
+    <b-col
+      md="6"
+      lg="4"
+    >
+      <b-card
+        header=""
+        :title="vendor.vendor_name"
+        :footer="vendor.description"
+        class="text-center"
+        footer-class="text-muted"
+      >
+        <b-card-text>
+          {{ vendor.vendor_code }}
+        </b-card-text>
+        <b-card-text>
+          {{ vendor.created_by }}
+        </b-card-text>
+        <b-card-text>
+          {{ vendor.created_at }}
+        </b-card-text>
+      </b-card>
+    </b-col>
+
     <!-- input search -->
     <div class="custom-search d-flex justify-content-end">
       <b-form-group>
@@ -20,9 +46,9 @@
             />
             <b-button
               variant="primary"
-              @click="isAddNewVendorSidebarActive = true"
+              @click="isAddNewCertificationSidebarActive = true"
             >
-              <span class="text-nowrap">Add Vendor</span>
+              <span class="text-nowrap">Add Certification</span>
             </b-button>
           </div>
         </b-col>
@@ -30,7 +56,7 @@
     </div>
     <!-- table -->
     <vue-good-table
-      :ref="refVendorListTable"
+      :ref="refCertificationListTable"
       :columns="columns"
       :rows="rows"
       :rtl="direction"
@@ -46,8 +72,18 @@
         slot="table-row"
         slot-scope="props"
       >
+        <!-- Column: Project Type -->
+        <div
+          v-if="props.column.field === 'project_type'"
+          class="text-nowrap"
+        >
+          <b-badge :variant="resolveProjectTypeVariant(props.row.project_type)">
+            {{ resolveProjectTypeTranslation(props.row.project_type) }}
+          </b-badge>
+        </div>
+
         <!-- Column: Action -->
-        <span v-if="props.column.field === 'action'">
+        <span v-else-if="props.column.field === 'action'">
           <span>
             <b-dropdown
               variant="link"
@@ -56,27 +92,27 @@
             >
               <template v-slot:button-content>
                 <feather-icon
-                  :id="`project-row-${props.row.id}-vendor-icon`"
+                  :id="`project-row-${props.row.id}-certification-icon`"
                   icon="EyeIcon"
                   size="16"
                   class="mx-1"
-                  @click="$router.push({ name: 'admin-certification-list', params: { vendorId: props.row.id }})"
+                  @click="$router.push({ name: 'admin-template-list', params: { vendorId: $router.currentRoute.params.vendorId, certificationTypeId: props.row.id }})"
                 />
                 <b-tooltip
-                  title="Vendor Detail"
-                  :target="`project-row-${props.row.id}-vendor-icon`"
+                  title="Certification Detail"
+                  :target="`project-row-${props.row.id}-certification-icon`"
                 />
 
                 <feather-icon
-                  :id="`project-row-${props.row.id}-vendor-icon-edit`"
+                  :id="`project-row-${props.row.id}-certification-icon-edit`"
                   icon="EditIcon"
                   size="16"
                   class="mx-1"
-                  @click="$router.push({ name: 'admin-vendor-edit', params: { vendorId: props.row.id }})"
+                  @click="$router.push({ name: 'admin-certification-edit', params: { vendorId: $router.currentRoute.params.vendorId, certificationTypeId: props.row.id }})"
                 />
                 <b-tooltip
-                  title="Vendor Update"
-                  :target="`project-row-${props.row.id}-vendor-icon-edit`"
+                  title="Certification Update"
+                  :target="`project-row-${props.row.id}-certification-icon-edit`"
                 />
               </template>
             </b-dropdown>
@@ -142,17 +178,18 @@
 
 <script>
 import {
-  BPagination, BFormGroup, BFormInput, BFormSelect, BDropdown, BButton, BCol, BTooltip,
+  BPagination, BFormGroup, BFormInput, BFormSelect, BDropdown, BButton, BCol, BCard, BCardText, BBadge, BTooltip,
 } from 'bootstrap-vue'
 import { VueGoodTable } from 'vue-good-table'
 import store from '@/store/index'
 import { ref, onUnmounted } from '@vue/composition-api'
 import 'vue-good-table/dist/vue-good-table.css'
+import router from '@/router'
 import { useToast } from 'vue-toastification/composition'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
-import useVendorsList from './useVendorsList'
+import useCertificationsList from './useCertificationsList'
 import masterStoreModule from './masterStoreModule'
-import VendorListAddNew from './VendorListAddNew.vue'
+import CertificationListAddNew from './CertificationListAddNew.vue'
 
 export default {
   components: {
@@ -164,58 +201,70 @@ export default {
     BFormSelect,
     BButton,
     BCol,
+    BCard,
+    BCardText,
+    BBadge,
     BTooltip,
-    VendorListAddNew,
+    CertificationListAddNew,
   },
   setup() {
-    const VENDOR_APP_STORE_MODULE_NAME = 'app-vendor'
+    const TEMPLATE_APP_STORE_MODULE_NAME = 'app-certification'
 
     // Register module
-    if (!store.hasModule(VENDOR_APP_STORE_MODULE_NAME)) store.registerModule(VENDOR_APP_STORE_MODULE_NAME, masterStoreModule)
+    if (!store.hasModule(TEMPLATE_APP_STORE_MODULE_NAME)) store.registerModule(TEMPLATE_APP_STORE_MODULE_NAME, masterStoreModule)
 
     // UnRegister on leave
     onUnmounted(() => {
-      if (store.hasModule(VENDOR_APP_STORE_MODULE_NAME)) store.unregisterModule(VENDOR_APP_STORE_MODULE_NAME)
+      if (store.hasModule(TEMPLATE_APP_STORE_MODULE_NAME)) store.unregisterModule(TEMPLATE_APP_STORE_MODULE_NAME)
     })
 
-    const isAddNewVendorSidebarActive = ref(false)
+    const isAddNewCertificationSidebarActive = ref(false)
+
+    const projectTypeOptions = [
+      { label: 'Design Recognition', value: 'design_recognition' },
+      { label: 'Final Assessment', value: 'final_assessment' },
+    ]
 
     const {
+      resolveProjectTypeIcon,
+      resolveProjectTypeVariant,
+      resolveProjectTypeTranslation,
       refetchData,
-      refVendorListTable,
-    } = useVendorsList()
+      refCertificationListTable,
+    } = useCertificationsList()
     return {
       // Sidebar
-      isAddNewVendorSidebarActive,
-      refVendorListTable,
+      projectTypeOptions,
+      isAddNewCertificationSidebarActive,
+      refCertificationListTable,
+      resolveProjectTypeIcon,
+      resolveProjectTypeVariant,
+      resolveProjectTypeTranslation,
       refetchData,
     }
   },
   data() {
     return {
+      vendor: {},
       pageLength: 20,
       dir: false,
       searchTerm: '',
       columns: [
         {
-          label: 'Vendor Code',
-          field: 'vendor_code',
+          label: 'Certification Code',
+          field: 'certification_code',
           filterOptions: {
             enabled: true,
-            placeholder: 'Search Vendor',
+            placeholder: 'Search Certification',
           },
         },
         {
-          label: 'Vendor Name',
-          field: 'vendor_name',
+          label: 'Certification Name',
+          field: 'certification_name',
           filterOptions: {
             enabled: true,
-            placeholder: 'Search Vendor',
+            placeholder: 'Search Certification',
           },
-        },
-        {
-          label: 'Description',
-          field: 'description',
         },
         {
           label: 'Active',
@@ -251,12 +300,13 @@ export default {
     },
   },
   created() {
-    this.retrieveVendors()
+    this.retrieveVendor()
+    this.retrieveCertifications()
   },
   methods: {
-    retrieveVendors() {
-      store.dispatch('app-vendor/fetchVendors', {})
-        .then(res => { this.rows = res.data })
+    retrieveVendor() {
+      this.$http.get(`engine-rest/master-project/vendors/${router.currentRoute.params.vendorId}`, { })
+        .then(res => { this.vendor = res.data })
         .catch(() => {
           useToast({
             component: ToastificationContent,
@@ -268,9 +318,13 @@ export default {
           })
         })
     },
+    retrieveCertifications() {
+      this.$http.get(`engine-rest/master-project/vendors/${router.currentRoute.params.vendorId}/certification_types`)
+        .then(res => { this.rows = res.data })
+    },
     /* eslint-disable object-shorthand */
     handleError(err) {
-      console.error('failed to show', err)
+      console.error('failed to show diagram', err)
     },
     /* eslint-enable object-shorthand */
   },

@@ -45,7 +45,7 @@
             class="mr-1"
             @click="submitAssessment"
           >
-            Submit
+            Upload
           </b-button>
         </b-input-group-append>
       </b-input-group>

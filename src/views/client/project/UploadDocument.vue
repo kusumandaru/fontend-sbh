@@ -245,6 +245,14 @@ export default {
         projectData.value = response.data
         paymentProps.blank = false
         paymentProps.src = response.data.proof_of_payment_url
+
+        store.dispatch('app-project/fetchBuildingDocumentsByMasterCertificationTypeID', { masterCertificationTypeID: projectData.value.certification_type_id })
+          .then(resp => {
+            buildingDocumentData.value = resp.data
+          })
+          .catch(err => {
+            console.error(err)
+          })
       })
       .catch(error => {
         if (error.response.status === 404) {
@@ -265,26 +273,6 @@ export default {
         }
         if (error.response.status === 500) {
           projectAttachments.value = undefined
-        }
-      })
-
-    store.dispatch('app-project/fetchAdminData')
-      .then(response => {
-        adminData.value = response.data
-        store.dispatch('app-project/fetchBuildingDocumentsByMasterTemplateID', { templateId: adminData.value.dr_template_id })
-          .then(resp => {
-            buildingDocumentData.value = resp.data
-          })
-          .catch(err => {
-            console.error(err)
-          })
-      })
-      .catch(error => {
-        if (error.response.status === 404) {
-          adminData.value = undefined
-        }
-        if (error.response.status === 500) {
-          adminData.value = undefined
         }
       })
 

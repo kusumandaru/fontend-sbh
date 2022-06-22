@@ -29,6 +29,9 @@
                 <h5 v-if="!eligibleApprove.eligible">
                   Terdapat penilaian yang belum direview {{ criteriaCodes }}
                 </h5>
+                <h5 v-if="!eligibleApprove.eligible_approved">
+                  Hanya bisa melakukan Approve With Referenced dan Rejected. Terdapat penilaian yang memiliki status rejected {{ rejectedCriteriaCodes }}.
+                </h5>
                 <b-form-group>
                   <b-form-textarea
                     v-if="eligibleApprove.eligible"
@@ -42,7 +45,7 @@
                       v-ripple.400="'rgba(255, 255, 255, 0.15)'"
                       variant="primary"
                       class="mt-2 mt-lg-3"
-                      :disabled="!eligibleApprove.eligible"
+                      :disabled="!eligibleApprove.eligible || !eligibleApprove.eligible_approved"
                       @click="reviewProjectDR('approved')"
                     >
                       Approve
@@ -68,6 +71,7 @@
                       Reject Design Recognition
                     </b-button>
                   </div>
+
                 </b-form-group>
               </div>
             </div>
@@ -161,6 +165,12 @@ export default {
     criteriaCodes() {
       if (this.eligibleApprove.criteria_codes !== undefined) {
         return this.eligibleApprove.criteria_codes.join(',')
+      }
+      return ''
+    },
+    rejectedCriteriaCodes() {
+      if (this.eligibleApprove.rejected_criteria_codes !== undefined) {
+        return this.eligibleApprove.rejected_criteria_codes.join(',')
       }
       return ''
     },

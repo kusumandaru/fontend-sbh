@@ -62,6 +62,14 @@ export default {
           .catch(error => reject(error))
       })
     },
+    fetchMasterLevelsByTaskId(ctx, { taskId }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/engine-rest/master-project/levels/${taskId}/task/FA`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
     fetchMasterEvaluation(ctx, { taskId }) {
       return new Promise((resolve, reject) => {
         axios

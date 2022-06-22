@@ -135,6 +135,31 @@
             </b-form-group>
           </validation-provider>
 
+          <!--Score Modifier-->
+          <validation-provider
+            v-if="validationMaxScore"
+            #default="validationContext"
+            name="Score Modifier"
+            :rules="validationMaxScore ? 'required' : ''"
+          >
+            <b-form-group
+              label="Score Modifier"
+              label-for="score-modifier"
+            >
+              <b-form-input
+                id="score"
+                v-model="exerciseData.scoreModifier"
+                :state="getValidationState(validationContext)"
+                type="number"
+                trim
+              />
+
+              <b-form-invalid-feedback>
+                {{ validationContext.errors[0] }}
+              </b-form-invalid-feedback>
+            </b-form-group>
+          </validation-provider>
+
           <!-- Active -->
           <validation-provider
             #default="validationContext"
@@ -243,6 +268,8 @@ export default {
       active: true,
       maxScore: null,
       exerciseType: 'score',
+      scoreModifier: 0,
+      createdBy: 'system',
     }
 
     const exerciseData = ref(JSON.parse(JSON.stringify(blankExerciseData)))

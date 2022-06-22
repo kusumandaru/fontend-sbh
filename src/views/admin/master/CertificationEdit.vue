@@ -1,28 +1,28 @@
 <template>
-  <component :is="evaluationData === undefined ? 'div' : 'b-card'">
+  <component :is="certificationData === undefined ? 'div' : 'b-card'">
 
     <!-- Alert: No item found -->
     <b-alert
       variant="danger"
-      :show="evaluationData === undefined"
+      :show="certificationData === undefined"
     >
       <h4 class="alert-heading">
-        Error fetching evaluation data
+        Error fetching certification data
       </h4>
       <div class="alert-body">
-        No evaluation found with this evaluation id. Check
+        No certification found with this certification id. Check
         <b-link
           class="alert-link"
-          :to="{ name: 'admin-evaluation-list'}"
+          :to="{ name: 'admin-certification-list'}"
         >
-          Evaluation List
+          Certification List
         </b-link>
-        for other evaluations.
+        for other certifications.
       </div>
     </b-alert>
 
     <div>
-      <!-- Evaluation Info: Input Fields -->
+      <!-- Certification Info: Input Fields -->
       <validation-observer
         #default="{ handleSubmit }"
         ref="refFormObserver"
@@ -32,23 +32,24 @@
           @reset.prevent="resetForm"
         >
           <b-row>
-            <!-- Field: Code -->
+            <!-- Field: Certification Code -->
             <b-col
               cols="12"
               md="4"
             >
               <validation-provider
                 #default="validationContext"
-                name="Code"
-                rules="required"
+                name="Certification Code"
+                rules="required|alpha-dash"
               >
                 <b-form-group
-                  label="Code"
-                  label-for="code"
+                  label="Certification Code"
+                  label-for="certification-code"
+                  description="use alphabet and underscore"
                 >
                   <b-form-input
-                    id="code"
-                    v-model="evaluationData.code"
+                    id="certification-code"
+                    v-model="certificationData.certification_code"
                   />
                   <b-form-invalid-feedback>
                     {{ validationContext.errors[0] }}
@@ -57,23 +58,23 @@
               </validation-provider>
             </b-col>
 
-            <!-- Field: Name -->
+            <!-- Field: Certification Name -->
             <b-col
               cols="12"
               md="4"
             >
               <validation-provider
                 #default="validationContext"
-                name="Name"
+                name="Certification Name"
                 rules="required"
               >
                 <b-form-group
-                  label="Name"
-                  label-for="name"
+                  label="Certification Name"
+                  label-for="certification-name"
                 >
                   <b-form-input
-                    id="name"
-                    v-model="evaluationData.name"
+                    id="certification-name"
+                    v-model="certificationData.certification_name"
                   />
                   <b-form-invalid-feedback>
                     {{ validationContext.errors[0] }}
@@ -89,15 +90,15 @@
             >
               <validation-provider
                 #default="validationContext"
-                name="Evaluation Active"
+                name="Certification Active"
               >
                 <b-form-group
-                  label="Evaluation Active"
-                  label-for="evaluation-active"
+                  label="Certification Active"
+                  label-for="certification-active"
                 >
                   <b-form-checkbox
-                    id="evaluation-active"
-                    v-model="evaluationData.active"
+                    id="certification-active"
+                    v-model="certificationData.active"
                     switch
                     inline
                   >
@@ -137,14 +138,14 @@
 
 <script>
 import {
-  BTab, BTabs, BCard, BAlert, BLink, BFormInput, BButton, BCol, BFormCheckbox, BFormGroup, BRow, BForm, BFormInvalidFeedback,
+  BTab, BTabs, BCard, BAlert, BLink, BFormInput, BButton, BCol, BFormGroup, BRow, BForm, BFormInvalidFeedback, BFormCheckbox,
 } from 'bootstrap-vue'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import { ref, onUnmounted } from '@vue/composition-api'
 import router from '@/router'
 import store from '@/store'
 import Ripple from 'vue-ripple-directive'
-import { required } from '@validations'
+import { required, alphaDash } from '@validations'
 import vSelect from 'vue-select'
 import formValidation from '@core/comp-functions/forms/form-validation'
 import masterStoreModule from './masterStoreModule'
@@ -156,8 +157,8 @@ export default {
     BCard,
     BAlert,
     BLink,
-    BFormCheckbox,
     BFormInput,
+    BFormCheckbox,
     BButton,
     BCol,
     BFormGroup,
@@ -168,29 +169,32 @@ export default {
     ValidationObserver,
     vSelect,
     required,
+    alphaDash,
   },
   directives: {
     Ripple,
   },
   setup() {
-    const blankEvaluationData = {
-      name: '',
-      code: '',
-      master_template_id: `${router.currentRoute.params.templateId}`,
+    const blankCertificationData = {
+      certification_name: '',
+      certification_code: '',
+      master_vendor_id: '',
       active: true,
     }
 
-    const evaluationData = ref(JSON.parse(JSON.stringify(blankEvaluationData)))
-    const resetevaluationData = () => {
-      evaluationData.value = JSON.parse(JSON.stringify(blankEvaluationData))
+    const certificationData = ref(JSON.parse(JSON.stringify(blankCertificationData)))
+    const resetCertificationData = () => {
+      certificationData.value = JSON.parse(JSON.stringify(blankCertificationData))
     }
-    const USER_APP_STORE_MODULE_NAME = 'app-evaluation'
+    const USER_APP_STORE_MODULE_NAME = 'app-certification'
     const onSubmit = () => {
-      evaluationData.value.masterTemplateID = evaluationData.value.master_template_id
+      certificationData.value.certificationName = certificationData.value.certification_name
+      certificationData.value.certificationCode = certificationData.value.certification_code
+      certificationData.value.masterVendorID = certificationData.value.master_vendor_id
 
-      store.dispatch('app-evaluation/editEvaluation', { evaluationId: router.currentRoute.params.evaluationId, evaluationData: evaluationData.value })
+      store.dispatch('app-certification/editCertification', { certificationTypeId: router.currentRoute.params.certificationTypeId, certificationData: certificationData.value })
         .then(() => {
-          router.push({ name: 'admin-evaluation-list' })
+          router.push({ name: 'admin-certification-list' })
         })
     }
 
@@ -202,11 +206,11 @@ export default {
       if (store.hasModule(USER_APP_STORE_MODULE_NAME)) store.unregisterModule(USER_APP_STORE_MODULE_NAME)
     })
 
-    store.dispatch('app-evaluation/fetchEvaluation', { evaluationId: router.currentRoute.params.evaluationId })
-      .then(response => { evaluationData.value = response.data })
+    store.dispatch('app-certification/fetchCertification', { certificationTypeId: router.currentRoute.params.certificationTypeId })
+      .then(response => { certificationData.value = response.data })
       .catch(error => {
         if (error.response.status === 404) {
-          evaluationData.value = undefined
+          certificationData.value = undefined
         }
       })
 
@@ -214,12 +218,12 @@ export default {
       refFormObserver,
       getValidationState,
       resetForm,
-    } = formValidation(resetevaluationData)
+    } = formValidation(resetCertificationData)
     return {
-      blankEvaluationData,
-      evaluationData,
+      blankCertificationData,
+      certificationData,
       onSubmit,
-      resetevaluationData,
+      resetCertificationData,
       refFormObserver,
       getValidationState,
       resetForm,
@@ -227,7 +231,7 @@ export default {
   },
   methods: {
     cancel() {
-      router.push({ name: 'admin-evaluation-list' })
+      router.push({ name: 'admin-certification-list' })
     },
   },
 }
@@ -236,7 +240,7 @@ export default {
 <style lang="scss">
 @import '@core/scss/vue/libs/vue-select.scss';
 
-#add-new-evaluation-sidebar {
+#add-new-certification-sidebar {
   .vs__dropdown-menu {
     max-height: 200px !important;
   }

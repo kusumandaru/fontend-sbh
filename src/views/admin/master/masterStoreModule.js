@@ -142,6 +142,38 @@ export default {
           .catch(error => reject(error))
       })
     },
+    fetchCertifications(ctx, queryParams) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get('/engine-rest/master-project/certification_types', { params: queryParams })
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    fetchCertification(ctx, { certificationTypeId }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/engine-rest/master-project/certification_types/${certificationTypeId}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    addCertification(ctx, certificationData) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post('/engine-rest/master-project/certification_types', certificationData)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    editCertification(ctx, { certificationTypeId, certificationData }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .patch(`/engine-rest/master-project/certification_types/${certificationTypeId}`, certificationData)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
     fetchTemplates(ctx, queryParams) {
       return new Promise((resolve, reject) => {
         axios
@@ -202,6 +234,30 @@ export default {
       return new Promise((resolve, reject) => {
         axios
           .patch(`/engine-rest/master-project/evaluations/${evaluationId}`, evaluationData)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    fetchLevel(ctx, { levelId }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/engine-rest/master-project/levels/${levelId}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    addLevel(ctx, levelData) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post('/engine-rest/master-project/levels', levelData)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    editLevel(ctx, { levelId, levelData }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .patch(`/engine-rest/master-project/levels/${levelId}`, levelData)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })

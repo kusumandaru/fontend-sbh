@@ -350,7 +350,7 @@ export default {
         'check-second-payment': 'admin',
         'design-recognition-submission': 'client',
         'third-payment': 'client',
-        'check-third-payment': 'client',
+        'check-third-payment': 'admin',
         'design-recognition-review': 'verificator',
         'design-recognition-evaluation-assessment': 'admin',
         'design-recognition-trial': 'admin',

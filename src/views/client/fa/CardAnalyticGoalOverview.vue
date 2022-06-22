@@ -227,8 +227,7 @@ export default {
           projectAssessment.value = undefined
         }
       })
-
-    store.dispatch('app-fa/fetchMasterLevel')
+    store.dispatch('app-fa/fetchMasterLevelsByTaskId', { taskId: router.currentRoute.params.id })
       .then(response => {
         // eslint-disable-next-line prefer-destructuring
         masterLevels.value = response.data
