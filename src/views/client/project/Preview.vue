@@ -379,7 +379,7 @@
         <b-card>
           <!-- Button: Edit Project-->
           <b-button
-            v-if="editProjectShow"
+            v-if="editProjectShow && clientRole"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             variant="success"
             class="mb-75"
@@ -439,7 +439,7 @@
 
           <!-- Button: DR Revision-->
           <b-button
-            v-if="drRevisionShow"
+            v-if="drRevisionShow && clientRole"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             variant="success"
             class="mb-75"
@@ -451,7 +451,7 @@
 
           <!-- Button: FA Revision-->
           <b-button
-            v-if="faRevisionShow"
+            v-if="faRevisionShow && clientRole"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             variant="success"
             class="mb-75"
@@ -463,7 +463,7 @@
 
           <!-- Button: Upload Document Building-->
           <b-button
-            v-if="uploadDocumentShow"
+            v-if="uploadDocumentShow && clientRole"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             variant="success"
             class="mb-75"
@@ -475,7 +475,7 @@
 
           <!-- Button: FirstPayment-->
           <b-button
-            v-if="firstPaymentShow"
+            v-if="firstPaymentShow && clientRole"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             variant="success"
             class="mb-75"
@@ -487,7 +487,7 @@
 
           <!-- Button: SecondPayment-->
           <b-button
-            v-if="secondPaymentShow"
+            v-if="secondPaymentShow && clientRole"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             variant="success"
             class="mb-75"
@@ -499,7 +499,7 @@
 
           <!-- Button: ThirdPayment-->
           <b-button
-            v-if="thirdPaymentShow"
+            v-if="thirdPaymentShow && clientRole"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             variant="success"
             class="mb-75"
@@ -511,7 +511,7 @@
 
           <!-- Button: Upload Plang dan Persetujuan Pemuatan-->
           <b-button
-            v-if="workshopShow"
+            v-if="workshopShow && clientRole"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             variant="success"
             class="mb-75"
@@ -523,7 +523,7 @@
 
           <!-- Button: Design Recognition-->
           <b-button
-            v-if="designRecognitionShow"
+            v-if="designRecognitionShow && clientRole"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             variant="success"
             class="mb-75"
@@ -535,7 +535,7 @@
 
           <!-- Button: On Site Revision Submission -->
           <b-button
-            v-if="onSiteRevisionSubmissionShow"
+            v-if="onSiteRevisionSubmissionShow && clientRole"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             variant="success"
             class="mb-75"
@@ -547,7 +547,7 @@
 
           <!-- Button: Final Assessment-->
           <b-button
-            v-if="finalAssessmentShow"
+            v-if="finalAssessmentShow && clientRole"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             variant="success"
             class="mb-75"
@@ -683,6 +683,9 @@ export default {
     }
   },
   computed: {
+    clientRole() {
+      return this.userData.group.id === 'user' || this.userData.group.id === 'superuser'
+    },
     editProjectShow() {
       return ['fill-registration-project'].includes(this.projectData.definition_key)
     },
@@ -793,6 +796,7 @@ export default {
   },
   setup() {
     const projectData = ref(null)
+    const userData = ref(null)
     const proofOfPayments = ref(null)
     const buildingPlan = ref(null)
     const rtRw = ref(null)
@@ -870,7 +874,6 @@ export default {
 
     store.dispatch('app-project/fetchClientProject', { id: router.currentRoute.params.id })
       .then(response => {
-        console.log(response)
         projectData.value = response.data
         paymentProps.blank = false
         paymentProps.src = response.data.proof_of_payment_url
@@ -930,6 +933,16 @@ export default {
         }
         if (error.response.status === 500) {
           projectData.value = undefined
+        }
+      })
+
+    store.dispatch('app-project/fetchUser')
+      .then(response => {
+        userData.value = response.data
+      })
+      .catch(error => {
+        if (error.response.status === 404) {
+          userData.value = undefined
         }
       })
 
@@ -1138,6 +1151,7 @@ export default {
 
     return {
       projectData,
+      userData,
       eligibilityAttachments,
       registeredAttachments,
       evaluationAttachments,

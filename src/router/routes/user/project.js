@@ -12,7 +12,7 @@ export default [
         },
       ],
       action: 'manage',
-      resource: 'client-project',
+      resource: 'client-project-register',
     },
   },
   {
@@ -28,7 +28,7 @@ export default [
         },
       ],
       action: 'read',
-      resource: 'client-project',
+      resource: 'client-project-list',
     },
   },
   {

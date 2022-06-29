@@ -371,7 +371,7 @@ export default {
           this.isLoading = true
           const request = new FormData()
           request.append('task_id', router.currentRoute.params.id)
-          request.append('attendance_document', this.attendanceDocument)
+          request.append('workshop_attendance_document', this.attendanceDocument)
           request.append('workshop_report_document', this.workshopReportDocument)
 
           const config = {

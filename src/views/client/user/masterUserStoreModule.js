@@ -22,6 +22,14 @@ export default {
           .catch(error => reject(error))
       })
     },
+    fetchGroups() {
+      return new Promise((resolve, reject) => {
+        axios
+          .get('/engine-rest/user/groups')
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
     addUser(ctx, userData) {
       return new Promise((resolve, reject) => {
         axios

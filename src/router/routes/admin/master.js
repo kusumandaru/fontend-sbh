@@ -12,7 +12,7 @@ export default [
         },
       ],
       action: 'read',
-      resource: 'master',
+      resource: 'admin-master-data',
     },
   },
   {
@@ -32,7 +32,7 @@ export default [
         },
       ],
       action: 'read',
-      resource: 'master',
+      resource: 'admin-master-data',
     },
   },
   {
@@ -48,7 +48,7 @@ export default [
         },
       ],
       action: 'read',
-      resource: 'master',
+      resource: 'admin-master-data',
     },
   },
   {
@@ -68,7 +68,7 @@ export default [
         },
       ],
       action: 'read',
-      resource: 'master',
+      resource: 'admin-master-data',
     },
   },
   {
@@ -84,7 +84,7 @@ export default [
         },
       ],
       action: 'manage',
-      resource: 'master',
+      resource: 'admin-master-data',
     },
   },
   {
@@ -104,7 +104,7 @@ export default [
         },
       ],
       action: 'read',
-      resource: 'master',
+      resource: 'admin-master-data',
     },
   },
   {
@@ -120,7 +120,7 @@ export default [
         },
       ],
       action: 'manage',
-      resource: 'master',
+      resource: 'admin-master-data',
     },
   },
   {
@@ -136,7 +136,7 @@ export default [
         },
       ],
       action: 'manage',
-      resource: 'master',
+      resource: 'admin-master-data',
     },
   },
   {
@@ -152,7 +152,7 @@ export default [
         },
       ],
       action: 'read',
-      resource: 'master',
+      resource: 'admin-master-data',
     },
   },
   {
@@ -172,7 +172,7 @@ export default [
         },
       ],
       action: 'read',
-      resource: 'master',
+      resource: 'admin-master-data',
     },
   },
   {
@@ -192,7 +192,7 @@ export default [
         },
       ],
       action: 'read',
-      resource: 'master',
+      resource: 'admin-master-data',
     },
   },
   {
@@ -215,7 +215,7 @@ export default [
         },
       ],
       action: 'read',
-      resource: 'master',
+      resource: 'admin-master-data',
     },
   },
   {
@@ -238,7 +238,7 @@ export default [
         },
       ],
       action: 'read',
-      resource: 'master',
+      resource: 'admin-master-data',
     },
   },
   {
@@ -264,7 +264,7 @@ export default [
         },
       ],
       action: 'read',
-      resource: 'master',
+      resource: 'admin-master-data',
     },
   },
   {
@@ -284,7 +284,7 @@ export default [
         },
       ],
       action: 'read',
-      resource: 'master',
+      resource: 'admin-master-data',
     },
   },
   {
@@ -307,7 +307,7 @@ export default [
         },
       ],
       action: 'read',
-      resource: 'master',
+      resource: 'admin-master-data',
     },
   },
   {
@@ -333,7 +333,7 @@ export default [
         },
       ],
       action: 'read',
-      resource: 'master',
+      resource: 'admin-master-data',
     },
   },
   {
@@ -359,7 +359,7 @@ export default [
         },
       ],
       action: 'read',
-      resource: 'master',
+      resource: 'admin-master-data',
     },
   },
   {
@@ -385,7 +385,7 @@ export default [
         },
       ],
       action: 'read',
-      resource: 'master',
+      resource: 'admin-master-data',
     },
   },
   {
@@ -414,7 +414,7 @@ export default [
         },
       ],
       action: 'read',
-      resource: 'master',
+      resource: 'admin-master-data',
     },
   },
   {
@@ -443,7 +443,7 @@ export default [
         },
       ],
       action: 'read',
-      resource: 'master',
+      resource: 'admin-master-data',
     },
   },
   {
@@ -475,7 +475,7 @@ export default [
         },
       ],
       action: 'read',
-      resource: 'master',
+      resource: 'admin-master-data',
     },
   },
   {
@@ -504,7 +504,7 @@ export default [
         },
       ],
       action: 'read',
-      resource: 'master',
+      resource: 'admin-master-data',
     },
   },
   {
@@ -539,7 +539,7 @@ export default [
         },
       ],
       action: 'read',
-      resource: 'master',
+      resource: 'admin-master-data',
     },
   },
   {
@@ -574,7 +574,7 @@ export default [
         },
       ],
       action: 'read',
-      resource: 'master',
+      resource: 'admin-master-data',
     },
   },
 ]

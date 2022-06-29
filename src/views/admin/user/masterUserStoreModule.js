@@ -30,6 +30,14 @@ export default {
           .catch(error => reject(error))
       })
     },
+    fetchTasksById(ctx, { userId }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/engine-rest/new-building/tasks/admin/${userId}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
     fetchUser(ctx, { userId }) {
       return new Promise((resolve, reject) => {
         axios

@@ -23,6 +23,9 @@ module.exports = {
         '@core': path.resolve(__dirname, 'src/@core'),
         '@validations': path.resolve(__dirname, 'src/@core/utils/validations/validations.js'),
         '@axios': path.resolve(__dirname, 'src/libs/axios'),
+        // https://github.com/vueuse/vue-demi/issues/106#issuecomment-953155139
+        // '@vue/composition-api': '@vue/composition-api/dist/vue-composition-api.mjs',
+        // '@vue/composition-api/dist/vue-composition-api.esm.js': '@vue/composition-api/dist/vue-composition-api.mjs'
       },
     },
   },

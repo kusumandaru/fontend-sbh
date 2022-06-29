@@ -135,7 +135,7 @@
           <validation-provider
             #default="validationContext"
             name="Password Confirm"
-            rules="required|confirmed:Password"
+            rules="required|password|confirmed:Password"
           >
             <b-form-group
               label="Password Confirm"

@@ -664,10 +664,10 @@ export default {
   },
   computed: {
     approveShow() {
-      return this.adminTasks.includes(this.projectData.definition_key) && this.userData.roles.join() !== 'verificator'
+      return (this.adminTasks.includes(this.projectData.definition_key) && this.userData.roles.join() !== 'verificator') || (this.verificatorTasks.includes(this.projectData.definition_key) && this.userData.roles.join() === 'verificator')
     },
     rejectShow() {
-      return this.adminTasks.includes(this.projectData.definition_key) && this.userData.roles.join() !== 'verificator'
+      return (this.adminTasks.includes(this.projectData.definition_key) && this.userData.roles.join() !== 'verificator') || (this.verificatorTasks.includes(this.projectData.definition_key) && this.userData.roles.join() === 'verificator')
     },
     continueFAShow() {
       return ['design-recognition-letter'].includes(this.projectData.definition_key)
@@ -1090,11 +1090,14 @@ export default {
       router.push({ name: 'admin-project-fa-evaluation-assessment', params: { id: router.currentRoute.params.id } })
     }
 
-    const adminTasks = ['check-registration-project', 'check-document-building', 'check-first-payment', 'check-third-payment', 'check-third-payment-fa', 'design-recognition-trial', 'design-recognition-revision-review', 'final-assessment-trial', 'final-assessment-revision-review']
+    const adminTasks = ['check-registration-project', 'check-document-building', 'check-first-payment', 'check-third-payment', 'check-third-payment-fa', 'design-recognition-trial', 'final-assessment-trial', 'final-assessment-revision-review']
     const agreementTasks = ['agreement']
     const workshopTasks = ['workshop']
     const designRecognitionHistoryTasks = ['third-payment', 'check-third-payment', 'design-recognition-evaluation-assessment', 'design-recognition-trial-revision', 'design-recognition-revision-review', 'design-recognition-letter', 'final-assessment-submission', 'final-assessment-review', 'third-payment-fa', 'check-third-payment-fa', 'on-site-verification', 'on-site-revision-submission', 'final-assessment-evaluation-assessment', 'final-assessment-trial-revision', 'final-assessment-revision-review', 'final-assessment-letter']
     const finalAssessmentHistoryTasks = ['third-payment-fa', 'check-third-payment-fa', 'on-site-revision-submission', 'final-assessment-evaluation-assessment', 'final-assessment-trial-revision', 'final-assessment-revision-review', 'final-assessment-letter']
+    const verificatorTasks = [
+      'design-recognition-revision-review',
+      'final-assessment-revision-review']
 
     const {
       refetchData,
@@ -1109,6 +1112,7 @@ export default {
       workshopTasks,
       designRecognitionHistoryTasks,
       finalAssessmentHistoryTasks,
+      verificatorTasks,
       agreementPage,
       workshopPage,
       secondPaymentConfirmationPage,

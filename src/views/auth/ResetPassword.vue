@@ -95,7 +95,7 @@
                 <validation-provider
                   #default="validationContext"
                   name="Confirm Password"
-                  rules="required|confirmed:password"
+                  rules="required|password|confirmed:password"
                 >
                   <b-input-group
                     class="input-group-merge"

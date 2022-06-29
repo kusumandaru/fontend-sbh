@@ -163,6 +163,40 @@
                 </b-form-group>
               </validation-provider>
             </b-col>
+
+            <!-- Field: Group-->
+            <b-col
+              cols="12"
+              md="4"
+            >
+              <validation-provider
+                #default="validationContext"
+                name="Group"
+                rules="required"
+              >
+                <b-form-group
+                  label="Group"
+                  label-for="group"
+                >
+                  <v-select
+                    v-model="userData.group_id"
+                    :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                    :options="groupOptions"
+                    :reduce="val => val.id"
+                    :clearable="false"
+                    label="name"
+                    code="id"
+                  >
+                    <template #option="{ name }">
+                      <span> {{ name }}</span>
+                    </template>
+                  </v-select>
+                  <b-form-invalid-feedback>
+                    {{ validationContext.errors[0] }}
+                  </b-form-invalid-feedback>
+                </b-form-group>
+              </validation-provider>
+            </b-col>
           </b-row>
           <div class="d-flex mt-2">
             <b-button
@@ -326,6 +360,7 @@ export default {
     }
     const userData = ref(JSON.parse(JSON.stringify(blankUserData)))
     const tenantTaskData = ref(JSON.parse('[]'))
+    const groupOptions = ref(JSON.parse('[]'))
 
     const resetuserData = () => {
       userData.value = JSON.parse(JSON.stringify(blankUserData))
@@ -336,6 +371,7 @@ export default {
       userData.value.firstName = userData.value.first_name
       userData.value.lastName = userData.value.last_name
       userData.value.tenantOwner = userData.value.tenant_owner
+      userData.value.groupId = userData.value.group_id
 
       store.dispatch('app-user-tenant/editUser', { userId: router.currentRoute.params.userId, userData: userData.value })
         .then(() => {
@@ -367,6 +403,14 @@ export default {
         }
       })
 
+    store.dispatch('app-user-tenant/fetchGroups')
+      .then(response => { groupOptions.value = response.data })
+      .catch(error => {
+        if (error.response.status === 404) {
+          groupOptions.value = undefined
+        }
+      })
+
     const {
       refFormObserver,
       getValidationState,
@@ -376,6 +420,7 @@ export default {
       blankUserData,
       userData,
       tenantTaskData,
+      groupOptions,
       onSubmit,
       resetuserData,
       refFormObserver,
@@ -410,10 +455,10 @@ export default {
       }
       this.$http.patch(`/engine-rest/user/project_users/${router.currentRoute.params.userId}`, request, config).then(() => {
         this.isLoading = false
-        this.showToast('success', 'Saved', 'Attachment successfully saved')
+        this.showToast('success', 'Saved', 'Assign project successfully saved')
         router.go()
       }).catch(() => {
-        this.showToast('danger', 'Cannot Save', 'There is error when submit attachment, contact administrator')
+        this.showToast('danger', 'Cannot Save', 'There is error when assign project, contact administrator')
       })
     },
   },

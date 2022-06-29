@@ -12,7 +12,7 @@ export default [
         },
       ],
       action: 'read',
-      resource: 'user',
+      resource: 'admin-user-list',
     },
   },
   {
@@ -28,7 +28,7 @@ export default [
         },
       ],
       action: 'manage',
-      resource: 'user',
+      resource: 'admin-user-list',
     },
   },
 ]
