@@ -9,15 +9,29 @@ export const roleAbility = {
   'camunda-admin': [
     {
       action: 'manage',
-      subject: 'project',
+      subject: 'admin-project-list',
     },
     {
       action: 'manage',
-      subject: 'user',
+      subject: 'admin-user-list',
     },
     {
       action: 'manage',
-      subject: 'master',
+      subject: 'admin-master-data',
+    },
+    {
+      action: 'read',
+      resource: 'home',
+    },
+  ],
+  admin: [
+    {
+      action: 'manage',
+      subject: 'admin-project-list',
+    },
+    {
+      action: 'manage',
+      subject: 'admin-user-list',
     },
     {
       action: 'read',
@@ -27,7 +41,27 @@ export const roleAbility = {
   verificator: [
     {
       action: 'manage',
-      subject: 'project',
+      subject: 'admin-project-list',
+    },
+    {
+      action: 'read',
+      resource: 'home',
+    },
+  ],
+  owner: [
+    {
+      action: 'manage',
+      subject: 'client-project-list',
+    },
+    {
+      action: 'read',
+      resource: 'home',
+    },
+  ],
+  viewer: [
+    {
+      action: 'manage',
+      subject: 'client-project-list',
     },
     {
       action: 'read',
@@ -37,7 +71,11 @@ export const roleAbility = {
   user: [
     {
       action: 'manage',
-      subject: 'client-project',
+      subject: 'client-project-register',
+    },
+    {
+      action: 'manage',
+      subject: 'client-project-list',
     },
     {
       action: 'read',
@@ -47,11 +85,15 @@ export const roleAbility = {
   superuser: [
     {
       action: 'manage',
-      subject: 'client-project',
+      subject: 'client-project-register',
     },
     {
       action: 'manage',
-      subject: 'client-admin',
+      subject: 'client-project-list',
+    },
+    {
+      action: 'manage',
+      subject: 'client-user-list',
     },
     {
       action: 'read',

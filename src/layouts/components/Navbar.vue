@@ -116,7 +116,6 @@ export default {
   },
   data() {
     return {
-      // userData: JSON.parse(localStorage.getItem('userData')),
     }
   },
   setup() {

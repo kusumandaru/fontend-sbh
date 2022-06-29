@@ -84,5 +84,8 @@
     "sass": "1.32.*",
     "sass-loader": "^10.1.0",
     "vue-template-compiler": "2.x"
+  },
+  "resolutions": {
+    "@vueuse/**/vue-demi": "0.11.4"
   }
 }

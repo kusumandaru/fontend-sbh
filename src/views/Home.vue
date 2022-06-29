@@ -73,7 +73,7 @@ export default {
       return this.user.group.id === 'superuser' || this.user.group.id === 'user'
     },
     adminRole() {
-      return this.user.group.id === 'camunda-admin' || this.user.group.id === 'verificator'
+      return this.user.group.id === 'camunda-admin' || this.user.group.id === 'verificator' || this.user.group.id === 'admin'
     },
   },
   created() {

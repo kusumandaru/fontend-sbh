@@ -251,6 +251,54 @@
           </div>
         </b-form>
       </validation-observer>
+
+      <!-- PERMISSION TABLE -->
+      <b-card
+        v-if="isVerificator"
+        no-body
+        class="border mt-1"
+      >
+        <b-card-header class="p-1">
+          <b-card-title class="font-medium-2">
+            <feather-icon
+              icon="LockIcon"
+              size="18"
+            />
+            <span class="align-middle ml-50">Verificator Project Permission</span>
+          </b-card-title>
+        </b-card-header>
+        <b-form-checkbox
+          v-model="selectAllTenantTask"
+        >
+          Select All Tenant
+        </b-form-checkbox>
+        <b-table
+          striped
+          responsive
+          class="mb-0"
+          :items="tenantTaskData"
+          :fields="tenantFields"
+        >
+          <template #cell(filename)="doc">
+            {{ doc.value }}
+          </template>
+          <template #cell(selected_process_instance)="row">
+            <b-form-checkbox
+              v-model="row.item.assigned"
+            />
+          </template>
+        </b-table>
+        <div class="d-flex mt-2">
+          <b-button
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="primary"
+            class="mr-2"
+            @click="assignProject"
+          >
+            Assign Project
+          </b-button>
+        </div>
+      </b-card>
     </div>
   </component>
 </template>
@@ -313,9 +361,33 @@ export default {
   },
   data() {
     return {
+      tenantFields: [
+        { key: 'selected_process_instance', label: 'Assign' },
+        { key: 'name', label: 'Task Name' },
+        { key: 'certification_type', label: 'Certification Type' },
+        { key: 'tenant_name', label: 'Tenant' },
+        { key: 'building_name', label: 'Building Name' },
+        { key: 'building_type_name', label: 'Building Type' },
+      ],
     }
   },
   computed: {
+    isVerificator() {
+      return this.userData.group_id === 'verificator'
+    },
+    selectAllTenantTask: {
+      /* eslint-disable object-shorthand */
+      get() {
+        const assignedTenantTaskData = this.tenantTaskData.filter(tenantTask => tenantTask.assigned === true)
+        return this.tenantTaskData ? assignedTenantTaskData.length === this.tenantTaskData.length : false
+      },
+      set(value) {
+        if (value) {
+          this.tenantTaskData.forEach(taskData => { taskData.assigned = value }) // eslint-disable-line no-param-reassign
+        }
+      },
+      /* eslint-enable object-shorthand */
+    },
   },
   setup() {
     const blankUserData = {
@@ -326,6 +398,7 @@ export default {
       active: true,
     }
     const userData = ref(JSON.parse(JSON.stringify(blankUserData)))
+    const tenantTaskData = ref(JSON.parse('[]'))
     const groupOptions = ref(JSON.parse('[]'))
     const tenantOptions = ref(JSON.parse('[]'))
 
@@ -381,6 +454,14 @@ export default {
         }
       })
 
+    store.dispatch('app-user-admin/fetchTasksById', { userId: router.currentRoute.params.userId })
+      .then(response => { tenantTaskData.value = response.data })
+      .catch(error => {
+        if (error.response.status === 404) {
+          tenantTaskData.value = undefined
+        }
+      })
+
     const {
       refFormObserver,
       getValidationState,
@@ -389,6 +470,7 @@ export default {
     return {
       blankUserData,
       userData,
+      tenantTaskData,
       onSubmit,
       resetuserData,
       refFormObserver,
@@ -412,6 +494,24 @@ export default {
     },
     cancel() {
       router.push({ name: 'admin-user-list' })
+    },
+    assignProject() {
+      const processInstanceIds = this.tenantTaskData.filter(tenantTask => tenantTask.assigned === true).map(tenantTask => tenantTask.process_instance_id)
+      const request = new URLSearchParams()
+      request.append('project_ids', processInstanceIds.join(','))
+
+      const config = {
+        header: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      }
+      this.$http.patch(`/engine-rest/user/project_verificators/${router.currentRoute.params.userId}`, request, config).then(() => {
+        this.isLoading = false
+        this.showToast('success', 'Saved', 'Assign project successfully saved')
+        router.go()
+      }).catch(() => {
+        this.showToast('danger', 'Cannot Save', 'There is error when assign project, contact administrator')
+      })
     },
   },
 }

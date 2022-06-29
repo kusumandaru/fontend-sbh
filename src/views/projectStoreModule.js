@@ -30,6 +30,14 @@ export default {
           .catch(error => reject(error))
       })
     },
+    fetchUser() {
+      return new Promise((resolve, reject) => {
+        axios
+          .get('engine-rest/user/profile')
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
     approveTask(ctx, { id }) {
       return new Promise((resolve, reject) => {
         const request = new FormData()

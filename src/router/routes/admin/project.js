@@ -12,7 +12,7 @@ export default [
         },
       ],
       action: 'manage',
-      resource: 'project',
+      resource: 'admin-project-list',
     },
   },
   {
