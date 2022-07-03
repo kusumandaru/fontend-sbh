@@ -357,6 +357,7 @@ export default {
       email: '',
       password: '',
       active: true,
+      groupId: '',
     }
     const userData = ref(JSON.parse(JSON.stringify(blankUserData)))
     const tenantTaskData = ref(JSON.parse('[]'))
@@ -372,6 +373,9 @@ export default {
       userData.value.lastName = userData.value.last_name
       userData.value.tenantOwner = userData.value.tenant_owner
       userData.value.groupId = userData.value.group_id
+      userData.value.tenantId = userData.value.tenant_id
+      userData.value.tenant = null
+      userData.value.group = null
 
       store.dispatch('app-user-tenant/editUser', { userId: router.currentRoute.params.userId, userData: userData.value })
         .then(() => {

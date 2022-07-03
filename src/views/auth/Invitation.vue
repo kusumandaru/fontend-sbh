@@ -38,7 +38,7 @@
           class="px-xl-2 mx-auto"
         >
           <b-card-title class="mb-1">
-            Register your tenant here 🚀
+            Register to join {{ tenantData.name }} here 🚀
           </b-card-title>
           <b-card-text class="mb-2">
             Start certification here
@@ -92,28 +92,6 @@
                     name="register-last-name"
                     :state="errors.length > 0 ? false:null"
                     placeholder="Doe"
-                  />
-                  <small class="text-danger">{{ errors[0] }}</small>
-                </validation-provider>
-              </b-form-group>
-
-              <!-- tenant name -->
-              <b-form-group
-                label="Company / Tenant Name"
-                label-for="register-tenant-name"
-              >
-                <validation-provider
-                  #default="{ errors }"
-                  name="tenantname"
-                  vid="tenantname"
-                  rules="required"
-                >
-                  <b-form-input
-                    id="register-tenant-name"
-                    v-model="tenantName"
-                    name="register-tenant-name"
-                    :state="errors.length > 0 ? false:null"
-                    placeholder="PT Satria Perkasa"
                   />
                   <small class="text-danger">{{ errors[0] }}</small>
                 </validation-provider>
@@ -289,10 +267,13 @@ import {
 } from 'bootstrap-vue'
 import { required, email, password } from '@validations'
 import { togglePasswordVisibility } from '@core/mixins/ui/forms'
+import { ref, onUnmounted } from '@vue/composition-api'
+import router from '@/router'
 import store from '@/store/index'
 import useJwt from '@/auth/jwt/useJwt'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 import { roleAbility, initialAbility } from '@/libs/acl/config'
+import invitationStoreModule from './invitationStoreModule'
 
 export default {
   components: {
@@ -323,7 +304,6 @@ export default {
       userEmail: '',
       registerPassword: '',
       repeatPassword: '',
-      tenantName: '',
       sideImg: require('@/assets/images/pages/register-v2.svg'),
       // validation
       required,
@@ -344,6 +324,33 @@ export default {
       return this.sideImg
     },
   },
+  setup() {
+    const blankTenantData = {
+      rev: '',
+      name: '',
+    }
+    const tenantData = ref(JSON.parse(JSON.stringify(blankTenantData)))
+    const INVITATION_APP_STORE_MODULE_NAME = 'app-invitation'
+    // Register module
+    if (!store.hasModule(INVITATION_APP_STORE_MODULE_NAME)) store.registerModule(INVITATION_APP_STORE_MODULE_NAME, invitationStoreModule)
+
+    // UnRegister on leave
+    onUnmounted(() => {
+      if (store.hasModule(INVITATION_APP_STORE_MODULE_NAME)) store.unregisterModule(INVITATION_APP_STORE_MODULE_NAME)
+    })
+    store.dispatch('app-invitation/fetchTenant', { tenantId: router.currentRoute.params.id })
+      .then(response => { tenantData.value = response.data })
+      .catch(error => {
+        if (error.response.status === 404) {
+          tenantData.value = undefined
+        }
+      })
+
+    return {
+      blankTenantData,
+      tenantData,
+    }
+  },
   methods: {
     showToast(variant, titleToast, description) {
       this.$toast({
@@ -359,10 +366,10 @@ export default {
     register() {
       this.$refs.registerForm.validate().then(success => {
         if (success) {
-          useJwt.register({
+          useJwt.invitation({
             firstName: this.firstName,
             lastName: this.lastName,
-            tenantName: this.tenantName,
+            tenantId: this.tenantData.id,
             email: this.userEmail,
             password: this.registerPassword,
           })
