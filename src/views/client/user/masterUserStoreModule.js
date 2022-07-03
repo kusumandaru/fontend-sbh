@@ -25,7 +25,7 @@ export default {
     fetchGroups() {
       return new Promise((resolve, reject) => {
         axios
-          .get('/engine-rest/user/groups')
+          .get('/engine-rest/user/groups/client')
           .then(response => resolve(response))
           .catch(error => reject(error))
       })

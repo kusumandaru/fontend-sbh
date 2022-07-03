@@ -22,6 +22,17 @@ export default [
     },
   },
   {
+    path: '/invitation/:id',
+    name: 'auth-invitation',
+    component: () => import('@/views/auth/Invitation.vue'),
+    meta: {
+      layout: 'full',
+      action: 'read',
+      resource: 'auth',
+      redirectIfLoggedIn: true,
+    },
+  },
+  {
     path: '/forgot-password',
     name: 'auth-forgot-password',
     component: () => import('@/views/auth/ForgotPassword.vue'),

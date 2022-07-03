@@ -2,6 +2,7 @@ export default {
   // Endpoints
   loginEndpoint: '/auth/login',
   registerEndpoint: '/auth/register',
+  invitationEndpoint: '/auth/invitation',
   refreshEndpoint: '/auth/refresh-token',
   logoutEndpoint: '/auth/logout',
 

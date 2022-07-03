@@ -4,6 +4,18 @@
       :is-add-new-user-sidebar-active.sync="isAddNewUserSidebarActive"
       @refetch-data="refetchData"
     />
+
+    <!-- Invitation Link -->
+    <b-button
+      variant="primary"
+      @click="copyUrl"
+    >
+      Copy Invitation
+    </b-button>
+
+    <!-- Spacer -->
+    <hr class="project-spacing">
+
     <!-- input search -->
     <div class="d-flex align-items-center justify-content-end">
       <b-form-input
@@ -133,10 +145,15 @@ import {
 import { VueGoodTable } from 'vue-good-table'
 import { ref, onUnmounted } from '@vue/composition-api'
 import store from '@/store/index'
+import Vue from 'vue'
+import VueSweetalert2 from 'vue-sweetalert2'
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 import 'vue-good-table/dist/vue-good-table.css'
 import useUsersList from './useUsersList'
 import masterUserStoreModule from './masterUserStoreModule'
 import UserListAddNew from './UserListAddNew.vue'
+
+Vue.use(VueSweetalert2)
 
 export default {
   components: {
@@ -151,7 +168,6 @@ export default {
   },
   setup() {
     const USER_APP_STORE_MODULE_NAME = 'app-user-tenant'
-
     // Register module
     if (!store.hasModule(USER_APP_STORE_MODULE_NAME)) store.registerModule(USER_APP_STORE_MODULE_NAME, masterUserStoreModule)
 
@@ -180,6 +196,7 @@ export default {
       searchTerm: '',
       rows: [],
       user: null,
+      invitationLink: '',
       columns: [
         {
           label: 'First Name',
@@ -238,13 +255,35 @@ export default {
     this.retrieveUser()
   },
   methods: {
+    showToast(variant, titleToast, description) {
+      this.$toast({
+        component: ToastificationContent,
+        props: {
+          title: titleToast,
+          icon: 'BellIcon',
+          text: description,
+          variant,
+        },
+      })
+    },
     retrieveUsers() {
       this.$http.get('engine-rest/user/members')
         .then(res => { this.rows = res.data })
     },
     retrieveUser() {
       this.$http.get('engine-rest/user/profile')
-        .then(res => { this.user = res.data })
+        .then(res => {
+          this.user = res.data
+          this.invitationLink = `${window.location.origin}/invitation/${res.data.tenant.id}`
+        })
+    },
+    async copyUrl() {
+      try {
+        await navigator.clipboard.writeText(this.invitationLink)
+        this.showToast('success', 'Copied', 'Invitation Link copied')
+      } catch (err) {
+        this.showToast('danger', 'Cannot Copy', 'There is error copied link')
+      }
     },
     /* eslint-disable object-shorthand */
     handleError(err) {
