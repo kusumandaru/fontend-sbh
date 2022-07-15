@@ -13,7 +13,7 @@
         No building found with this building id. Check
         <b-link
           class="alert-link"
-          :to="{ name: 'admin-building-list'}"
+          :to="{ name: 'admin-building-type-list'}"
         >
           Building List
         </b-link>
@@ -221,7 +221,7 @@ export default {
   },
   methods: {
     cancel() {
-      router.push({ name: 'admin-building-list' })
+      router.push({ name: 'admin-building-type-list' })
     },
   },
 }

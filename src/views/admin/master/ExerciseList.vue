@@ -101,6 +101,18 @@
                   title="Exercise Update"
                   :target="`project-row-${props.row.id}-exercise-icon-edit`"
                 />
+
+                <feather-icon
+                  :id="`project-row-${props.row.id}-exercise-icon-delete`"
+                  icon="TrashIcon"
+                  size="16"
+                  class="mx-1"
+                  @click="deleteExercise(props.row.id)"
+                />
+                <b-tooltip
+                  title="Delete Exercise"
+                  :target="`project-row-${props.row.id}-exercise-icon-delete`"
+                />
               </template>
             </b-dropdown>
           </span>
@@ -169,6 +181,8 @@ import {
 } from 'bootstrap-vue'
 import { VueGoodTable } from 'vue-good-table'
 import store from '@/store/index'
+import Vue from 'vue'
+import VueSweetalert2 from 'vue-sweetalert2'
 import { ref, onUnmounted } from '@vue/composition-api'
 import 'vue-good-table/dist/vue-good-table.css'
 import router from '@/router'
@@ -177,6 +191,8 @@ import ToastificationContent from '@core/components/toastification/Toastificatio
 import useExercisesList from './useExercisesList'
 import masterStoreModule from './masterStoreModule'
 import ExerciseListAddNew from './ExerciseListAddNew.vue'
+
+Vue.use(VueSweetalert2)
 
 export default {
   components: {
@@ -205,6 +221,56 @@ export default {
     })
 
     const isAddNewExerciseSidebarActive = ref(false)
+    const toast = useToast()
+    const isLoading = ref(null)
+
+    const deleteExercise = exerciseId => {
+      Vue.swal({
+        title: 'Are you sure?',
+        text: 'Delete this exercise',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Delete',
+        customClass: {
+          confirmButton: 'btn btn-danger',
+          cancelButton: 'btn btn-outline-primary ml-1',
+        },
+        buttonsStyling: false,
+      }).then(result => {
+        if (result.value) {
+          isLoading.value = true
+
+          store.dispatch('app-exercise/deleteExercise', {
+            exerciseId,
+          })
+            .then(() => {
+              isLoading.value = false
+              toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Success',
+                  icon: 'InfoIcon',
+                  text: 'Successfully delete exercise',
+                  variant: 'success',
+                },
+              })
+              router.go()
+            })
+            .catch(error => {
+              isLoading.value = false
+              toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Cannot delete',
+                  icon: 'AlertTriangleIcon',
+                  text: error.response.data.message,
+                  variant: 'danger',
+                },
+              })
+            })
+        }
+      })
+    }
 
     const exerciseTypeOptions = [
       { label: 'Score', value: 'score' },
@@ -227,6 +293,8 @@ export default {
       resolveProjectTypeVariant,
       resolveProjectTypeTranslation,
       refetchData,
+      isLoading,
+      deleteExercise,
     }
   },
   data() {

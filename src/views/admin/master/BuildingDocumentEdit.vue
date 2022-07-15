@@ -298,7 +298,7 @@ export default {
   },
   methods: {
     cancel() {
-      router.push({ name: 'admin-evaluation-list' })
+      router.push({ name: 'admin-template-list' })
     },
   },
 }
