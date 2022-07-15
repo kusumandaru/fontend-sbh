@@ -127,6 +127,18 @@
                   title="Template Update"
                   :target="`project-row-${props.row.id}-template-icon-edit`"
                 />
+
+                <feather-icon
+                  :id="`project-row-${props.row.id}-template-icon-delete`"
+                  icon="TrashIcon"
+                  size="16"
+                  class="mx-1"
+                  @click="deleteTemplate(props.row.id)"
+                />
+                <b-tooltip
+                  title="Delete Template"
+                  :target="`project-row-${props.row.id}-template-icon-delete`"
+                />
               </template>
             </b-dropdown>
           </span>
@@ -264,6 +276,18 @@
                   title="Building Document Update"
                   :target="`project-row-${props.row.id}-building-document-icon-edit`"
                 />
+
+                <feather-icon
+                  :id="`project-row-${props.row.id}-building-document-icon-delete`"
+                  icon="TrashIcon"
+                  size="16"
+                  class="mx-1"
+                  @click="deleteBuildingDocument(props.row.id)"
+                />
+                <b-tooltip
+                  title="Delete Building Document"
+                  :target="`project-row-${props.row.id}-building-document-icon-delete`"
+                />
               </template>
             </b-dropdown>
           </span>
@@ -332,6 +356,8 @@ import {
 } from 'bootstrap-vue'
 import { VueGoodTable } from 'vue-good-table'
 import store from '@/store/index'
+import Vue from 'vue'
+import VueSweetalert2 from 'vue-sweetalert2'
 import { ref, onUnmounted } from '@vue/composition-api'
 import 'vue-good-table/dist/vue-good-table.css'
 import router from '@/router'
@@ -342,6 +368,8 @@ import useTemplatesList from './useTemplatesList'
 import masterStoreModule from './masterStoreModule'
 import TemplateListAddNew from './TemplateListAddNew.vue'
 import BuildingDocumentListAddNew from './BuildingDocumentListAddNew.vue'
+
+Vue.use(VueSweetalert2)
 
 export default {
   components: {
@@ -376,6 +404,104 @@ export default {
 
     const isAddNewTemplateSidebarActive = ref(false)
     const isAddNewBuildingDocumentSidebarActive = ref(false)
+    const toast = useToast()
+    const isLoading = ref(null)
+
+    const deleteTemplate = templateId => {
+      Vue.swal({
+        title: 'Are you sure?',
+        text: 'Delete this template',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Delete',
+        customClass: {
+          confirmButton: 'btn btn-danger',
+          cancelButton: 'btn btn-outline-primary ml-1',
+        },
+        buttonsStyling: false,
+      }).then(result => {
+        if (result.value) {
+          isLoading.value = true
+
+          store.dispatch('app-template/deleteTemplate', {
+            templateId,
+          })
+            .then(() => {
+              isLoading.value = false
+              toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Success',
+                  icon: 'InfoIcon',
+                  text: 'Successfully delete template',
+                  variant: 'success',
+                },
+              })
+              router.go()
+            })
+            .catch(error => {
+              isLoading.value = false
+              toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Cannot delete',
+                  icon: 'AlertTriangleIcon',
+                  text: error.response.data.message,
+                  variant: 'danger',
+                },
+              })
+            })
+        }
+      })
+    }
+
+    const deleteBuildingDocument = buildingDocumentId => {
+      Vue.swal({
+        title: 'Are you sure?',
+        text: 'Delete this building document',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Delete',
+        customClass: {
+          confirmButton: 'btn btn-danger',
+          cancelButton: 'btn btn-outline-primary ml-1',
+        },
+        buttonsStyling: false,
+      }).then(result => {
+        if (result.value) {
+          isLoading.value = true
+
+          store.dispatch('app-template/deleteBuildingDocument', {
+            buildingDocumentId,
+          })
+            .then(() => {
+              isLoading.value = false
+              toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Success',
+                  icon: 'InfoIcon',
+                  text: 'Successfully delete building document',
+                  variant: 'success',
+                },
+              })
+              router.go()
+            })
+            .catch(error => {
+              isLoading.value = false
+              toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Cannot delete',
+                  icon: 'AlertTriangleIcon',
+                  text: error.response.data.message,
+                  variant: 'danger',
+                },
+              })
+            })
+        }
+      })
+    }
 
     const projectTypeOptions = [
       { label: 'Design Recognition', value: 'design_recognition' },
@@ -401,6 +527,9 @@ export default {
       resolveProjectTypeVariant,
       resolveProjectTypeTranslation,
       refetchData,
+      deleteTemplate,
+      deleteBuildingDocument,
+      isLoading,
     }
   },
   directives: {

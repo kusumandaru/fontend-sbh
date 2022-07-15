@@ -112,7 +112,7 @@
           <validation-provider
             #default="validationContext"
             name="Mandatory"
-            rules="required"
+            rules=""
           >
             <b-form-group
               label="Building Document Mandatory"
@@ -256,7 +256,7 @@ export default {
     }
 
     const onSubmit = () => {
-      store.dispatch('app-evaluation/addBuildingDocument', buildingDocumentData.value)
+      store.dispatch('app-template/addBuildingDocument', buildingDocumentData.value)
         .then(() => {
           emit('refetch-data')
           emit('update:is-add-new-building-document-sidebar-active', false)

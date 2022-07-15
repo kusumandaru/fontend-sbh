@@ -78,6 +78,18 @@
                   title="Vendor Update"
                   :target="`project-row-${props.row.id}-vendor-icon-edit`"
                 />
+
+                <feather-icon
+                  :id="`project-row-${props.row.id}-vendor-icon-delete`"
+                  icon="TrashIcon"
+                  size="16"
+                  class="mx-1"
+                  @click="deleteVendor(props.row.id)"
+                />
+                <b-tooltip
+                  title="Delete Vendor"
+                  :target="`project-row-${props.row.id}-vendor-icon-delete`"
+                />
               </template>
             </b-dropdown>
           </span>
@@ -146,6 +158,9 @@ import {
 } from 'bootstrap-vue'
 import { VueGoodTable } from 'vue-good-table'
 import store from '@/store/index'
+import router from '@/router'
+import Vue from 'vue'
+import VueSweetalert2 from 'vue-sweetalert2'
 import { ref, onUnmounted } from '@vue/composition-api'
 import 'vue-good-table/dist/vue-good-table.css'
 import { useToast } from 'vue-toastification/composition'
@@ -153,6 +168,8 @@ import ToastificationContent from '@core/components/toastification/Toastificatio
 import useVendorsList from './useVendorsList'
 import masterStoreModule from './masterStoreModule'
 import VendorListAddNew from './VendorListAddNew.vue'
+
+Vue.use(VueSweetalert2)
 
 export default {
   components: {
@@ -179,6 +196,56 @@ export default {
     })
 
     const isAddNewVendorSidebarActive = ref(false)
+    const toast = useToast()
+    const isLoading = ref(null)
+
+    const deleteVendor = vendorId => {
+      Vue.swal({
+        title: 'Are you sure?',
+        text: 'Delete this vendor',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Delete',
+        customClass: {
+          confirmButton: 'btn btn-danger',
+          cancelButton: 'btn btn-outline-primary ml-1',
+        },
+        buttonsStyling: false,
+      }).then(result => {
+        if (result.value) {
+          isLoading.value = true
+
+          store.dispatch('app-vendor/deleteVendor', {
+            vendorId,
+          })
+            .then(() => {
+              isLoading.value = false
+              toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Success',
+                  icon: 'InfoIcon',
+                  text: 'Successfully delete vendor',
+                  variant: 'success',
+                },
+              })
+              router.go()
+            })
+            .catch(error => {
+              isLoading.value = false
+              toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Cannot delete',
+                  icon: 'AlertTriangleIcon',
+                  text: error.response.data.message,
+                  variant: 'danger',
+                },
+              })
+            })
+        }
+      })
+    }
 
     const {
       refetchData,
@@ -189,6 +256,8 @@ export default {
       isAddNewVendorSidebarActive,
       refVendorListTable,
       refetchData,
+      deleteVendor,
+      isLoading,
     }
   },
   data() {

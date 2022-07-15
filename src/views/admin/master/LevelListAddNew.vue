@@ -50,7 +50,7 @@
             >
               <b-form-input
                 id="name"
-                v-model="LevelData.name"
+                v-model="levelData.name"
                 :state="getValidationState(validationContext)"
                 trim
               />
@@ -73,7 +73,7 @@
             >
               <b-form-input
                 id="minimum-score"
-                v-model="LevelData.minimumScore"
+                v-model="levelData.minimumScore"
                 :state="getValidationState(validationContext)"
                 trim
               />
@@ -96,7 +96,7 @@
             >
               <b-form-input
                 id="percentage"
-                v-model="LevelData.minimum_score"
+                v-model="levelData.percentage"
                 :state="getValidationState(validationContext)"
                 trim
               />
@@ -118,7 +118,7 @@
             >
               <b-form-checkbox
                 id="Level-active"
-                v-model="LevelData.active"
+                v-model="levelData.active"
                 switch
                 inline
               >
@@ -215,13 +215,13 @@ export default {
       active: true,
     }
 
-    const LevelData = ref(JSON.parse(JSON.stringify(blankLevelData)))
+    const levelData = ref(JSON.parse(JSON.stringify(blankLevelData)))
     const resetLevelData = () => {
-      LevelData.value = JSON.parse(JSON.stringify(blankLevelData))
+      levelData.value = JSON.parse(JSON.stringify(blankLevelData))
     }
 
     const onSubmit = () => {
-      store.dispatch('app-level/addLevel', LevelData.value)
+      store.dispatch('app-evaluation/addLevel', levelData.value)
         .then(() => {
           emit('refetch-data')
           emit('update:is-add-new-level-sidebar-active', false)
@@ -235,7 +235,7 @@ export default {
     } = formValidation(resetLevelData)
 
     return {
-      LevelData,
+      levelData,
       onSubmit,
 
       refFormObserver,

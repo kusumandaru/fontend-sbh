@@ -72,6 +72,17 @@
                   title="Building Type Update"
                   :target="`master-row-${props.row.id}-building-icon-edit`"
                 />
+                <feather-icon
+                  :id="`master-row-${props.row.id}-building-icon-delete`"
+                  icon="TrashIcon"
+                  size="16"
+                  class="mx-1"
+                  @click="deleteBuilding(props.row.id)"
+                />
+                <b-tooltip
+                  title="Delete Building Type"
+                  :target="`master-row-${props.row.id}-building-icon-delete`"
+                />
               </template>
             </b-dropdown>
           </span>
@@ -141,10 +152,17 @@ import {
 import { VueGoodTable } from 'vue-good-table'
 import { ref, onUnmounted } from '@vue/composition-api'
 import store from '@/store/index'
+import router from '@/router'
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
+import { useToast } from 'vue-toastification/composition'
+import Vue from 'vue'
+import VueSweetalert2 from 'vue-sweetalert2'
 import 'vue-good-table/dist/vue-good-table.css'
 import useBuildingsList from './useBuildingsList'
 import masterStoreModule from './masterStoreModule'
 import BuildingListAddNew from './BuildingListAddNew.vue'
+
+Vue.use(VueSweetalert2)
 
 export default {
   components: {
@@ -168,6 +186,56 @@ export default {
       if (store.hasModule(BUILDING_APP_STORE_MODULE_NAME)) store.unregisterModule(BUILDING_APP_STORE_MODULE_NAME)
     })
 
+    const isLoading = ref(null)
+    const toast = useToast()
+    const deleteBuilding = buildingId => {
+      Vue.swal({
+        title: 'Are you sure?',
+        text: 'Delete this document building',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Delete',
+        customClass: {
+          confirmButton: 'btn btn-danger',
+          cancelButton: 'btn btn-outline-primary ml-1',
+        },
+        buttonsStyling: false,
+      }).then(result => {
+        if (result.value) {
+          isLoading.value = true
+
+          store.dispatch('app-building/deleteBuilding', {
+            buildingId,
+          })
+            .then(() => {
+              isLoading.value = false
+              toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Success',
+                  icon: 'InfoIcon',
+                  text: 'Successfully delete building type',
+                  variant: 'success',
+                },
+              })
+              router.go()
+            })
+            .catch(error => {
+              isLoading.value = false
+              toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Cannot delete',
+                  icon: 'AlertTriangleIcon',
+                  text: error.response.data.message,
+                  variant: 'danger',
+                },
+              })
+            })
+        }
+      })
+    }
+
     const isAddNewBuildingSidebarActive = ref(false)
 
     const {
@@ -179,6 +247,8 @@ export default {
       isAddNewBuildingSidebarActive,
       refBuildingListTable,
       refetchData,
+      deleteBuilding,
+      isLoading,
     }
   },
   data() {
@@ -239,6 +309,17 @@ export default {
     retrieveBuildingTypes() {
       this.$http.get('engine-rest/master/building_types')
         .then(res => { this.rows = res.data })
+    },
+    showToast(variant, titleToast, description) {
+      this.$toast({
+        component: ToastificationContent,
+        props: {
+          title: titleToast,
+          icon: 'BellIcon',
+          text: description,
+          variant,
+        },
+      })
     },
     /* eslint-disable object-shorthand */
     handleError(err) {

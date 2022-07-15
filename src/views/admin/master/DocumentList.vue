@@ -104,6 +104,18 @@
                   title="Document Update"
                   :target="`project-row-${props.row.id}-document-icon-edit`"
                 />
+
+                <feather-icon
+                  :id="`project-row-${props.row.id}-document-icon-delete`"
+                  icon="TrashIcon"
+                  size="16"
+                  class="mx-1"
+                  @click="deleteDocument(props.row.id)"
+                />
+                <b-tooltip
+                  title="Delete Document"
+                  :target="`project-row-${props.row.id}-document-icon-delete`"
+                />
               </template>
             </b-dropdown>
           </span>
@@ -285,6 +297,8 @@ import {
 } from 'bootstrap-vue'
 import { VueGoodTable } from 'vue-good-table'
 import store from '@/store/index'
+import Vue from 'vue'
+import VueSweetalert2 from 'vue-sweetalert2'
 import { ref, onUnmounted } from '@vue/composition-api'
 import 'vue-good-table/dist/vue-good-table.css'
 import router from '@/router'
@@ -294,6 +308,8 @@ import useDocumentsList from './useDocumentsList'
 import useBlockersList from './useBlockersList'
 import masterStoreModule from './masterStoreModule'
 import DocumentListAddNew from './DocumentListAddNew.vue'
+
+Vue.use(VueSweetalert2)
 
 export default {
   components: {
@@ -325,6 +341,56 @@ export default {
     })
 
     const isAddNewDocumentSidebarActive = ref(false)
+    const toast = useToast()
+    const isLoading = ref(null)
+
+    const deleteDocument = documentId => {
+      Vue.swal({
+        title: 'Are you sure?',
+        text: 'Delete this document',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Delete',
+        customClass: {
+          confirmButton: 'btn btn-danger',
+          cancelButton: 'btn btn-outline-primary ml-1',
+        },
+        buttonsStyling: false,
+      }).then(result => {
+        if (result.value) {
+          isLoading.value = true
+
+          store.dispatch('app-document/deleteDocument', {
+            documentId,
+          })
+            .then(() => {
+              isLoading.value = false
+              toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Success',
+                  icon: 'InfoIcon',
+                  text: 'Successfully delete document',
+                  variant: 'success',
+                },
+              })
+              router.go()
+            })
+            .catch(error => {
+              isLoading.value = false
+              toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Cannot delete',
+                  icon: 'AlertTriangleIcon',
+                  text: error.response.data.message,
+                  variant: 'danger',
+                },
+              })
+            })
+        }
+      })
+    }
 
     const {
       resolveProjectTypeIcon,
@@ -345,6 +411,8 @@ export default {
       resolveProjectTypeVariant,
       resolveProjectTypeTranslation,
       refetchData,
+      isLoading,
+      deleteDocument,
     }
   },
   data() {

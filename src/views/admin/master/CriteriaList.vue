@@ -128,6 +128,18 @@
                   title="Criteria Update"
                   :target="`project-row-${props.row.id}-criteria-icon-edit`"
                 />
+
+                <feather-icon
+                  :id="`project-row-${props.row.id}-criteria-icon-delete`"
+                  icon="TrashIcon"
+                  size="16"
+                  class="mx-1"
+                  @click="deleteCriteria(props.row.id)"
+                />
+                <b-tooltip
+                  title="Delete Criteria"
+                  :target="`project-row-${props.row.id}-criteria-icon-delete`"
+                />
               </template>
             </b-dropdown>
           </span>
@@ -196,6 +208,8 @@ import {
 } from 'bootstrap-vue'
 import { VueGoodTable } from 'vue-good-table'
 import store from '@/store/index'
+import Vue from 'vue'
+import VueSweetalert2 from 'vue-sweetalert2'
 import { ref, onUnmounted } from '@vue/composition-api'
 import 'vue-good-table/dist/vue-good-table.css'
 import router from '@/router'
@@ -204,6 +218,8 @@ import ToastificationContent from '@core/components/toastification/Toastificatio
 import useCriteriasList from './useCriteriasList'
 import masterStoreModule from './masterStoreModule'
 import CriteriaListAddNew from './CriteriaListAddNew.vue'
+
+Vue.use(VueSweetalert2)
 
 export default {
   components: {
@@ -233,6 +249,56 @@ export default {
     })
 
     const isAddNewCriteriaSidebarActive = ref(false)
+    const toast = useToast()
+    const isLoading = ref(null)
+
+    const deleteCriteria = criteriaId => {
+      Vue.swal({
+        title: 'Are you sure?',
+        text: 'Delete this criteria',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Delete',
+        customClass: {
+          confirmButton: 'btn btn-danger',
+          cancelButton: 'btn btn-outline-primary ml-1',
+        },
+        buttonsStyling: false,
+      }).then(result => {
+        if (result.value) {
+          isLoading.value = true
+
+          store.dispatch('app-criteria/deleteCriteria', {
+            criteriaId,
+          })
+            .then(() => {
+              isLoading.value = false
+              toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Success',
+                  icon: 'InfoIcon',
+                  text: 'Successfully delete criteria',
+                  variant: 'success',
+                },
+              })
+              router.go()
+            })
+            .catch(error => {
+              isLoading.value = false
+              toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Cannot delete',
+                  icon: 'AlertTriangleIcon',
+                  text: error.response.data.message,
+                  variant: 'danger',
+                },
+              })
+            })
+        }
+      })
+    }
 
     const exerciseTypeOptions = [
       { label: 'Prequisite', value: 'prequisite' },
@@ -256,6 +322,8 @@ export default {
       resolveExerciseTypeVariant,
       resolveExerciseTypeTranslation,
       refetchData,
+      isLoading,
+      deleteCriteria,
     }
   },
   data() {
