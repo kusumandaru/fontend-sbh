@@ -35,6 +35,22 @@
       </b-col>
 
       <b-col
+        v-if="adminShow"
+        lg="4"
+        md="6"
+      >
+        <tenant-list-statistic />
+      </b-col>
+
+      <b-col
+        v-if="adminShow"
+        lg="4"
+        md="6"
+      >
+        <user-list-statistic />
+      </b-col>
+
+      <b-col
         v-if="userShow"
         lg="4"
         md="6"
@@ -50,6 +66,8 @@ import { BRow, BCol } from 'bootstrap-vue'
 import StatisticCardHorizontal from '@core/components/statistics-cards/StatisticCardHorizontal.vue'
 import AdminTaskStatistic from './AdminTaskStatistic.vue'
 import ClientTaskStatistic from './ClientTaskStatistic.vue'
+import TenantListStatistic from './TenantListStatistic.vue'
+import UserListStatistic from './UserListStatistic.vue'
 
 export default {
   components: {
@@ -58,6 +76,8 @@ export default {
     StatisticCardHorizontal,
     AdminTaskStatistic,
     ClientTaskStatistic,
+    TenantListStatistic,
+    UserListStatistic,
   },
   data() {
     return {
@@ -100,7 +120,7 @@ export default {
         .then(res => { this.userCount = res.data })
     },
     retrieveUserCount() {
-      this.$http.get('engine-rest/user/users/count')
+      this.$http.get('engine-rest/user/user_count')
         .then(res => { this.userCount = res.data })
     },
     retrieveTenantCount() {

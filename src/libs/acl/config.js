@@ -44,6 +44,10 @@ export const roleAbility = {
       subject: 'admin-project-list',
     },
     {
+      action: 'manage',
+      subject: 'verificator-project-list',
+    },
+    {
       action: 'read',
       resource: 'home',
     },

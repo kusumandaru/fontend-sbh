@@ -16,6 +16,22 @@ export default [
     },
   },
   {
+    path: '/admin/project/self/list',
+    name: 'admin-self-project-list',
+    component: () => import('@/views/admin/project/SelfTaskList.vue'),
+    meta: {
+      pageTitle: 'List Own Project',
+      breadcrumb: [
+        {
+          text: 'List Own Project',
+          active: true,
+        },
+      ],
+      action: 'manage',
+      resource: 'admin-project-list',
+    },
+  },
+  {
     path: '/admin/project/preview/:id',
     name: 'admin-project-preview',
     component: () => import('@/views/admin/project/Preview.vue'),
