@@ -15,11 +15,26 @@ export default [
   },
 
   {
-    title: 'List Client Project',
-    route: 'client-project-list',
+    title: 'List Project',
     icon: 'BookIcon',
     resource: 'client-project-list',
     action: 'manage',
+    children: [
+      {
+        title: 'All Project',
+        route: 'client-project-list',
+        icon: 'BookIcon',
+        resource: 'client-project-list',
+        action: 'manage',
+      },
+      {
+        title: 'Self Task',
+        route: 'client-self-project-list',
+        icon: 'BookIcon',
+        resource: 'client-project-list',
+        action: 'manage',
+      },
+    ],
   },
   {
     title: 'List User',
@@ -30,10 +45,25 @@ export default [
   },
   {
     title: 'List Project',
-    route: 'admin-project-list',
     icon: 'BookIcon',
     resource: 'admin-project-list',
     action: 'manage',
+    children: [
+      {
+        title: 'All Project',
+        route: 'admin-project-list',
+        icon: 'BookIcon',
+        resource: 'admin-project-list',
+        action: 'manage',
+      },
+      {
+        title: 'Self Task',
+        route: 'admin-self-project-list',
+        icon: 'BookIcon',
+        resource: 'verificator-project-list',
+        action: 'manage',
+      },
+    ],
   },
   {
     title: 'User List',

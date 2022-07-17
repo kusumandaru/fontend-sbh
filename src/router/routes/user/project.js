@@ -32,6 +32,22 @@ export default [
     },
   },
   {
+    path: '/client/project/self/list',
+    name: 'client-self-project-list',
+    component: () => import('@/views/client/project/SelfTaskList.vue'),
+    meta: {
+      pageTitle: 'List Own Project',
+      breadcrumb: [
+        {
+          text: 'List Own Project',
+          active: true,
+        },
+      ],
+      action: 'read',
+      resource: 'client-project-list',
+    },
+  },
+  {
     path: '/client/project/preview/:id',
     name: 'client-project-preview',
     component: () => import('@/views/client/project/Preview.vue'),

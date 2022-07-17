@@ -24,7 +24,7 @@ export default [
         icon: 'BookIcon',
       },
       {
-        title: 'List Client Project',
+        title: 'List Project',
         route: 'client-project-list',
         icon: 'BookIcon',
       },
