@@ -13,6 +13,10 @@ export const roleAbility = {
     },
     {
       action: 'manage',
+      subject: 'admin-self-project-list',
+    },
+    {
+      action: 'manage',
       subject: 'admin-user-list',
     },
     {
@@ -34,6 +38,10 @@ export const roleAbility = {
       subject: 'admin-user-list',
     },
     {
+      action: 'manage',
+      subject: 'admin-self-project-list',
+    },
+    {
       action: 'read',
       resource: 'home',
     },
@@ -45,7 +53,7 @@ export const roleAbility = {
     },
     {
       action: 'manage',
-      subject: 'verificator-project-list',
+      subject: 'verificator-self-project-list',
     },
     {
       action: 'read',

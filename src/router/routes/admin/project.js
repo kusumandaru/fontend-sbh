@@ -16,9 +16,9 @@ export default [
     },
   },
   {
-    path: '/admin/project/self/list',
-    name: 'admin-self-project-list',
-    component: () => import('@/views/admin/project/SelfTaskList.vue'),
+    path: '/verificator/project/self/list',
+    name: 'verificator-self-project-list',
+    component: () => import('@/views/admin/project/SelfVerificatorTaskList.vue'),
     meta: {
       pageTitle: 'List Own Project',
       breadcrumb: [
@@ -28,7 +28,23 @@ export default [
         },
       ],
       action: 'manage',
-      resource: 'admin-project-list',
+      resource: 'verificator-self-project-list',
+    },
+  },
+  {
+    path: '/admin/project/self/list',
+    name: 'admin-self-project-list',
+    component: () => import('@/views/admin/project/SelfAdminTaskList.vue'),
+    meta: {
+      pageTitle: 'List Own Project',
+      breadcrumb: [
+        {
+          text: 'List Own Project',
+          active: true,
+        },
+      ],
+      action: 'manage',
+      resource: 'admin-self-project-list',
     },
   },
   {

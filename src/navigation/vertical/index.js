@@ -58,9 +58,16 @@ export default [
       },
       {
         title: 'Self Task',
+        route: 'verificator-self-project-list',
+        icon: 'BookIcon',
+        resource: 'verificator-self-project-list',
+        action: 'manage',
+      },
+      {
+        title: 'Self Task',
         route: 'admin-self-project-list',
         icon: 'BookIcon',
-        resource: 'verificator-project-list',
+        resource: 'admin-self-project-list',
         action: 'manage',
       },
     ],
