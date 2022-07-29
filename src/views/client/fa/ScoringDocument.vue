@@ -81,29 +81,20 @@ export default {
   },
   setup() {
     const FA_APP_STORE_MODULE_NAME = 'app-fa-scoring-document'
-    const blankAdminData = {
-      manager_name: '',
-      manager_signature: '',
-      registration_letter: '',
-      first_attachment: '',
-      second_attachment: '',
-      third_attachment: '',
-      dr_template_id: '',
-      fa_template_id: '',
-    }
-    const adminData = ref(JSON.parse(JSON.stringify(blankAdminData)))
     const isLoading = ref(null)
+    const projectData = ref(null)
 
     const downloadAllFiles = () => {
       isLoading.value = true
 
-      store.dispatch('app-fa-scoring-document/fetchAdminData')
+      store.dispatch('app-fa-scoring-document/fetchClientProject', { id: router.currentRoute.params.id })
         .then(response => {
-          adminData.value = response.data
+          projectData.value = response.data
 
           store.dispatch('app-fa-scoring-document/downloadAllScoringFiles', {
             id: router.currentRoute.params.id,
-            templateId: adminData.value.dr_template_id,
+            certificationTypeId: projectData.value.certification_type_id,
+            projectType: 'final_assessment',
           })
             .then(resp => {
               isLoading.value = false
@@ -132,10 +123,10 @@ export default {
         })
         .catch(error => {
           if (error.response.status === 404) {
-            adminData.value = undefined
+            projectData.value = undefined
           }
           if (error.response.status === 500) {
-            adminData.value = undefined
+            projectData.value = undefined
           }
         })
     }

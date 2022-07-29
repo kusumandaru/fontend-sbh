@@ -168,17 +168,6 @@ export default {
     }
     const projectAssessment = ref(JSON.parse(JSON.stringify(blankProjectAssessment)))
     const projectAttachments = ref(JSON.parse('[]'))
-    const blankAdminData = {
-      manager_name: '',
-      manager_signature: '',
-      registration_letter: '',
-      first_attachment: '',
-      second_attachment: '',
-      third_attachment: '',
-      dr_template_id: '',
-      fa_template_id: '',
-    }
-    const adminData = ref(JSON.parse(JSON.stringify(blankAdminData)))
     const scoringForm = ref(null)
 
     const isLoading = ref(null)
@@ -209,19 +198,6 @@ export default {
       .catch(error => {
         if (error.response.status === 404) {
           projectAttachments.value = undefined
-        }
-      })
-
-    store.dispatch('app-fa-upload-assessment/fetchAdminData')
-      .then(response => {
-        adminData.value = response.data
-      })
-      .catch(error => {
-        if (error.response.status === 404) {
-          adminData.value = undefined
-        }
-        if (error.response.status === 500) {
-          adminData.value = undefined
         }
       })
 
