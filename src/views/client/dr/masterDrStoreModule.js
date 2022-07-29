@@ -142,20 +142,20 @@ export default {
           .catch(error => reject(error))
       })
     },
-    downloadAllScoringFiles(ctx, { id, templateId }) {
+    downloadAllScoringFiles(ctx, { id, certificationTypeId, projectType }) {
       return new Promise((resolve, reject) => {
         axios({
           method: 'get',
-          url: `/engine-rest/new-building/project/attachments/${id}/archived_scoring/${templateId}`,
+          url: `/engine-rest/new-building/project/attachments/${id}/archived_scoring/${certificationTypeId}/${projectType}`,
           responseType: 'arraybuffer',
         }).then(response => resolve(response))
           .catch(error => reject(error))
       })
     },
-    fetchAdminData() {
+    fetchClientProject(ctx, { id }) {
       return new Promise((resolve, reject) => {
         axios
-          .get('engine-rest/master/master_admins')
+          .get(`engine-rest/new-building/variables/client/${id}`)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })

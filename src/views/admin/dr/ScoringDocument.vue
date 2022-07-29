@@ -95,29 +95,20 @@ export default {
     }
     const projectAssessment = ref(JSON.parse(JSON.stringify(blankProjectAssessment)))
     const projectAttachments = ref(JSON.parse('[]'))
-    const blankAdminData = {
-      manager_name: '',
-      manager_signature: '',
-      registration_letter: '',
-      first_attachment: '',
-      second_attachment: '',
-      third_attachment: '',
-      dr_template_id: '',
-      fa_template_id: '',
-    }
-    const adminData = ref(JSON.parse(JSON.stringify(blankAdminData)))
+    const projectData = ref(null)
 
     const isLoading = ref(null)
 
     const downloadAllFiles = () => {
       isLoading.value = true
 
-      store.dispatch('app-dr-scoring-form/fetchAdminData')
+      store.dispatch('app-dr-scoring-form/fetchAdminProject', { id: router.currentRoute.params.id })
         .then(response => {
-          adminData.value = response.data
+          projectData.value = response.data
           store.dispatch('app-dr-scoring-form/downloadAllScoringFiles', {
             id: router.currentRoute.params.id,
-            templateId: adminData.value.dr_template_id,
+            certificationTypeId: projectData.value.certification_type_id,
+            projectType: 'design_recognition',
           })
             .then(resp => {
               isLoading.value = false
@@ -146,10 +137,10 @@ export default {
         })
         .catch(error => {
           if (error.response.status === 404) {
-            adminData.value = undefined
+            projectData.value = undefined
           }
           if (error.response.status === 500) {
-            adminData.value = undefined
+            projectData.value = undefined
           }
         })
     }
