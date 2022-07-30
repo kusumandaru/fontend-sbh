@@ -142,11 +142,20 @@ export default {
           .catch(error => reject(error))
       })
     },
-    downloadAllScoringFiles(ctx, { id, certificationTypeId, projectType }) {
+    initDownloadAllScoringFiles(ctx, { id, certificationTypeId, projectType }) {
       return new Promise((resolve, reject) => {
         axios({
           method: 'get',
           url: `/engine-rest/new-building/project/attachments/${id}/archived_scoring/${certificationTypeId}/${projectType}`,
+        }).then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    downloadAllScoringFiles(ctx, { id, certificationTypeId, projectType }) {
+      return new Promise((resolve, reject) => {
+        axios({
+          method: 'get',
+          url: `/engine-rest/new-building/project/attachments/${id}/download_archived_scoring/${certificationTypeId}/${projectType}`,
           responseType: 'arraybuffer',
         }).then(response => resolve(response))
           .catch(error => reject(error))

@@ -31,6 +31,15 @@
         <b-button
           variant="light"
           :disabled="isLoading"
+          @click="initDownloadAllFiles()"
+        >
+          <feather-icon icon="ArchiveIcon" />
+          Archived All Final Assessment Document
+        </b-button>
+
+        <b-button
+          variant="light"
+          :disabled="isLoading"
           @click="downloadAllFiles()"
         >
           <feather-icon icon="ArchiveIcon" />
@@ -54,6 +63,7 @@ import {
   ref, onUnmounted,
 } from '@vue/composition-api'
 import router from '@/router'
+import { useToast } from 'vue-toastification/composition'
 import store from '@/store'
 import Ripple from 'vue-ripple-directive'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
@@ -83,6 +93,52 @@ export default {
     const FA_APP_STORE_MODULE_NAME = 'app-fa-scoring-document'
     const projectData = ref(null)
     const isLoading = ref(null)
+    const toast = useToast()
+
+    const initDownloadAllFiles = () => {
+      isLoading.value = true
+
+      store.dispatch('app-fa-scoring-document/fetchAdminProject', { id: router.currentRoute.params.id })
+        .then(response => {
+          projectData.value = response.data
+
+          store.dispatch('app-fa-scoring-document/initDownloadAllScoringFiles', {
+            id: router.currentRoute.params.id,
+            certificationTypeId: projectData.value.certification_type_id,
+            projectType: 'final_assessment',
+          })
+            .then(resp => {
+              isLoading.value = false
+              toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Success',
+                  icon: 'InfoIcon',
+                  text: resp.data,
+                  variant: 'success',
+                },
+              })
+            })
+            .catch(err => {
+              isLoading.value = false
+
+              if (err.response.status === 404) {
+                console.error(err)
+              }
+              if (err.response.status === 500) {
+                console.error(err)
+              }
+            })
+        })
+        .catch(error => {
+          if (error.response.status === 404) {
+            projectData.value = undefined
+          }
+          if (error.response.status === 500) {
+            projectData.value = undefined
+          }
+        })
+    }
 
     const downloadAllFiles = () => {
       isLoading.value = true
@@ -140,6 +196,7 @@ export default {
     })
 
     return {
+      initDownloadAllFiles,
       downloadAllFiles,
       isLoading,
     }
