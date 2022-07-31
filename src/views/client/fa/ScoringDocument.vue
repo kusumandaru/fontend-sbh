@@ -29,12 +29,22 @@
       >
         <span class="font-weight-bold" />
         <b-button
+          v-if="!startedArchive"
+          variant="light"
+          :disabled="isLoading"
+          @click="initDownloadAllFiles()"
+        >
+          <feather-icon icon="ArchiveIcon" />
+          Archived All Final Assessment Document
+        </b-button>
+
+        <b-button
           variant="light"
           :disabled="isLoading"
           @click="downloadAllFiles()"
         >
-          <feather-icon icon="ArchiveIcon" />
-          Download All Final Assessment Document
+          <feather-icon icon="DownloadIcon" />
+          Download
         </b-button>
       </b-card-text>
     </b-card>
@@ -54,6 +64,7 @@ import {
   ref, onUnmounted,
 } from '@vue/composition-api'
 import router from '@/router'
+import { useToast } from 'vue-toastification/composition'
 import store from '@/store'
 import Ripple from 'vue-ripple-directive'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
@@ -76,6 +87,12 @@ export default {
     }
   },
   computed: {
+    finishedArchive() {
+      return this.projectData != null && this.projectData.finish_archived_final_assessment === 'finished'
+    },
+    startedArchive() {
+      return this.projectData != null && this.projectData.finish_archived_final_assessment === 'started'
+    },
   },
   created() {
   },
@@ -83,53 +100,7 @@ export default {
     const FA_APP_STORE_MODULE_NAME = 'app-fa-scoring-document'
     const isLoading = ref(null)
     const projectData = ref(null)
-
-    const downloadAllFiles = () => {
-      isLoading.value = true
-
-      store.dispatch('app-fa-scoring-document/fetchClientProject', { id: router.currentRoute.params.id })
-        .then(response => {
-          projectData.value = response.data
-
-          store.dispatch('app-fa-scoring-document/downloadAllScoringFiles', {
-            id: router.currentRoute.params.id,
-            certificationTypeId: projectData.value.certification_type_id,
-            projectType: 'final_assessment',
-          })
-            .then(resp => {
-              isLoading.value = false
-
-              const blob = new Blob([resp.data], { type: 'application/zip' })
-              const url = window.URL.createObjectURL(blob)
-
-              // window.open(url)
-              const downloadLink = document.createElement('a')
-              downloadLink.href = url
-
-              document.body.appendChild(downloadLink)
-              downloadLink.click()
-              document.body.removeChild(downloadLink)
-            })
-            .catch(err => {
-              isLoading.value = false
-
-              if (err.response.status === 404) {
-                console.error(err)
-              }
-              if (err.response.status === 500) {
-                console.error(err)
-              }
-            })
-        })
-        .catch(error => {
-          if (error.response.status === 404) {
-            projectData.value = undefined
-          }
-          if (error.response.status === 500) {
-            projectData.value = undefined
-          }
-        })
-    }
+    const toast = useToast()
 
     // Register module
     if (!store.hasModule(FA_APP_STORE_MODULE_NAME)) store.registerModule(FA_APP_STORE_MODULE_NAME, masterFaStoreModule)
@@ -139,8 +110,99 @@ export default {
       if (store.hasModule(FA_APP_STORE_MODULE_NAME)) store.unregisterModule(FA_APP_STORE_MODULE_NAME)
     })
 
+    store.dispatch('app-fa-scoring-document/fetchClientProject', { id: router.currentRoute.params.id })
+      .then(response => {
+        projectData.value = response.data
+      })
+      .catch(error => {
+        if (error.response.status === 404) {
+          projectData.value = undefined
+        }
+        if (error.response.status === 500) {
+          projectData.value = undefined
+        }
+      })
+
+    const initDownloadAllFiles = () => {
+      isLoading.value = true
+
+      store.dispatch('app-fa-scoring-document/initDownloadAllScoringFiles', {
+        id: router.currentRoute.params.id,
+        certificationTypeId: projectData.value.certification_type_id,
+        projectType: 'final_assessment',
+      })
+        .then(resp => {
+          isLoading.value = false
+          toast({
+            component: ToastificationContent,
+            props: {
+              title: 'Success',
+              icon: 'InfoIcon',
+              text: resp.data.message,
+              variant: 'success',
+            },
+          })
+        })
+        .catch(err => {
+          isLoading.value = false
+
+          if (err.response.status === 404) {
+            console.error(err)
+          }
+          if (err.response.status === 500) {
+            console.error(err)
+          }
+        })
+    }
+
+    const downloadAllFiles = () => {
+      isLoading.value = true
+
+      store.dispatch('app-fa-scoring-document/downloadAllScoringFiles', {
+        id: router.currentRoute.params.id,
+        certificationTypeId: projectData.value.certification_type_id,
+        projectType: 'final_assessment',
+      })
+        .then(resp => {
+          isLoading.value = false
+
+          const blob = new Blob([resp.data], { type: 'application/zip' })
+          const url = window.URL.createObjectURL(blob)
+
+          // window.open(url)
+          const downloadLink = document.createElement('a')
+          downloadLink.href = url
+
+          document.body.appendChild(downloadLink)
+          downloadLink.click()
+          document.body.removeChild(downloadLink)
+        })
+        .catch(err => {
+          isLoading.value = false
+          if (err.response.status === 400) {
+            toast({
+              component: ToastificationContent,
+              props: {
+                title: 'Archiving file still on background process',
+                icon: 'BellIcon',
+                text: 'Please waiting',
+                variant: 'danger',
+              },
+            })
+          }
+          if (err.response.status === 404) {
+            console.error(err)
+          }
+          if (err.response.status === 500) {
+            console.error(err)
+          }
+        })
+    }
+
     return {
+      initDownloadAllFiles,
       downloadAllFiles,
+      projectData,
       isLoading,
     }
   },

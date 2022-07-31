@@ -15,7 +15,7 @@ export default [
   },
 
   {
-    title: 'List Project',
+    title: 'Client List Project',
     icon: 'BookIcon',
     resource: 'client-project-list',
     action: 'manage',
@@ -28,7 +28,7 @@ export default [
         action: 'manage',
       },
       {
-        title: 'Self Task',
+        title: 'Client Task',
         route: 'client-self-project-list',
         icon: 'BookIcon',
         resource: 'client-project-list',
@@ -44,7 +44,7 @@ export default [
     action: 'manage',
   },
   {
-    title: 'List Project',
+    title: 'Admin List Project',
     icon: 'BookIcon',
     resource: 'admin-project-list',
     action: 'manage',
@@ -57,14 +57,14 @@ export default [
         action: 'manage',
       },
       {
-        title: 'Self Task',
+        title: 'Verificator Task',
         route: 'verificator-self-project-list',
         icon: 'BookIcon',
         resource: 'verificator-self-project-list',
         action: 'manage',
       },
       {
-        title: 'Self Task',
+        title: 'Admin Task',
         route: 'admin-self-project-list',
         icon: 'BookIcon',
         resource: 'admin-self-project-list',
