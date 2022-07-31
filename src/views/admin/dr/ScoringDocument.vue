@@ -26,6 +26,7 @@
       >
         <span class="font-weight-bold" />
         <b-button
+          v-if="!startedArchive"
           variant="light"
           :disabled="isLoading"
           @click="initDownloadAllFiles()"
@@ -39,8 +40,8 @@
           :disabled="isLoading"
           @click="downloadAllFiles()"
         >
-          <feather-icon icon="ArchiveIcon" />
-          Download All Design Recognition Document
+          <feather-icon icon="DownloadIcon" />
+          Download
         </b-button>
       </b-card-text>
     </b-card>
@@ -91,11 +92,17 @@ export default {
     attachmentExist() {
       return Array.isArray(this.projectAttachments) && this.projectAttachments.length > 0
     },
+    finishedArchive() {
+      return this.projectData != null && this.projectData.finish_archived_design_recognition === 'finished'
+    },
+    startedArchive() {
+      return this.projectData != null && this.projectData.finish_archived_design_recognition === 'started'
+    },
   },
   created() {
   },
   setup() {
-    const DR_APP_STORE_MODULE_NAME = 'app-dr-scoring-form'
+    const DR_APP_STORE_MODULE_NAME = 'app-dr-scoring-document'
     const blankProjectAssessment = {
       temporary_score: 0,
       potential_score: 0,
@@ -110,114 +117,6 @@ export default {
     const isLoading = ref(null)
     const toast = useToast()
 
-    const initDownloadAllFiles = () => {
-      isLoading.value = true
-
-      store.dispatch('app-dr-scoring-form/fetchAdminProject', { id: router.currentRoute.params.id })
-        .then(response => {
-          projectData.value = response.data
-
-          store.dispatch('app-dr-scoring-form/initDownloadAllScoringFiles', {
-            id: router.currentRoute.params.id,
-            certificationTypeId: projectData.value.certification_type_id,
-            projectType: 'design_recognition',
-          })
-            .then(resp => {
-              isLoading.value = false
-              toast({
-                component: ToastificationContent,
-                props: {
-                  title: 'Success',
-                  icon: 'InfoIcon',
-                  text: resp.data.message,
-                  variant: 'success',
-                },
-              })
-            })
-            .catch(err => {
-              isLoading.value = false
-
-              if (err.response.status === 404) {
-                console.error(err)
-              }
-              if (err.response.status === 500) {
-                console.error(err)
-              }
-            })
-        })
-        .catch(error => {
-          if (error.response.status === 404) {
-            projectData.value = undefined
-          }
-          if (error.response.status === 500) {
-            projectData.value = undefined
-          }
-        })
-    }
-
-    const downloadAllFiles = () => {
-      isLoading.value = true
-
-      store.dispatch('app-dr-scoring-form/fetchAdminProject', { id: router.currentRoute.params.id })
-        .then(response => {
-          projectData.value = response.data
-          store.dispatch('app-dr-scoring-form/downloadAllScoringFiles', {
-            id: router.currentRoute.params.id,
-            certificationTypeId: projectData.value.certification_type_id,
-            projectType: 'design_recognition',
-          })
-            .then(resp => {
-              isLoading.value = false
-
-              const blob = new Blob([resp.data], { type: 'application/zip' })
-              const url = window.URL.createObjectURL(blob)
-
-              // window.open(url)
-              const downloadLink = document.createElement('a')
-              downloadLink.href = url
-
-              document.body.appendChild(downloadLink)
-              downloadLink.click()
-              document.body.removeChild(downloadLink)
-            })
-            .catch(err => {
-              isLoading.value = false
-              if (err.response.status === 400) {
-                console.error(err)
-              }
-              if (err.response.status === 404) {
-                console.error(err)
-              }
-              if (err.response.status === 500) {
-                console.error(err)
-              }
-            })
-        })
-        .catch(error => {
-          isLoading.value = false
-
-          if (error.response.status === 400) {
-            projectData.value = undefined
-            console.log(error)
-            toast({
-              component: ToastificationContent,
-              props: {
-                title: 'Success',
-                icon: 'InfoIcon',
-                text: error.response.data.message,
-                variant: 'success',
-              },
-            })
-          }
-          if (error.response.status === 404) {
-            projectData.value = undefined
-          }
-          if (error.response.status === 500) {
-            projectData.value = undefined
-          }
-        })
-    }
-
     // Register module
     if (!store.hasModule(DR_APP_STORE_MODULE_NAME)) store.registerModule(DR_APP_STORE_MODULE_NAME, masterDrStoreModule)
 
@@ -226,7 +125,96 @@ export default {
       if (store.hasModule(DR_APP_STORE_MODULE_NAME)) store.unregisterModule(DR_APP_STORE_MODULE_NAME)
     })
 
-    store.dispatch('app-dr-scoring-form/fetchProjectAssessment', { taskId: router.currentRoute.params.id })
+    store.dispatch('app-dr-scoring-document/fetchAdminProject', { id: router.currentRoute.params.id })
+      .then(response => {
+        projectData.value = response.data
+      })
+      .catch(error => {
+        if (error.response.status === 404) {
+          projectData.value = undefined
+        }
+        if (error.response.status === 500) {
+          projectData.value = undefined
+        }
+      })
+
+    const initDownloadAllFiles = () => {
+      isLoading.value = true
+
+      store.dispatch('app-dr-scoring-document/initDownloadAllScoringFiles', {
+        id: router.currentRoute.params.id,
+        certificationTypeId: projectData.value.certification_type_id,
+        projectType: 'design_recognition',
+      })
+        .then(resp => {
+          isLoading.value = false
+          toast({
+            component: ToastificationContent,
+            props: {
+              title: 'Success',
+              icon: 'InfoIcon',
+              text: resp.data.message,
+              variant: 'success',
+            },
+          })
+        })
+        .catch(err => {
+          isLoading.value = false
+
+          if (err.response.status === 404) {
+            console.error(err)
+          }
+          if (err.response.status === 500) {
+            console.error(err)
+          }
+        })
+    }
+
+    const downloadAllFiles = () => {
+      isLoading.value = true
+
+      store.dispatch('app-dr-scoring-document/downloadAllScoringFiles', {
+        id: router.currentRoute.params.id,
+        certificationTypeId: projectData.value.certification_type_id,
+        projectType: 'design_recognition',
+      })
+        .then(resp => {
+          isLoading.value = false
+
+          const blob = new Blob([resp.data], { type: 'application/zip' })
+          const url = window.URL.createObjectURL(blob)
+
+          // window.open(url)
+          const downloadLink = document.createElement('a')
+          downloadLink.href = url
+
+          document.body.appendChild(downloadLink)
+          downloadLink.click()
+          document.body.removeChild(downloadLink)
+        })
+        .catch(err => {
+          isLoading.value = false
+          if (err.response.status === 400) {
+            toast({
+              component: ToastificationContent,
+              props: {
+                title: 'Archiving file still on background process',
+                icon: 'BellIcon',
+                text: 'Please waiting',
+                variant: 'danger',
+              },
+            })
+          }
+          if (err.response.status === 404) {
+            console.error(err)
+          }
+          if (err.response.status === 500) {
+            console.error(err)
+          }
+        })
+    }
+
+    store.dispatch('app-dr-scoring-document/fetchProjectAssessment', { taskId: router.currentRoute.params.id })
       .then(response => {
         // eslint-disable-next-line prefer-destructuring
         projectAssessment.value = response.data[0]
@@ -237,7 +225,7 @@ export default {
         }
       })
 
-    store.dispatch('app-dr-scoring-form/fetchProjectAttachments', { taskId: router.currentRoute.params.id })
+    store.dispatch('app-dr-scoring-document/fetchProjectAttachments', { taskId: router.currentRoute.params.id })
       .then(response => {
         projectAttachments.value = response.data
       })
@@ -248,6 +236,7 @@ export default {
       })
 
     return {
+      projectData,
       projectAssessment,
       projectAttachments,
       downloadAllFiles,
@@ -265,24 +254,6 @@ export default {
           text: description,
           variant,
         },
-      })
-    },
-    getAttachment(attachment) {
-      this.isLoading = true
-      this.$http.get(`/engine-rest/new-building/assessment_attachment/${attachment.id}`).then(response => {
-        // window.open(response.data.url)
-        const downloadLink = document.createElement('a')
-        downloadLink.href = response.data.url
-        downloadLink.download = response.data.filename
-
-        document.body.appendChild(downloadLink)
-        downloadLink.click()
-        document.body.removeChild(downloadLink)
-
-        this.isLoading = false
-      }).catch(() => {
-        this.isLoading = false
-        this.showToast('danger', 'Cannot Load Attachment', 'There is error when load attachment, contact administrator')
       })
     },
   },
