@@ -15,6 +15,9 @@
       <b-card-text>
         <h5>
           Waiting to process ...
+          <div>
+            Processing {{ loadedSize }} byte data
+          </div>
           <b-spinner v-show="isLoading" />
         </h5>
       </b-card-text>
@@ -38,7 +41,7 @@
         <b-button
           variant="light"
           :disabled="isLoading"
-          @click="downloadAllFiles()"
+          @click="downloadArchivedProject()"
         >
           <feather-icon icon="DownloadIcon" />
           Download
@@ -86,6 +89,7 @@ export default {
         { key: 'version', label: 'Version' },
         { key: 'created_at', label: 'Created At' },
       ],
+      loadedSize: 0,
     }
   },
   computed: {
@@ -257,23 +261,42 @@ export default {
         },
       })
     },
-    getAttachment(attachment) {
+    downloadArchivedProject() {
       this.isLoading = true
-      this.$http.get(`/engine-rest/new-building/assessment_attachment/${attachment.id}`).then(response => {
-        // window.open(response.data.url)
-        const downloadLink = document.createElement('a')
-        downloadLink.href = response.data.url
-        downloadLink.download = response.data.filename
+      const vm = this
+      const config = {
+        responseType: 'arraybuffer',
+        onDownloadProgress: progressEvent => {
+          vm.loadedSize = progressEvent.loaded
+        },
+      }
 
-        document.body.appendChild(downloadLink)
-        downloadLink.click()
-        document.body.removeChild(downloadLink)
+      this.$http.get(`/engine-rest/new-building/project/attachments/${router.currentRoute.params.id}/download_archived_scoring/${this.projectData.certification_type_id}/design_recognition`, config)
+        .then(resp => {
+          this.isLoading = false
+          const blob = new Blob([resp.data], { type: 'application/zip' })
+          const url = window.URL.createObjectURL(blob)
 
-        this.isLoading = false
-      }).catch(() => {
-        this.isLoading = false
-        this.showToast('danger', 'Cannot Load Attachment', 'There is error when load attachment, contact administrator')
-      })
+          // window.open(url)
+          const downloadLink = document.createElement('a')
+          downloadLink.href = url
+
+          document.body.appendChild(downloadLink)
+          downloadLink.click()
+          document.body.removeChild(downloadLink)
+        })
+        .catch(err => {
+          this.isLoading = false
+          if (err.response.status === 400) {
+            this.showToast('danger', 'Archiving file still on background process', 'Please waiting')
+          }
+          if (err.response.status === 404) {
+            console.error(err)
+          }
+          if (err.response.status === 500) {
+            console.error(err)
+          }
+        })
     },
   },
 }
