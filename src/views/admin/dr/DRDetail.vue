@@ -284,12 +284,21 @@
           <div v-if="criteria.criteria.additional_notes">
             <label for="textarea-default">Internal Notes</label>
             <quill-editor
-              v-model="criteria.criteria.additional_notes"
-              :disabled="disabled"
+              v-model="criteria.additional_notes"
+              :disabled="readOnly"
               :exercise="snowOption"
             />
           <!-- <span v-html="criteria.placeholder"></span> -->
           </div>
+          <b-col cols="12">
+            <b-button
+              v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+              variant="primary"
+              @click="submitNote(criteria)"
+            >
+              Update Note
+            </b-button>
+          </b-col>
           <!-- placeholder -->
 
           <!-- Spacer -->
@@ -607,6 +616,27 @@ export default {
         }).catch(() => {
           this.isLoading = false
           this.showToast('danger', 'Cannot Save', 'There is error when submit comment, contact administrator')
+        })
+    },
+    submitNote(criteria) {
+      this.isLoading = true
+      this.updateCriteriaId(criteria)
+
+      const initAdditionalNoteData = {
+        additionalNotes: criteria.additional_notes,
+      }
+
+      // eslint-disable-next-line
+      const additionalNoteData = ref(JSON.parse(JSON.stringify(initAdditionalNoteData)))
+
+      this.$http.post(`/engine-rest/new-building/criteria_scoring/${criteria.id}/additional_notes`, additionalNoteData.value)
+        .then(() => {
+          this.isLoading = false
+          this.rerenderCriteria()
+          this.showToast('success', 'Saved', 'Internal note successfully saved')
+        }).catch(() => {
+          this.isLoading = false
+          this.showToast('danger', 'Cannot Save', 'There is error when submit internal note, contact administrator')
         })
     },
     uploadFile(document, criteria) {
