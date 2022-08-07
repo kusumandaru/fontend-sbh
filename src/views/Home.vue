@@ -51,6 +51,22 @@
       </b-col>
 
       <b-col
+        v-if="verificatorShow"
+        lg="4"
+        md="6"
+      >
+        <verificator-task-statistic />
+      </b-col>
+
+      <b-col
+        v-if="verificatorShow"
+        lg="4"
+        md="6"
+      >
+        <verificator-own-task-statistic />
+      </b-col>
+
+      <b-col
         v-if="userShow"
         lg="4"
         md="6"
@@ -67,6 +83,8 @@ import StatisticCardHorizontal from '@core/components/statistics-cards/Statistic
 import AdminTaskStatistic from './AdminTaskStatistic.vue'
 import ClientTaskStatistic from './ClientTaskStatistic.vue'
 import TenantListStatistic from './TenantListStatistic.vue'
+import VerificatorTaskStatistic from './VerificatorTaskStatistic.vue'
+import VerificatorOwnTaskStatistic from './VerificatorOwnTaskStatistic.vue'
 import UserListStatistic from './UserListStatistic.vue'
 
 export default {
@@ -77,6 +95,8 @@ export default {
     AdminTaskStatistic,
     ClientTaskStatistic,
     TenantListStatistic,
+    VerificatorTaskStatistic,
+    VerificatorOwnTaskStatistic,
     UserListStatistic,
   },
   data() {
@@ -86,6 +106,7 @@ export default {
       user: null,
       adminShow: false,
       userShow: false,
+      verificatorShow: false,
     }
   },
   computed: {
@@ -93,7 +114,10 @@ export default {
       return this.user.group.id === 'superuser' || this.user.group.id === 'user'
     },
     adminRole() {
-      return this.user.group.id === 'camunda-admin' || this.user.group.id === 'verificator' || this.user.group.id === 'admin'
+      return this.user.group.id === 'camunda-admin' || this.user.group.id === 'admin'
+    },
+    verificatorRole() {
+      return this.user.group.id === 'verificator'
     },
   },
   created() {
@@ -112,6 +136,9 @@ export default {
             this.retrieveUserCount()
             this.retrieveTenantCount()
             this.adminShow = true
+          }
+          if (this.verificatorRole) {
+            this.verificatorShow = true
           }
         })
     },

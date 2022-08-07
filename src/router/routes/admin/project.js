@@ -16,6 +16,22 @@ export default [
     },
   },
   {
+    path: '/verificator/project/list',
+    name: 'verificator-project-list',
+    component: () => import('@/views/admin/project/VerificatorList.vue'),
+    meta: {
+      pageTitle: 'List Project',
+      breadcrumb: [
+        {
+          text: 'List Project',
+          active: true,
+        },
+      ],
+      action: 'manage',
+      resource: 'verificator-project-list',
+    },
+  },
+  {
     path: '/verificator/project/self/list',
     name: 'verificator-self-project-list',
     component: () => import('@/views/admin/project/SelfVerificatorTaskList.vue'),

@@ -22,6 +22,14 @@ export default {
           .catch(error => reject(error))
       })
     },
+    deleteUser(ctx, { userId }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .delete(`/engine-rest/user/members/${userId}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
     fetchGroups() {
       return new Promise((resolve, reject) => {
         axios

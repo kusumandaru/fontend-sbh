@@ -19,7 +19,7 @@ export default [
         icon: 'BookIcon',
       },
       {
-        title: 'List Vendor',
+        title: 'List Project',
         route: 'admin-project-list',
         icon: 'BookIcon',
       },

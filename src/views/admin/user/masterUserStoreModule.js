@@ -46,6 +46,14 @@ export default {
           .catch(error => reject(error))
       })
     },
+    deleteUser(ctx, { userId }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .delete(`/engine-rest/user/users/${userId}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
     addUser(ctx, userData) {
       return new Promise((resolve, reject) => {
         axios

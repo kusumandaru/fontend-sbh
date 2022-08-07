@@ -86,6 +86,29 @@
             </b-form-group>
           </validation-provider>
 
+          <!-- Need Design Recognition -->
+          <validation-provider
+            #default="validationContext"
+            name="Need Design Recognition"
+          >
+            <b-form-group
+              label="Need Design Recognition"
+              label-for="need-design-recognition"
+            >
+              <b-form-checkbox
+                id="need-design-recognition"
+                v-model="certificationData.designRecognition"
+                switch
+                inline
+              >
+                Need Design Recognition?
+              </b-form-checkbox>
+              <b-form-invalid-feedback>
+                {{ validationContext.errors[0] }}
+              </b-form-invalid-feedback>
+            </b-form-group>
+          </validation-provider>
+
           <!-- Active -->
           <validation-provider
             #default="validationContext"
@@ -191,6 +214,7 @@ export default {
       certificationCode: '',
       certificationName: '',
       masterVendorID: `${router.currentRoute.params.vendorId}`,
+      designRecognition: true,
       active: true,
     }
 
