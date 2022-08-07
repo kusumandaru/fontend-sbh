@@ -61,15 +61,27 @@
             >
               <template v-slot:button-content>
                 <feather-icon
-                  :id="`master-row-${props.row.username}-user-icon-edit`"
+                  :id="`master-row-${props.row.id}-user-icon-edit`"
                   icon="EditIcon"
                   size="16"
                   class="mx-1"
-                  @click="$router.push({ name: 'admin-user-edit', params: { userId: props.row.username }})"
+                  @click="$router.push({ name: 'admin-user-edit', params: { userId: props.row.id }})"
                 />
                 <b-tooltip
                   title="User Update"
                   :target="`master-row-${props.row.id}-user-icon-edit`"
+                />
+
+                <feather-icon
+                  :id="`master-row-${props.row.id}-user-icon-delete`"
+                  icon="DeleteIcon"
+                  size="16"
+                  class="mx-1"
+                  @click="deleteUser(props.row.id)"
+                />
+                <b-tooltip
+                  title="User Delete"
+                  :target="`master-row-${props.row.id}-user-icon-delete`"
                 />
               </template>
             </b-dropdown>
@@ -138,12 +150,19 @@ import {
   BPagination, BFormInput, BFormSelect, BDropdown, BButton, BTooltip,
 } from 'bootstrap-vue'
 import { VueGoodTable } from 'vue-good-table'
-import { ref, onUnmounted } from '@vue/composition-api'
 import store from '@/store/index'
+import router from '@/router'
+import Vue from 'vue'
+import VueSweetalert2 from 'vue-sweetalert2'
+import { ref, onUnmounted } from '@vue/composition-api'
 import 'vue-good-table/dist/vue-good-table.css'
+import { useToast } from 'vue-toastification/composition'
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 import useUsersList from './useUsersList'
 import masterUserStoreModule from './masterUserStoreModule'
 import UserListAddNew from './UserListAddNew.vue'
+
+Vue.use(VueSweetalert2)
 
 export default {
   components: {
@@ -168,6 +187,56 @@ export default {
     })
 
     const isAddNewUserSidebarActive = ref(false)
+    const toast = useToast()
+    const isLoading = ref(null)
+
+    const deleteUser = userId => {
+      Vue.swal({
+        title: 'Are you sure?',
+        text: 'Delete this user',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Delete',
+        customClass: {
+          confirmButton: 'btn btn-danger',
+          cancelButton: 'btn btn-outline-primary ml-1',
+        },
+        buttonsStyling: false,
+      }).then(result => {
+        if (result.value) {
+          isLoading.value = true
+
+          store.dispatch('app-user-admin/deleteUser', {
+            userId,
+          })
+            .then(() => {
+              isLoading.value = false
+              toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Success',
+                  icon: 'InfoIcon',
+                  text: 'Successfully delete user',
+                  variant: 'success',
+                },
+              })
+              router.go()
+            })
+            .catch(error => {
+              isLoading.value = false
+              toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Cannot delete',
+                  icon: 'AlertTriangleIcon',
+                  text: error.response.data.message,
+                  variant: 'danger',
+                },
+              })
+            })
+        }
+      })
+    }
 
     const {
       refetchData,
@@ -178,6 +247,8 @@ export default {
       isAddNewUserSidebarActive,
       refUserListTable,
       refetchData,
+      deleteUser,
+      isLoading,
     }
   },
   data() {

@@ -9,15 +9,15 @@ export const roleAbility = {
   'camunda-admin': [
     {
       action: 'manage',
+      subject: 'admin-user-list',
+    },
+    {
+      action: 'manage',
       subject: 'admin-project-list',
     },
     {
       action: 'manage',
       subject: 'admin-self-project-list',
-    },
-    {
-      action: 'manage',
-      subject: 'admin-user-list',
     },
     {
       action: 'manage',
@@ -31,11 +31,11 @@ export const roleAbility = {
   admin: [
     {
       action: 'manage',
-      subject: 'admin-project-list',
+      subject: 'admin-user-list',
     },
     {
       action: 'manage',
-      subject: 'admin-user-list',
+      subject: 'admin-project-list',
     },
     {
       action: 'manage',
@@ -49,7 +49,7 @@ export const roleAbility = {
   verificator: [
     {
       action: 'manage',
-      subject: 'admin-project-list',
+      subject: 'verificator-project-list',
     },
     {
       action: 'manage',

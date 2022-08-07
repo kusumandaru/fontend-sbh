@@ -83,6 +83,34 @@
               </validation-provider>
             </b-col>
 
+            <!-- Field: Show Design Recognition -->
+            <b-col
+              cols="12"
+              md="4"
+            >
+              <validation-provider
+                #default="validationContext"
+                name="Show Design Recognition"
+              >
+                <b-form-group
+                  label="Show Design Recognition?"
+                  label-for="certification-design-recognition"
+                >
+                  <b-form-checkbox
+                    id="certification-design-recognition"
+                    v-model="certificationData.design_recognition"
+                    switch
+                    inline
+                  >
+                    Need Design Recognition?
+                  </b-form-checkbox>
+                  <b-form-invalid-feedback>
+                    {{ validationContext.errors[0] }}
+                  </b-form-invalid-feedback>
+                </b-form-group>
+              </validation-provider>
+            </b-col>
+
             <!-- Field: Active-->
             <b-col
               cols="12"
@@ -180,6 +208,7 @@ export default {
       certification_code: '',
       master_vendor_id: '',
       active: true,
+      design_recognition: true,
     }
 
     const certificationData = ref(JSON.parse(JSON.stringify(blankCertificationData)))
@@ -191,6 +220,7 @@ export default {
       certificationData.value.certificationName = certificationData.value.certification_name
       certificationData.value.certificationCode = certificationData.value.certification_code
       certificationData.value.masterVendorID = certificationData.value.master_vendor_id
+      certificationData.value.designRecognition = certificationData.value.design_recognition
 
       store.dispatch('app-certification/editCertification', { certificationTypeId: router.currentRoute.params.certificationTypeId, certificationData: certificationData.value })
         .then(() => {

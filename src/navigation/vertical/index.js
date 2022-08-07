@@ -44,7 +44,7 @@ export default [
     action: 'manage',
   },
   {
-    title: 'Admin List Project',
+    title: 'Admin Project',
     icon: 'BookIcon',
     resource: 'admin-project-list',
     action: 'manage',
@@ -57,17 +57,32 @@ export default [
         action: 'manage',
       },
       {
-        title: 'Verificator Task',
-        route: 'verificator-self-project-list',
-        icon: 'BookIcon',
-        resource: 'verificator-self-project-list',
-        action: 'manage',
-      },
-      {
         title: 'Admin Task',
         route: 'admin-self-project-list',
         icon: 'BookIcon',
         resource: 'admin-self-project-list',
+        action: 'manage',
+      },
+    ],
+  },
+  {
+    title: 'Verificator Project',
+    icon: 'BookIcon',
+    resource: 'verificator-project-list',
+    action: 'manage',
+    children: [
+      {
+        title: 'All Project',
+        route: 'verificator-project-list',
+        icon: 'BookIcon',
+        resource: 'verificator-project-list',
+        action: 'manage',
+      },
+      {
+        title: 'Verificator Task',
+        route: 'verificator-self-project-list',
+        icon: 'BookIcon',
+        resource: 'verificator-self-project-list',
         action: 'manage',
       },
     ],

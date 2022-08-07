@@ -656,6 +656,8 @@ export default {
         { task: 'design-recognition-trial-revision', role: 'client', title: 'Revisi DR oleh client' },
         { task: 'design-recognition-evaluation-assessment', role: 'admin', title: 'Menunggu hasil sidang EAB DR' },
         { task: 'final-assessment-evaluation-assessment', role: 'admin', title: 'Menunggu hasil sidang EAB FA' },
+        { task: 'design-recognition-letter', role: 'admin', title: 'Proyek ini sudah dinyatakan lulus dalam sidang tahap design recognition, selanjutnya PT. Sertifikasi Bangunan Hijau akan mengirimkan surat pernyataan design recognition.' },
+        { task: 'on-site-verification', role: 'verificator', title: 'Proyek ini sudah dapat melanjutkan tahap on site verification, silahkan menghubungi admin melalui email untuk pendjadwalan' },
       ],
       userData: JSON.parse(localStorage.getItem('userData')),
       alertKey: 0,
@@ -670,7 +672,7 @@ export default {
       return (this.adminTasks.includes(this.projectData.definition_key) && this.userData.roles.join() !== 'verificator') || (this.verificatorTasks.includes(this.projectData.definition_key) && this.userData.roles.join() === 'verificator')
     },
     continueFAShow() {
-      return ['design-recognition-letter'].includes(this.projectData.definition_key)
+      return (['design-recognition-letter'].includes(this.projectData.definition_key) && this.userData.roles.join() !== 'verificator')
     },
     agreementShow() {
       return this.agreementTasks.includes(this.projectData.definition_key)
@@ -685,22 +687,22 @@ export default {
       return ['on-site-verification'].includes(this.projectData.definition_key) && this.userData.roles.join() === 'verificator'
     },
     designRecognitionReviewShow() {
-      return ['design-recognition-review'].includes(this.projectData.definition_key) && this.userData.roles.join() === 'verificator'
+      return ['design-recognition-review', 'design-recognition-revision-review'].includes(this.projectData.definition_key) && this.userData.roles.join() === 'verificator'
     },
     designRecognitionHistoryShow() {
       return this.designRecognitionHistoryTasks.includes(this.projectData.definition_key) && this.projectData.design_recognition
     },
     designRecognitionEvaluationAssessmentShow() {
-      return ['design-recognition-evaluation-assessment'].includes(this.projectData.definition_key)
+      return (['design-recognition-evaluation-assessment'].includes(this.projectData.definition_key) && this.userData.roles.join() !== 'verificator')
     },
     finalAssessmentReviewShow() {
-      return ['final-assessment-review'].includes(this.projectData.definition_key) && this.userData.roles.join() === 'verificator'
+      return ['final-assessment-review', 'final-assessment-revision-review'].includes(this.projectData.definition_key) && this.userData.roles.join() === 'verificator'
     },
     finalAssessmentHistoryShow() {
       return this.finalAssessmentHistoryTasks.includes(this.projectData.definition_key)
     },
     finalAssessmentEvaluationAssessmentShow() {
-      return ['final-assessment-evaluation-assessment'].includes(this.projectData.definition_key)
+      return (['final-assessment-evaluation-assessment'].includes(this.projectData.definition_key) && this.userData.roles.join() !== 'verificator')
     },
     deleteShow() {
       return !['final-assessment-letter'].includes(this.projectData.definition_key) && this.userData.roles.join() === 'camunda-admin'

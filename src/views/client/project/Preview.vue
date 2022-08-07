@@ -679,6 +679,8 @@ export default {
         { task: 'design-recognition-trial-revision', role: 'client', title: 'Revisi DR setelah sidang' },
         { task: 'design-recognition-evaluation-assessment', role: 'client', title: 'Menunggu hasil sidang EAB DR' },
         { task: 'final-assessment-evaluation-assessment', role: 'client', title: 'Menunggu hasil sidang EAB FA' },
+        { task: 'design-recognition-letter', role: 'admin', title: 'Proyek ini sudah dinyatakan lulus dalam sidang tahap design recognition, selanjutnya PT. Sertifikasi Bangunan Hijau akan mengirimkan surat pernyataan design recognition.' },
+        { task: 'on-site-verification', role: 'verificator', title: 'Proyek ini sudah dapat melanjutkan tahap on site verification, silahkan menghubungi admin melalui email untuk pendjadwalan' },
       ],
     }
   },

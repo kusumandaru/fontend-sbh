@@ -18,6 +18,7 @@
                 label="certification_name"
                 :options="certificationOption"
                 :selectable="option => ! option.certification_code.includes('select_value')"
+                @input="assignDesignRecognition"
               />
               <small class="text-danger">{{ errors[0] }}</small>
             </validation-provider>
@@ -324,7 +325,10 @@
         </b-col>
 
         <!--Design Recognition-->
-        <b-col cols="12">
+        <b-col
+          v-if="showDesignRecognition"
+          cols="12"
+        >
           <b-form-group
             label="Use Design Recognition Phase ?"
             label-for="designRecognition"
@@ -492,6 +496,7 @@ export default {
       result: {},
       resultId: null,
       isLoading: false,
+      showDesignRecognition: true,
       options: {
         number: {
           numeral: true,
@@ -706,6 +711,10 @@ export default {
         console.error(error)
       })
     },
+    assignDesignRecognition(certificationType) {
+      this.showDesignRecognition = certificationType.design_recognition
+      this.selectedDesignRecognition.id = certificationType.design_recognition
+    },
     showToast(variant, titleToast, description) {
       this.$toast({
         component: ToastificationContent,
@@ -765,6 +774,10 @@ export default {
       router.push({ name: 'client-project-preview', params: { id: router.currentRoute.params.id } })
     },
     stringToBoolean(value) {
+      if (typeof value === 'boolean') {
+        return value
+      }
+
       switch (value.toLowerCase().trim()) {
         case 'true': case 'yes': case '1': return true
         case 'false': case 'no': case '0': case null: return false
