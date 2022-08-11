@@ -232,5 +232,29 @@ export default {
           .catch(error => reject(error))
       })
     },
+    fetchViewer(ctx, { id }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`engine-rest/user/project_users_by_process_instance_id/${id}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    deleteViewer(ctx, { userId }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .delete(`/engine-rest/user/project_users/${userId}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    addViewer(ctx, { id, viewerData }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post(`/engine-rest/user/project_users/${id}`, viewerData)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
   },
 }

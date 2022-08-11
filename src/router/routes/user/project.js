@@ -53,6 +53,11 @@ export default [
     component: () => import('@/views/client/project/Preview.vue'),
   },
   {
+    path: '/client/project/viewer/:id',
+    name: 'client-project-assign-viewer',
+    component: () => import('@/views/client/project/AssignViewer.vue'),
+  },
+  {
     path: '/client/project/edit/:id',
     name: 'client-project-edit',
     component: () => import('@/views/client/project/EditProject.vue'),
