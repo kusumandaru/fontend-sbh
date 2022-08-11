@@ -379,7 +379,7 @@
         <b-card>
           <!-- Button: Edit Project-->
           <b-button
-            v-if="editProjectShow && clientRole"
+            v-if="editProjectShow && eligibleAccess"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             variant="success"
             class="mb-75"
@@ -439,7 +439,7 @@
 
           <!-- Button: DR Revision-->
           <b-button
-            v-if="drRevisionShow && clientRole"
+            v-if="drRevisionShow && eligibleAccess"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             variant="success"
             class="mb-75"
@@ -451,7 +451,7 @@
 
           <!-- Button: FA Revision-->
           <b-button
-            v-if="faRevisionShow && clientRole"
+            v-if="faRevisionShow && eligibleAccess"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             variant="success"
             class="mb-75"
@@ -463,7 +463,7 @@
 
           <!-- Button: Upload Document Building-->
           <b-button
-            v-if="uploadDocumentShow && clientRole"
+            v-if="uploadDocumentShow && eligibleAccess"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             variant="success"
             class="mb-75"
@@ -475,7 +475,7 @@
 
           <!-- Button: FirstPayment-->
           <b-button
-            v-if="firstPaymentShow && clientRole"
+            v-if="firstPaymentShow && eligibleAccess"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             variant="success"
             class="mb-75"
@@ -487,7 +487,7 @@
 
           <!-- Button: SecondPayment-->
           <b-button
-            v-if="secondPaymentShow && clientRole"
+            v-if="secondPaymentShow && eligibleAccess"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             variant="success"
             class="mb-75"
@@ -499,7 +499,7 @@
 
           <!-- Button: ThirdPayment-->
           <b-button
-            v-if="thirdPaymentShow && clientRole"
+            v-if="thirdPaymentShow && eligibleAccess"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             variant="success"
             class="mb-75"
@@ -511,7 +511,7 @@
 
           <!-- Button: Upload Plang dan Persetujuan Pemuatan-->
           <b-button
-            v-if="workshopShow && clientRole"
+            v-if="workshopShow && eligibleAccess"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             variant="success"
             class="mb-75"
@@ -523,7 +523,7 @@
 
           <!-- Button: Design Recognition-->
           <b-button
-            v-if="designRecognitionShow && clientRole"
+            v-if="designRecognitionShow && eligibleAccess"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             variant="success"
             class="mb-75"
@@ -535,7 +535,7 @@
 
           <!-- Button: On Site Revision Submission -->
           <b-button
-            v-if="onSiteRevisionSubmissionShow && clientRole"
+            v-if="onSiteRevisionSubmissionShow && eligibleAccess"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             variant="success"
             class="mb-75"
@@ -547,7 +547,7 @@
 
           <!-- Button: Final Assessment-->
           <b-button
-            v-if="finalAssessmentShow && clientRole"
+            v-if="finalAssessmentShow && eligibleAccess"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             variant="success"
             class="mb-75"
@@ -685,8 +685,8 @@ export default {
     }
   },
   computed: {
-    clientRole() {
-      return this.userData.group.id === 'user' || this.userData.group.id === 'superuser'
+    eligibleAccess() {
+      return (this.userData.group_id === 'user' || this.userData.group_id === 'superuser') && (this.projectData.tenant === this.userData.tenant_id)
     },
     editProjectShow() {
       return ['fill-registration-project'].includes(this.projectData.definition_key)

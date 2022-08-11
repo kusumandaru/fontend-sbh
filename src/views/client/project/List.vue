@@ -104,10 +104,12 @@
                 @click="goToPreview(props.row.id)"
               />
               <b-tooltip
+                v-if="props.row.internal"
                 title="Preview Project"
                 :target="`project-row-${props.row.id}-preview-icon`"
               />
               <feather-icon
+                v-if="props.row.internal"
                 :id="`project-row-${props.row.id}-activity-icon`"
                 icon="ActivityIcon"
                 size="16"
@@ -115,8 +117,21 @@
                 @click="retrieveDiagrams(props.row.process_definition_id, props.row.task_definition_key)"
               />
               <b-tooltip
+                v-if="props.row.internal"
                 title="Activity Process"
                 :target="`project-row-${props.row.id}-activity-icon`"
+              />
+              <feather-icon
+                v-if="props.row.internal"
+                :id="`project-row-${props.row.id}-viewer-icon`"
+                icon="UserIcon"
+                size="16"
+                class="mx-1"
+                @click="assignViewer(props.row.id)"
+              />
+              <b-tooltip
+                title="Assign Viewer"
+                :target="`project-row-${props.row.id}-viewer-icon`"
               />
             </div>
           </span>
@@ -237,11 +252,11 @@ export default {
           },
         },
         {
-          label: 'Assignee',
-          field: 'assignee',
+          label: 'Tenant',
+          field: 'tenant_name',
           filterOptions: {
             enabled: true,
-            placeholder: 'Search Assignee',
+            placeholder: 'Search Tenant',
           },
         },
         {
@@ -444,6 +459,9 @@ export default {
       }
       this.$http.post('engine-rest/new-building/read-task', request, config)
       router.push({ name: 'client-project-preview', params: { id: id } })
+    },
+    assignViewer(id) {
+      router.push({ name: 'client-project-assign-viewer', params: { id: id } })
     },
     updateParams(newProps) {
       // eslint-disable-next-line prefer-object-spread
