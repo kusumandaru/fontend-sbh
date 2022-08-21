@@ -112,7 +112,7 @@
 
 <script>
 import {
-  BTab, BTabs, BCard, BAlert, BLink, BFormInput, BButton, BCol, BFormGroup, BFormCheckbox, BRow, BForm, 
+  BTab, BTabs, BCard, BAlert, BLink, BFormInput, BButton, BCol, BFormGroup, BFormCheckbox, BRow, BForm,
 } from 'bootstrap-vue'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import { ref, onUnmounted } from '@vue/composition-api'
@@ -138,7 +138,7 @@ export default {
     BFormGroup,
     BRow,
     BForm,
-    
+
     ValidationProvider,
     ValidationObserver,
     vSelect,

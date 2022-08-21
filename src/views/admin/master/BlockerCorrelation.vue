@@ -135,7 +135,7 @@ export default {
     BForm,
     BFormCheckbox,
     BFormCheckboxGroup,
-    
+
     ValidationProvider,
     ValidationObserver,
     required,

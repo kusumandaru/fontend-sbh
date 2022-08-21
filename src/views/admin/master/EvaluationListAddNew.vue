@@ -151,7 +151,7 @@ export default {
     BFormCheckbox,
     BFormGroup,
     BFormInput,
-    
+
     BButton,
     // Form Validation
     ValidationProvider,

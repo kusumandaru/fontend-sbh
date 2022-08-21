@@ -133,7 +133,7 @@ export default {
     BForm,
     BFormGroup,
     BFormInput,
-    
+
     BButton,
     vSelect,
 

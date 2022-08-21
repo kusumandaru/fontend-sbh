@@ -192,7 +192,7 @@ export default {
     BFormGroup,
     BRow,
     BForm,
-    
+
     ValidationProvider,
     ValidationObserver,
     vSelect,
