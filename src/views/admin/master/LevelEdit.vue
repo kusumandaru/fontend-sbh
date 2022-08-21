@@ -49,9 +49,9 @@
                     id="name"
                     v-model="levelData.name"
                   />
-                  <b-form-invalid-feedback>
+                  <div class="invalid-feedback d-block">
                     {{ validationContext.errors[0] }}
-                  </b-form-invalid-feedback>
+                  </div>
                 </b-form-group>
               </validation-provider>
             </b-col>
@@ -74,9 +74,9 @@
                     id="minimum_score"
                     v-model="levelData.minimum_score"
                   />
-                  <b-form-invalid-feedback>
+                  <div class="invalid-feedback d-block">
                     {{ validationContext.errors[0] }}
-                  </b-form-invalid-feedback>
+                  </div>
                 </b-form-group>
               </validation-provider>
             </b-col>
@@ -99,9 +99,9 @@
                     id="percentage"
                     v-model="levelData.percentage"
                   />
-                  <b-form-invalid-feedback>
+                  <div class="invalid-feedback d-block">
                     {{ validationContext.errors[0] }}
-                  </b-form-invalid-feedback>
+                  </div>
                 </b-form-group>
               </validation-provider>
             </b-col>
@@ -127,9 +127,9 @@
                   >
                     Active
                   </b-form-checkbox>
-                  <b-form-invalid-feedback>
+                  <div class="invalid-feedback d-block">
                     {{ validationContext.errors[0] }}
-                  </b-form-invalid-feedback>
+                  </div>
                 </b-form-group>
               </validation-provider>
             </b-col>
@@ -161,7 +161,7 @@
 
 <script>
 import {
-  BTab, BTabs, BCard, BAlert, BLink, BFormInput, BButton, BCol, BFormCheckbox, BFormGroup, BRow, BForm, BFormInvalidFeedback,
+  BTab, BTabs, BCard, BAlert, BLink, BFormInput, BButton, BCol, BFormCheckbox, BFormGroup, BRow, BForm, 
 } from 'bootstrap-vue'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import { ref, onUnmounted } from '@vue/composition-api'
@@ -187,7 +187,7 @@ export default {
     BFormGroup,
     BRow,
     BForm,
-    BFormInvalidFeedback,
+    
     ValidationProvider,
     ValidationObserver,
     vSelect,

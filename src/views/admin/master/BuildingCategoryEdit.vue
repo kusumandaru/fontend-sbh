@@ -1,21 +1,21 @@
 <template>
-  <component :is="buildingData === undefined ? 'div' : 'b-card'">
+  <component :is="buildingCategoryData === undefined ? 'div' : 'b-card'">
 
     <!-- Alert: No item found -->
     <b-alert
       variant="danger"
-      :show="buildingData === undefined"
+      :show="buildingCategoryData === undefined"
     >
       <h4 class="alert-heading">
-        Error fetching building data
+        Error fetching building category data
       </h4>
       <div class="alert-body">
-        No building found with this building id. Check
+        No building category found with this building category id. Check
         <b-link
           class="alert-link"
-          :to="{ name: 'admin-building-type-list'}"
+          :to="{ name: 'admin-building-category-list'}"
         >
-          Building List
+          Building Category List
         </b-link>
         for other buildings.
       </div>
@@ -48,61 +48,61 @@
                 >
                   <b-form-input
                     id="building-code"
-                    v-model="buildingData.code"
+                    v-model="buildingCategoryData.code"
                   />
-                  <b-form-invalid-feedback>
+                  <div class="invalid-feedback d-block">
                     {{ validationContext.errors[0] }}
-                  </b-form-invalid-feedback>
+                  </div>
                 </b-form-group>
               </validation-provider>
             </b-col>
 
-            <!-- Field: Building Name ID -->
+            <!-- Field: Building Name -->
             <b-col
               cols="12"
               md="4"
             >
               <validation-provider
                 #default="validationContext"
-                name="Building Name ID"
+                name="Building Name"
                 rules="required"
               >
                 <b-form-group
-                  label="Building Name ID"
-                  label-for="building-name-id"
+                  label="Building Name"
+                  label-for="building-name"
                 >
                   <b-form-input
                     id="building-name"
-                    v-model="buildingData.name_id"
+                    v-model="buildingCategoryData.name"
                   />
-                  <b-form-invalid-feedback>
+                  <div class="invalid-feedback d-block">
                     {{ validationContext.errors[0] }}
-                  </b-form-invalid-feedback>
+                  </div>
                 </b-form-group>
               </validation-provider>
             </b-col>
 
-            <!-- Field: Building Name EN -->
+            <!-- Field: Description -->
             <b-col
               cols="12"
               md="4"
             >
               <validation-provider
                 #default="validationContext"
-                name="Building Name EN"
+                name="Description"
                 rules="required"
               >
                 <b-form-group
-                  label="Building Name EN"
-                  label-for="building-name-en"
+                  label="Description"
+                  label-for="building-description"
                 >
                   <b-form-input
-                    id="building-name"
-                    v-model="buildingData.name_en"
+                    id="building-description"
+                    v-model="buildingCategoryData.description"
                   />
-                  <b-form-invalid-feedback>
+                  <div class="invalid-feedback d-block">
                     {{ validationContext.errors[0] }}
-                  </b-form-invalid-feedback>
+                  </div>
                 </b-form-group>
               </validation-provider>
             </b-col>
@@ -133,7 +133,7 @@
 
 <script>
 import {
-  BTab, BTabs, BCard, BAlert, BLink, BFormInput, BButton, BCol, BFormGroup, BRow, BForm, BFormInvalidFeedback,
+  BTab, BTabs, BCard, BAlert, BLink, BFormInput, BButton, BCol, BFormGroup, BRow, BForm,
 } from 'bootstrap-vue'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import { ref, onUnmounted } from '@vue/composition-api'
@@ -157,7 +157,6 @@ export default {
     BFormGroup,
     BRow,
     BForm,
-    BFormInvalidFeedback,
     ValidationProvider,
     ValidationObserver,
     required,
@@ -168,23 +167,20 @@ export default {
   setup() {
     const blankBuildingData = {
       code: '',
-      name_id: '',
-      name_en: '',
+      name: '',
+      description: '',
     }
 
-    const buildingData = ref(JSON.parse(JSON.stringify(blankBuildingData)))
-    const resetbuildingData = () => {
-      buildingData.value = JSON.parse(JSON.stringify(blankBuildingData))
+    const buildingCategoryData = ref(JSON.parse(JSON.stringify(blankBuildingData)))
+    const resetbuildingCategoryData = () => {
+      buildingCategoryData.value = JSON.parse(JSON.stringify(blankBuildingData))
     }
-    const USER_APP_STORE_MODULE_NAME = 'app-building'
+    const USER_APP_STORE_MODULE_NAME = 'app-building-category'
 
     const onSubmit = () => {
-      buildingData.value.nameId = buildingData.value.name_id
-      buildingData.value.nameEn = buildingData.value.name_en
-
-      store.dispatch('app-building/editBuilding', { buildingId: router.currentRoute.params.buildingId, buildingData: buildingData.value })
+      store.dispatch('app-building-category/editBuildingCategory', { categoryId: router.currentRoute.params.categoryId, buildingCategoryData: buildingCategoryData.value })
         .then(() => {
-          router.push({ name: 'admin-building-type-list' })
+          router.push({ name: 'admin-building-category-list' })
         })
     }
 
@@ -196,11 +192,11 @@ export default {
       if (store.hasModule(USER_APP_STORE_MODULE_NAME)) store.unregisterModule(USER_APP_STORE_MODULE_NAME)
     })
 
-    store.dispatch('app-building/fetchBuilding', { buildingId: router.currentRoute.params.buildingId })
-      .then(response => { buildingData.value = response.data })
+    store.dispatch('app-building-category/fetchBuildingCategory', { categoryId: router.currentRoute.params.categoryId })
+      .then(response => { buildingCategoryData.value = response.data })
       .catch(error => {
         if (error.response.status === 404) {
-          buildingData.value = undefined
+          buildingCategoryData.value = undefined
         }
       })
 
@@ -208,12 +204,12 @@ export default {
       refFormObserver,
       getValidationState,
       resetForm,
-    } = formValidation(resetbuildingData)
+    } = formValidation(resetbuildingCategoryData)
     return {
       blankBuildingData,
-      buildingData,
+      buildingCategoryData,
       onSubmit,
-      resetbuildingData,
+      resetbuildingCategoryData,
       refFormObserver,
       getValidationState,
       resetForm,
@@ -221,7 +217,7 @@ export default {
   },
   methods: {
     cancel() {
-      router.push({ name: 'admin-building-type-list' })
+      router.push({ name: 'admin-building-category-list' })
     },
   },
 }

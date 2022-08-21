@@ -1,7 +1,7 @@
 <template>
   <b-sidebar
-    id="add-new-level-sidebar"
-    :visible="isAddNewLevelSidebarActive"
+    id="add-new-building-sidebar"
+    :visible="isAddNewBuildingSidebarActive"
     bg-variant="white"
     sidebar-class="sidebar-lg"
     shadow
@@ -9,13 +9,13 @@
     no-header
     right
     @hidden="resetForm"
-    @change="(val) => $emit('update:is-add-new-level-sidebar-active', val)"
+    @change="(val) => $emit('update:is-add-new-building-sidebar-active', val)"
   >
     <template #default="{ hide }">
       <!-- Header -->
       <div class="d-flex justify-content-between align-items-center content-sidebar-header px-2 py-1">
         <h5 class="mb-0">
-          Add New Level
+          Add New Building
         </h5>
 
         <feather-icon
@@ -38,19 +38,19 @@
           @submit.prevent="handleSubmit(onSubmit)"
           @reset.prevent="resetForm"
         >
-          <!-- Name -->
+          <!-- Code -->
           <validation-provider
             #default="validationContext"
-            name="Name"
+            name="Code"
             rules="required"
           >
             <b-form-group
-              label="Name"
-              label-for="name"
+              label="Code [cannot change laters]"
+              label-for="code"
             >
               <b-form-input
-                id="name"
-                v-model="levelData.name"
+                id="code"
+                v-model="buildingData.code"
                 :state="getValidationState(validationContext)"
                 trim
               />
@@ -61,19 +61,19 @@
             </b-form-group>
           </validation-provider>
 
-          <!-- Minimum Score -->
+          <!-- Name ID -->
           <validation-provider
             #default="validationContext"
-            name="Minimum Score"
-            rules="required|integer"
+            name="Name ID"
+            rules="required"
           >
             <b-form-group
-              label="Minimum Score"
-              label-for="minimum-score"
+              label="Indonesian Name"
+              label-for="name-id"
             >
               <b-form-input
-                id="minimum-score"
-                v-model="levelData.minimumScore"
+                id="nameId"
+                v-model="buildingData.nameId"
                 :state="getValidationState(validationContext)"
                 trim
               />
@@ -84,46 +84,23 @@
             </b-form-group>
           </validation-provider>
 
-          <!-- Percentage -->
+          <!-- Name EN -->
           <validation-provider
             #default="validationContext"
-            name="Percentage"
-            rules="required|integer"
+            name="Name En"
+            rules="required"
           >
             <b-form-group
-              label="Percentage"
-              label-for="percentage"
+              label="English Name"
+              label-for="name-en"
             >
               <b-form-input
-                id="percentage"
-                v-model="levelData.percentage"
+                id="nameId"
+                v-model="buildingData.nameEn"
                 :state="getValidationState(validationContext)"
                 trim
               />
 
-              <div class="invalid-feedback d-block">
-                {{ validationContext.errors[0] }}
-              </div>
-            </b-form-group>
-          </validation-provider>
-
-          <!-- Active -->
-          <validation-provider
-            #default="validationContext"
-            name="Active"
-          >
-            <b-form-group
-              label="Active"
-              label-for="active"
-            >
-              <b-form-checkbox
-                id="Level-active"
-                v-model="levelData.active"
-                switch
-                inline
-              >
-                Active
-              </b-form-checkbox>
               <div class="invalid-feedback d-block">
                 {{ validationContext.errors[0] }}
               </div>
@@ -149,6 +126,7 @@
               Cancel
             </b-button>
           </div>
+
         </b-form>
       </validation-observer>
     </template>
@@ -157,17 +135,11 @@
 
 <script>
 import {
-  BSidebar, BForm, BFormCheckbox, BFormGroup, BFormInput, BButton,
+  BSidebar, BForm, BFormGroup, BFormInput, BButton,
 } from 'bootstrap-vue'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import { ref } from '@vue/composition-api'
-import {
-  required,
-  alphaNum,
-  email,
-  integer,
-} from '@validations'
-import router from '@/router'
+import { required, alphaNum, email } from '@validations'
 import formValidation from '@core/comp-functions/forms/form-validation'
 import Ripple from 'vue-ripple-directive'
 import store from '@/store'
@@ -176,7 +148,6 @@ export default {
   components: {
     BSidebar,
     BForm,
-    BFormCheckbox,
     BFormGroup,
     BFormInput,
     BButton,
@@ -188,11 +159,11 @@ export default {
     Ripple,
   },
   model: {
-    prop: 'isAddNewLevelSidebarActive',
-    event: 'update:is-add-new-level-sidebar-active',
+    prop: 'isAddNewBuildingSidebarActive',
+    event: 'update:is-add-new-building-sidebar-active',
   },
   props: {
-    isAddNewLevelSidebarActive: {
+    isAddNewBuildingSidebarActive: {
       type: Boolean,
       required: true,
     },
@@ -202,28 +173,25 @@ export default {
       required,
       alphaNum,
       email,
-      integer,
     }
   },
   setup(props, { emit }) {
-    const blankLevelData = {
-      name: '',
-      minimumScore: 0,
-      percentage: 0,
-      masterTemplateID: `${router.currentRoute.params.templateId}`,
-      active: true,
+    const blankBuildingData = {
+      code: '',
+      nameId: '',
+      nameEn: '',
     }
 
-    const levelData = ref(JSON.parse(JSON.stringify(blankLevelData)))
-    const resetLevelData = () => {
-      levelData.value = JSON.parse(JSON.stringify(blankLevelData))
+    const buildingData = ref(JSON.parse(JSON.stringify(blankBuildingData)))
+    const resetbuildingData = () => {
+      buildingData.value = JSON.parse(JSON.stringify(blankBuildingData))
     }
 
     const onSubmit = () => {
-      store.dispatch('app-evaluation/addLevel', levelData.value)
+      store.dispatch('app-building/addBuilding', buildingData.value)
         .then(() => {
           emit('refetch-data')
-          emit('update:is-add-new-level-sidebar-active', false)
+          emit('update:is-add-new-building-sidebar-active', false)
         })
     }
 
@@ -231,10 +199,10 @@ export default {
       refFormObserver,
       getValidationState,
       resetForm,
-    } = formValidation(resetLevelData)
+    } = formValidation(resetbuildingData)
 
     return {
-      levelData,
+      buildingData,
       onSubmit,
 
       refFormObserver,
@@ -248,7 +216,7 @@ export default {
 <style lang="scss">
 @import '@core/scss/vue/libs/vue-select.scss';
 
-#add-new-level-sidebar {
+#add-new-building-sidebar {
   .vs__dropdown-menu {
     max-height: 200px !important;
   }

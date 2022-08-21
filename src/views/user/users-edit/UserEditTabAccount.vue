@@ -107,9 +107,9 @@
                   id="first-name"
                   v-model="userData.first_name"
                 />
-                <b-form-invalid-feedback>
+                <div class="invalid-feedback d-block">
                   {{ validationContext.errors[0] }}
-                </b-form-invalid-feedback>
+                </div>
               </b-form-group>
             </validation-provider>
           </b-col>
@@ -132,9 +132,9 @@
                   id="last-name"
                   v-model="userData.last_name"
                 />
-                <b-form-invalid-feedback>
+                <div class="invalid-feedback d-block">
                   {{ validationContext.errors[0] }}
-                </b-form-invalid-feedback>
+                </div>
               </b-form-group>
             </validation-provider>
           </b-col>
@@ -158,9 +158,9 @@
                   v-model="userData.email"
                   type="email"
                 />
-                <b-form-invalid-feedback>
+                <div class="invalid-feedback d-block">
                   {{ validationContext.errors[0] }}
-                </b-form-invalid-feedback>
+                </div>
               </b-form-group>
             </validation-provider>
           </b-col>
@@ -249,7 +249,7 @@
 
 <script>
 import {
-  BButton, BCardText, BMedia, BAvatar, BRow, BCol, BFormGroup, BFormInput, BFormFile, BFormInvalidFeedback, BFormCheckbox, BForm,
+  BButton, BCardText, BMedia, BAvatar, BRow, BCol, BFormGroup, BFormInput, BFormFile, BFormCheckbox, BForm,
 } from 'bootstrap-vue'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
@@ -276,7 +276,6 @@ export default {
     BFormGroup,
     BFormInput,
     BFormFile,
-    BFormInvalidFeedback,
     BFormCheckbox,
     BForm,
     ValidationObserver,

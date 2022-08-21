@@ -56,9 +56,9 @@
                 code="activityId"
               />
 
-              <b-form-invalid-feedback>
+              <div class="invalid-feedback d-block">
                 {{ validationContext.errors[0] }}
-              </b-form-invalid-feedback>
+              </div>
             </b-form-group>
           </validation-provider>
           <!-- Form Actions -->
@@ -89,7 +89,7 @@
 
 <script>
 import {
-  BSidebar, BForm, BFormGroup, BFormInvalidFeedback, BButton,
+  BSidebar, BForm, BFormGroup, BButton,
 } from 'bootstrap-vue'
 import vSelect from 'vue-select'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
@@ -113,7 +113,6 @@ export default {
     BSidebar,
     BForm,
     BFormGroup,
-    BFormInvalidFeedback,
     BButton,
 
     // Form Validation

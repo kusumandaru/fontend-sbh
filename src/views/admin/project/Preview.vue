@@ -1,7 +1,7 @@
 <template>
   <section class="project-preview-wrapper">
     <!-- error -->
-    <error :key="errorKey" />
+    <error :key="'err'+errorKey" />
     <!-- error -->
 
     <rollback-project
@@ -160,188 +160,60 @@
             </b-form>
           </b-card-body>
 
-          <!-- Spacer -->
-          <hr
-            v-if="eligibilityAttachmentAny"
-            class="project-spacing"
-          >
-          <!-- Eligibility Document -->
-          <b-card-body
-            v-if="eligibilityAttachmentAny"
-            class="project-padding pb-0"
-          >
-            <b-card-title>Eligibility Document</b-card-title>
-            <b-card-sub-title>Eligibility Document for Project Registration</b-card-sub-title>
-            <p />
-            <b-row>
-
-              <!-- Col: Download Files -->
-              <b-col
-                cols="12"
-                md="12"
-                class="mt-md-0 mt-3"
-                order="2"
-                order-md="1"
+          <div :key="'group'+categoryKey">
+            <div
+              v-for="category in documentCategories"
+              :key="'cat'+category.id"
+              class="business-item"
+            >
+              <hr
+                class="project-spacing"
               >
-                <app-collapse>
-                  <app-collapse-item
-                    v-for="(attachments, name) in filteredAttachment(eligibilityAttachments)"
-                    :key="name"
-                    :title="toTitleCase(name)"
-                    :is-visible="true"
-                  >
-                    <b-table
-                      responsive
-                      :items="attachments"
-                      :fields="projectAttachmentFields"
-                      class="mb-0"
-                    >
-                      <template #cell(filename)="doc">
-                        <b-link
-                          class="font-weight-bold d-block text-nowrap"
-                          @click="downloadFileByAttachment(doc.item.id)"
-                        >
-                          {{ doc.value }}
-                        </b-link>
-                      </template>
-                    </b-table>
-                  </app-collapse-item>
-                </app-collapse>
-              </b-col>
-            </b-row>
-          </b-card-body>
-
-          <!-- Spacer -->
-          <hr
-            v-if="registeredAttachmentAny"
-            class="project-spacing"
-          >
-
-          <!-- Registered Project Document -->
-          <b-card-body
-            v-if="registeredAttachmentAny"
-            class="project-padding pb-0"
-          >
-            <b-card-title>Registered Project Document</b-card-title>
-            <p />
-            <b-row>
-
-              <!-- Col: Certification Type -->
-              <b-col
-                cols="12"
-                md="12"
-                class="mt-md-0 mt-3"
-                order="2"
-                order-md="1"
+              <b-card-body
+                class="project-padding pb-0"
               >
-                <app-collapse>
-                  <app-collapse-item
-                    v-for="(attachments, name) in filteredAttachment(registeredAttachments)"
-                    :key="name"
-                    :title="toTitleCase(name)"
-                    :is-visible="true"
+                <b-card-title>{{ category.name }}</b-card-title>
+                <b-card-sub-title>{{ category.description }}</b-card-sub-title>
+                <p />
+                <b-row>
+                  <!-- Col: Download Files -->
+                  <b-col
+                    cols="12"
+                    md="12"
+                    class="mt-md-0 mt-3"
+                    order="2"
+                    order-md="1"
                   >
-                    <b-table
-                      responsive
-                      :items="attachments"
-                      :fields="projectAttachmentFields"
-                      class="mb-0"
-                    >
-                      <template #cell(filename)="doc">
-                        <b-link
-                          class="font-weight-bold d-block text-nowrap"
-                          @click="downloadFileByAttachment(doc.item.id)"
+                    <app-collapse>
+                      <app-collapse-item
+                        v-for="(attachments, code) in category.members"
+                        v-show="showCategory(attachments)"
+                        :key="'attach'+code"
+                        :title="codeToName(code)"
+                        :is-visible="true"
+                      >
+                        <b-table
+                          responsive
+                          :items="attachments"
+                          :fields="projectAttachmentFields"
+                          class="mb-0"
                         >
-                          {{ doc.value }}
-                        </b-link>
-                      </template>
-                    </b-table>
-                  </app-collapse-item>
-                </app-collapse>
-
-                <b-card-text
-                  v-if="projectData.registered_project"
-                  class="mb-0"
-                >
-                  <b-button
-                    v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-                    variant="flat-primary"
-                    @click="registeredProject"
-                  >
-                    <feather-icon icon="ArchiveIcon" />
-                    Download Registered Project
-                  </b-button>
-                </b-card-text>
-
-              </b-col>
-            </b-row>
-          </b-card-body>
-
-          <!-- Spacer -->
-          <hr
-            v-if="evaluationAttachmentAny"
-            class="project-spacing"
-          >
-
-          <!-- Evaluation Project Document -->
-          <b-card-body
-            v-if="evaluationAttachmentAny"
-            class="project-padding pb-0"
-          >
-            <b-card-title>Evaluation Project Document</b-card-title>
-            <p />
-            <b-row>
-
-              <!-- Col: Document Type -->
-              <b-col
-                cols="12"
-                md="12"
-                class="mt-md-0 mt-3"
-                order="2"
-                order-md="1"
-              >
-                <app-collapse>
-                  <app-collapse-item
-                    v-for="(attachments, name) in filteredAttachment(evaluationAttachments)"
-                    :key="name"
-                    :title="toTitleCase(name)"
-                    :is-visible="true"
-                  >
-                    <b-table
-                      responsive
-                      :items="attachments"
-                      :fields="projectAttachmentFields"
-                      class="mb-0"
-                    >
-                      <template #cell(filename)="doc">
-                        <b-link
-                          class="font-weight-bold d-block text-nowrap"
-                          @click="downloadFileByAttachment(doc.item.id)"
-                        >
-                          {{ doc.value }}
-                        </b-link>
-                      </template>
-                    </b-table>
-                  </app-collapse-item>
-                </app-collapse>
-
-                <b-card-text
-                  v-if="projectData.registered_project"
-                  class="mb-0"
-                >
-                  <b-button
-                    v-ripple.400="'rgba(113, 102, 240, 0.15)'"
-                    variant="flat-primary"
-                    @click="registeredProject"
-                  >
-                    <feather-icon icon="ArchiveIcon" />
-                    Download Registered Project
-                  </b-button>
-                </b-card-text>
-
-              </b-col>
-            </b-row>
-          </b-card-body>
+                          <template #cell(filename)="doc">
+                            <b-link
+                              class="font-weight-bold d-block text-nowrap"
+                              @click="downloadFileByAttachment(doc.item.id)"
+                            >
+                              {{ doc.value }}
+                            </b-link>
+                          </template>
+                        </b-table>
+                      </app-collapse-item>
+                    </app-collapse>
+                  </b-col>
+                </b-row>
+              </b-card-body>
+            </div>
+          </div>
 
           <!-- Spacer -->
           <hr class="project-spacing">
@@ -595,7 +467,7 @@
 
 <script>
 import {
-  ref, onUnmounted, reactive,
+  ref, onUnmounted,
 } from '@vue/composition-api'
 import store from '@/store'
 import router from '@/router'
@@ -721,119 +593,26 @@ export default {
       }
       return ''
     },
-    eligibilityAttachmentAny() {
-      let count = 0
-      Object.keys(this.eligibilityAttachments).forEach(key => {
-        if (this.eligibilityAttachments[key] !== undefined) {
-          try {
-            count += this.eligibilityAttachments[key].length
-          } catch (err) {
-            count += 0
-          }
-        }
-      })
-      return count > 0
-    },
-    registeredAttachmentAny() {
-      let count = 0
-      Object.keys(this.registeredAttachments).forEach(key => {
-        if (this.registeredAttachments[key] !== undefined) {
-          try {
-            count += this.registeredAttachments[key].length
-          } catch (err) {
-            count += 0
-          }
-        }
-      })
-      return count > 0
-    },
-    evaluationAttachmentAny() {
-      let count = 0
-      Object.keys(this.evaluationAttachments).forEach(key => {
-        if (this.evaluationAttachments[key] !== undefined) {
-          try {
-            count += this.evaluationAttachments[key].length
-          } catch (err) {
-            count += 0
-          }
-        }
-      })
-      return count > 0
-    },
   },
   setup() {
     const projectData = ref(null)
     const reason = ref(null)
-    const proofOfPayments = ref(null)
-    const buildingPlan = ref(null)
-    const rtRw = ref(null)
-    const uplUkl = ref(null)
-    const earthquakeResistance = ref(null)
-    const disabilityFriendly = ref(null)
-    const safetyAndFireRequirement = ref(null)
-    const studyCaseReadiness = ref(null)
-    const firstPaymentDocument = ref(null)
-    const secondPaymentDocument = ref(null)
-    const thirdPaymentDocument = ref(null)
-    const workshopAttendanceDocument = ref(null)
-    const workshorReportDocument = ref(null)
-    const eligibilityStatement = ref(null)
-    const agreementLetterDocument = ref(null)
-    const drScoringForm = ref(null)
-    const faScoringForm = ref(null)
-    const drRevisionDocument = ref(null)
-    const faRevisionDocument = ref(null)
-    const drEvaluationDocument = ref(null)
-    const faEvaluationDocument = ref(null)
-    const signPost = ref(null)
-    const approvalBuildingRelease = ref(null)
 
     const claim = ref(null)
     const PROJECT_APP_STORE_MODULE_NAME = 'app-project'
     const isLoading = ref(null)
 
     const historyOptions = ref([])
+    const documentCategories = ref([])
+    const buildingDocuments = ref([])
+    const generateDocuments = ref([])
+
     const isRollbackSidebarActive = ref(false)
+    const categoryKey = ref(0)
 
-    const eligibilityAttachments = ref({
-      proof_of_payment: proofOfPayments,
-      building_plan: buildingPlan,
-      rt_rw: rtRw,
-      upl_ukl: uplUkl,
-      earthquake_resistance: earthquakeResistance,
-      disability_friendly: disabilityFriendly,
-      safety_and_fire_requirement: safetyAndFireRequirement,
-      study_case_readiness: studyCaseReadiness,
-    })
-
-    const registeredAttachments = ref({
-      first_payment_document: firstPaymentDocument,
-      second_payment_document: secondPaymentDocument,
-      third_payment_document: thirdPaymentDocument,
-      workshop_attendance_document: workshopAttendanceDocument,
-      workshop_report_document: workshorReportDocument,
-      eligibility_statement: eligibilityStatement,
-      agreement_letter_document: agreementLetterDocument,
-      dr_scoring_form: drScoringForm,
-      fa_scoring_form: faScoringForm,
-      sign_post: signPost,
-      approval_building_release: approvalBuildingRelease,
-    })
-
-    const evaluationAttachments = ref({
-      dr_revision_submission: drRevisionDocument,
-      fa_revision_submission: faRevisionDocument,
-      dr_evaluation_assessment: drEvaluationDocument,
-      fa_evaluation_assessment: faEvaluationDocument,
-    })
-
-    const paymentProps = reactive({
-      center: true,
-      fluidGrow: true,
-      blank: true,
-      blankColor: '#bbb',
-      class: 'my-5',
-    })
+    const eligibilityAttachments = ref({})
+    const registeredAttachments = ref({})
+    const evaluationAttachments = ref({})
 
     // Register module
     if (!store.hasModule(PROJECT_APP_STORE_MODULE_NAME)) store.registerModule(PROJECT_APP_STORE_MODULE_NAME, projectStoreModule)
@@ -862,53 +641,101 @@ export default {
     store.dispatch('app-project/fetchAdminProject', { id: router.currentRoute.params.id })
       .then(response => {
         projectData.value = response.data
-        paymentProps.blank = false
-        paymentProps.src = response.data.proof_of_payment_url
 
-        Object.keys(registeredAttachments.value).forEach(key => {
-          store.dispatch('app-project/getAttachmentsByType', { taskId: router.currentRoute.params.id, fileType: key })
-            .then(resp => {
-              registeredAttachments.value[key] = resp.data
-            })
-            .catch(error => {
-              if (error.response.status === 404) {
-                registeredAttachments.value[key] = undefined
-              }
-              if (error.response.status === 500) {
-                registeredAttachments.value[key] = undefined
-              }
-            })
-        })
+        store.dispatch('app-project/allBuildingDocumentCategory')
+          .then(responseCat => {
+            documentCategories.value = responseCat.data
+            documentCategories.value.members = []
 
-        Object.keys(eligibilityAttachments.value).forEach(key => {
-          store.dispatch('app-project/getAttachmentsByType', { taskId: router.currentRoute.params.id, fileType: key })
-            .then(resp => {
-              eligibilityAttachments.value[key] = resp.data
-            })
-            .catch(error => {
-              if (error.response.status === 404) {
-                eligibilityAttachments.value[key] = undefined
-              }
-              if (error.response.status === 500) {
-                eligibilityAttachments.value[key] = undefined
-              }
-            })
-        })
+            store.dispatch('app-project/fetchBuildingDocumentsByMasterCertificationTypeID', { masterCertificationTypeID: projectData.value.certification_type_id })
+              .then(resp => {
+                buildingDocuments.value = resp.data
+                for (let i = 0; i < documentCategories.value.length; i += 1) {
+                  const members = buildingDocuments.value.filter(document => document.category.code === documentCategories.value[i].code).map(document => document.code)
+                  /* eslint-disable no-param-reassign */
+                  documentCategories.value[i].members = members.reduce((map, key) => {
+                    map[key] = []
+                    return map
+                  }, {})
+                  let memberDone = 0
+                  const memberCount = members.length
 
-        Object.keys(evaluationAttachments.value).forEach(key => {
-          store.dispatch('app-project/getAttachmentsByType', { taskId: router.currentRoute.params.id, fileType: key })
-            .then(resp => {
-              evaluationAttachments.value[key] = resp.data
-            })
-            .catch(error => {
-              if (error.response.status === 404) {
-                evaluationAttachments.value[key] = undefined
-              }
-              if (error.response.status === 500) {
-                evaluationAttachments.value[key] = undefined
-              }
-            })
-        })
+                  /* eslint-enable no-param-reassign */
+                  Object.keys(documentCategories.value[i].members).forEach(key => {
+                    store.dispatch('app-project/getAttachmentsByType', { taskId: router.currentRoute.params.id, fileType: key })
+                      .then(respAttach => {
+                        if (documentCategories.value[i].members[key] === undefined) {
+                          documentCategories.value[i].members[key] = respAttach.data
+                        } else {
+                          documentCategories.value[i].members[key] = respAttach.data.concat(documentCategories.value[i].members[key])
+                        }
+                      })
+                      .catch(error => {
+                        if (error.response.status === 404) {
+                          documentCategories.value[i].members[key] = undefined
+                        }
+                        if (error.response.status === 500) {
+                          documentCategories.value[i].members[key] = undefined
+                        }
+                      })
+                      .finally(() => {
+                        memberDone += 1
+                        if (memberDone === memberCount) {
+                          categoryKey.value += 1
+                        }
+                      })
+                  })
+                }
+              })
+              .catch(err => {
+                console.error(err)
+              })
+
+            store.dispatch('app-project/fetchGenerateDocumentsByMasterCertificationTypeID', { masterCertificationTypeID: projectData.value.certification_type_id })
+              .then(resp => {
+                generateDocuments.value = resp.data
+                for (let i = 0; i < documentCategories.value.length; i += 1) {
+                  const members = generateDocuments.value.filter(document => document.category.code === documentCategories.value[i].code).map(document => document.code)
+                  /* eslint-disable no-param-reassign */
+                  documentCategories.value[i].members = members.reduce((map, key) => {
+                    map[key] = []
+                    return map
+                  }, {})
+
+                  let memberDone = 0
+                  const memberCount = members.length
+                  /* eslint-enable no-param-reassign */
+
+                  Object.keys(documentCategories.value[i].members).forEach(key => {
+                    store.dispatch('app-project/getAttachmentsByType', { taskId: router.currentRoute.params.id, fileType: key })
+                      .then(respAttach => {
+                        if (documentCategories.value[i].members[key] === undefined) {
+                          documentCategories.value[i].members[key] = respAttach.data
+                        } else {
+                          documentCategories.value[i].members[key] = respAttach.data.concat(documentCategories.value[i].members[key])
+                        }
+                      })
+                      .catch(error => {
+                        if (error.response.status === 404) {
+                          documentCategories.value[i].members[key] = undefined
+                        }
+                        if (error.response.status === 500) {
+                          documentCategories.value[i].members[key] = undefined
+                        }
+                      })
+                      .finally(() => {
+                        memberDone += 1
+                        if (memberDone === memberCount) {
+                          categoryKey.value += 1
+                        }
+                      })
+                  })
+                }
+              })
+              .catch(err => {
+                console.error(err)
+              })
+          })
       })
       .catch(error => {
         if (error.response.status === 404) {
@@ -1104,6 +931,7 @@ export default {
     const {
       refetchData,
     } = rollback()
+
     return {
       projectData,
       eligibilityAttachments,
@@ -1121,7 +949,6 @@ export default {
       onSiteVerificationPage,
       printProject,
       deleteProject,
-      paymentProps,
       approveTask,
       downloadFileByAttachment,
       downloadAllFiles,
@@ -1135,6 +962,10 @@ export default {
       isLoading,
       isRollbackSidebarActive,
       historyOptions,
+      documentCategories,
+      buildingDocuments,
+      generateDocuments,
+      categoryKey,
       refetchData,
     }
   },
@@ -1142,9 +973,19 @@ export default {
     toTitleCase(word) {
       return word.split('_').map(item => item.charAt(0).toUpperCase() + item.substring(1)).join(' ')
     },
-    filteredAttachment(attachment) {
-      // eslint-disable-next-line no-unused-vars
-      return Object.fromEntries(Object.entries(attachment).filter(([k, v]) => v != null && v.length > 0))
+    codeToName(code) {
+      // eslint-disable-next-line
+      const filtered = this.allDocuments().filter(doc => { 
+        // eslint-disable-next-line
+        return doc.code === code
+      })
+      if (filtered[0] !== undefined) {
+        return filtered[0].name
+      }
+      return ''
+    },
+    allDocuments() {
+      return this.buildingDocuments.concat(this.generateDocuments)
     },
     showToast(variant, titleToast, description) {
       this.$toast({
@@ -1156,6 +997,12 @@ export default {
           variant,
         },
       })
+    },
+    showCategory(attachments) {
+      if (attachments === undefined) {
+        return true
+      }
+      return attachments.length > 0
     },
   },
 }

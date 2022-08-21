@@ -30,6 +30,38 @@ export default {
           .catch(error => reject(error))
       })
     },
+    fetchBuildingCategory(ctx, { categoryId }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/engine-rest/new-building/project/document_building_categories/${categoryId}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    addBuildingCategory(ctx, buildingCategoryData) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post('/engine-rest/new-building/project/document_building_categories', buildingCategoryData)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    editBuildingCategory(ctx, { categoryId, buildingCategoryData }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .patch(`/engine-rest/new-building/project/document_building_categories/${categoryId}`, buildingCategoryData)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    deleteBuildingCategory(ctx, { categoryId }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .delete(`/engine-rest/new-building/project/document_building_categories/${categoryId}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
     deleteBuildingType(ctx, { buildingId }) {
       return new Promise((resolve, reject) => {
         axios
@@ -62,6 +94,22 @@ export default {
           .catch(error => reject(error))
       })
     },
+    allBuildingDocumentCategory() {
+      return new Promise((resolve, reject) => {
+        axios
+          .get('/engine-rest/new-building/project/document_building_categories')
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    allGenerateDocumentCategory() {
+      return new Promise((resolve, reject) => {
+        axios
+          .get('/engine-rest/new-building/project/generate_building_categories')
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
     fetchBuildingDocument(ctx, { buildingDocumentId }) {
       return new Promise((resolve, reject) => {
         axios
@@ -90,6 +138,38 @@ export default {
       return new Promise((resolve, reject) => {
         axios
           .patch(`/engine-rest/new-building/project/document_buildings/${buildingDocumentId}`, buildingDocumentData)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    fetchGenerateDocument(ctx, { generateDocumentId }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/engine-rest/new-building/project/document_generates/${generateDocumentId}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    deleteGenerateDocument(ctx, { generateDocumentId }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .delete(`/engine-rest/new-building/project/document_generates/${generateDocumentId}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    addGenerateDocument(ctx, generateDocumentData) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post('/engine-rest/new-building/project/document_generates', generateDocumentData)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    editGenerateDocument(ctx, { generateDocumentId, generateDocumentData }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .patch(`/engine-rest/new-building/project/document_generates/${generateDocumentId}`, generateDocumentData)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })

@@ -1,28 +1,28 @@
 <template>
-  <component :is="cityData === undefined ? 'div' : 'b-card'">
+  <component :is="buildingData === undefined ? 'div' : 'b-card'">
 
     <!-- Alert: No item found -->
     <b-alert
       variant="danger"
-      :show="cityData === undefined"
+      :show="buildingData === undefined"
     >
       <h4 class="alert-heading">
-        Error fetching city data
+        Error fetching building data
       </h4>
       <div class="alert-body">
-        No city found with this city id. Check
+        No building found with this building id. Check
         <b-link
           class="alert-link"
-          :to="{ name: 'admin-city-list'}"
+          :to="{ name: 'admin-building-type-list'}"
         >
-          City List
+          Building List
         </b-link>
-        for other citys.
+        for other buildings.
       </div>
     </b-alert>
 
     <div>
-      <!-- City Info: Input Fields -->
+      <!-- Building Info: Input Fields -->
       <validation-observer
         #default="{ handleSubmit }"
         ref="refFormObserver"
@@ -32,33 +32,24 @@
           @reset.prevent="resetForm"
         >
           <b-row>
-
-            <!-- Province -->
+            <!-- Field: Building Code -->
             <b-col
               cols="12"
               md="4"
             >
               <validation-provider
                 #default="validationContext"
-                name="province"
+                name="Building Code"
                 rules="required"
               >
                 <b-form-group
-                  label="province"
-                  label-for="code"
+                  label="Building Code"
+                  label-for="building-code"
                 >
-                  <v-select
-                    v-model="cityData.province_id"
-                    :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                    :options="provinceOptions"
-                    :reduce="val => val.id"
-                    :clearable="false"
-                    :required="!cityData.province_id"
-                    input-id="province"
-                    label="name"
-                    code="id"
+                  <b-form-input
+                    id="building-code"
+                    v-model="buildingData.code"
                   />
-
                   <div class="invalid-feedback d-block">
                     {{ validationContext.errors[0] }}
                   </div>
@@ -66,23 +57,48 @@
               </validation-provider>
             </b-col>
 
-            <!-- Field: City Name-->
+            <!-- Field: Building Name ID -->
             <b-col
               cols="12"
               md="4"
             >
               <validation-provider
                 #default="validationContext"
-                name="City Name"
+                name="Building Name ID"
                 rules="required"
               >
                 <b-form-group
-                  label="City Name"
-                  label-for="city-name"
+                  label="Building Name ID"
+                  label-for="building-name-id"
                 >
                   <b-form-input
-                    id="city-name"
-                    v-model="cityData.name"
+                    id="building-name"
+                    v-model="buildingData.name_id"
+                  />
+                  <div class="invalid-feedback d-block">
+                    {{ validationContext.errors[0] }}
+                  </div>
+                </b-form-group>
+              </validation-provider>
+            </b-col>
+
+            <!-- Field: Building Name EN -->
+            <b-col
+              cols="12"
+              md="4"
+            >
+              <validation-provider
+                #default="validationContext"
+                name="Building Name EN"
+                rules="required"
+              >
+                <b-form-group
+                  label="Building Name EN"
+                  label-for="building-name-en"
+                >
+                  <b-form-input
+                    id="building-name"
+                    v-model="buildingData.name_en"
                   />
                   <div class="invalid-feedback d-block">
                     {{ validationContext.errors[0] }}
@@ -126,7 +142,6 @@ import store from '@/store'
 import Ripple from 'vue-ripple-directive'
 import { required } from '@validations'
 import formValidation from '@core/comp-functions/forms/form-validation'
-import vSelect from 'vue-select'
 import masterStoreModule from './masterStoreModule'
 
 export default {
@@ -146,29 +161,30 @@ export default {
     ValidationProvider,
     ValidationObserver,
     required,
-    vSelect,
   },
   directives: {
     Ripple,
   },
   setup() {
-    const blankCityData = {
-      name: '',
-      province_id: '',
+    const blankBuildingData = {
+      code: '',
+      name_id: '',
+      name_en: '',
     }
-    const provinceOptions = ref(JSON.parse('[]'))
-    const cityData = ref(JSON.parse(JSON.stringify(blankCityData)))
-    const resetcityData = () => {
-      cityData.value = JSON.parse(JSON.stringify(blankCityData))
+
+    const buildingData = ref(JSON.parse(JSON.stringify(blankBuildingData)))
+    const resetbuildingData = () => {
+      buildingData.value = JSON.parse(JSON.stringify(blankBuildingData))
     }
-    const USER_APP_STORE_MODULE_NAME = 'app-city'
+    const USER_APP_STORE_MODULE_NAME = 'app-building'
 
     const onSubmit = () => {
-      cityData.value.provinceId = cityData.value.province_id
+      buildingData.value.nameId = buildingData.value.name_id
+      buildingData.value.nameEn = buildingData.value.name_en
 
-      store.dispatch('app-city/editCity', { cityId: router.currentRoute.params.cityId, cityData: cityData.value })
+      store.dispatch('app-building/editBuilding', { buildingId: router.currentRoute.params.buildingId, buildingData: buildingData.value })
         .then(() => {
-          router.push({ name: 'admin-city-list' })
+          router.push({ name: 'admin-building-type-list' })
         })
     }
 
@@ -180,21 +196,11 @@ export default {
       if (store.hasModule(USER_APP_STORE_MODULE_NAME)) store.unregisterModule(USER_APP_STORE_MODULE_NAME)
     })
 
-    store.dispatch('app-city/fetchCity', { cityId: router.currentRoute.params.cityId })
-      .then(response => { cityData.value = response.data })
+    store.dispatch('app-building/fetchBuilding', { buildingId: router.currentRoute.params.buildingId })
+      .then(response => { buildingData.value = response.data })
       .catch(error => {
         if (error.response.status === 404) {
-          cityData.value = undefined
-        }
-      })
-
-    store.dispatch('app-city/fetchProvinces')
-      .then(response => {
-        provinceOptions.value = response.data
-      })
-      .catch(error => {
-        if (error.response.status === 404) {
-          provinceOptions.value = undefined
+          buildingData.value = undefined
         }
       })
 
@@ -202,26 +208,25 @@ export default {
       refFormObserver,
       getValidationState,
       resetForm,
-    } = formValidation(resetcityData)
+    } = formValidation(resetbuildingData)
     return {
-      blankCityData,
-      cityData,
+      blankBuildingData,
+      buildingData,
       onSubmit,
-      resetcityData,
+      resetbuildingData,
       refFormObserver,
       getValidationState,
       resetForm,
-      provinceOptions,
     }
   },
   methods: {
     cancel() {
-      router.push({ name: 'admin-city-list' })
+      router.push({ name: 'admin-building-type-list' })
     },
   },
 }
 </script>
 
-<style lang="scss">
-@import '~@core/scss/vue/libs/vue-select.scss';
+<style>
+
 </style>
