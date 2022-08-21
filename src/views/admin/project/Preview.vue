@@ -767,7 +767,11 @@ export default {
           }
         })
         .finally(() => {
-          router.push({ name: 'admin-project-list' })
+          if (this.userData.roles.join() === 'verificator') {
+            router.push({ name: 'verificator-project-list' })
+          } else {
+            router.push({ name: 'admin-project-list' })
+          }
         })
     }
 

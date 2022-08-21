@@ -4,7 +4,10 @@
     rounded="sm"
   >
     <!-- review DR -->
-    <b-col md="12">
+    <b-col
+      v-if="eligibleApprove.dr_approved === undefined"
+      md="12"
+    >
       <div class="pricing-free-trial">
         <b-row>
           <b-col
@@ -251,7 +254,7 @@ export default {
       })
     },
     gotoIndex() {
-      router.push({ name: 'admin-project-list' })
+      router.push({ name: 'verificator-project-list' })
     },
   },
 }
