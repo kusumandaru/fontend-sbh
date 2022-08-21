@@ -41,9 +41,9 @@
                     />
                   </b-input-group-append>
                 </b-input-group>
-                <b-form-invalid-feedback>
+                <div class="invalid-feedback d-block">
                   {{ validationContext.errors[0] }}
-                </b-form-invalid-feedback>
+                </div>
               </b-form-group>
             </validation-provider>
           </b-col>
@@ -80,9 +80,9 @@
                     />
                   </b-input-group-append>
                 </b-input-group>
-                <b-form-invalid-feedback>
+                <div class="invalid-feedback d-block">
                   {{ validationContext.errors[0] }}
-                </b-form-invalid-feedback>
+                </div>
               </b-form-group>
             </validation-provider>
           </b-col>
@@ -139,7 +139,7 @@
 
 <script>
 import {
-  BButton, BRow, BCol, BFormGroup, BFormInput, BFormInvalidFeedback, BForm, BInputGroupAppend, BInputGroup,
+  BButton, BRow, BCol, BFormGroup, BFormInput, BForm, BInputGroupAppend, BInputGroup,
 } from 'bootstrap-vue'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
@@ -161,7 +161,6 @@ export default {
     BCol,
     BFormGroup,
     BFormInput,
-    BFormInvalidFeedback,
     BForm,
     BInputGroup,
     BInputGroupAppend,

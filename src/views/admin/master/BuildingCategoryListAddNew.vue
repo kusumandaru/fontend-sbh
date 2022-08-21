@@ -1,7 +1,7 @@
 <template>
   <b-sidebar
     id="add-new-building-sidebar"
-    :visible="isAddNewBuildingSidebarActive"
+    :visible="isAddNewBuildingCategorySidebarActive"
     bg-variant="white"
     sidebar-class="sidebar-lg"
     shadow
@@ -9,7 +9,7 @@
     no-header
     right
     @hidden="resetForm"
-    @change="(val) => $emit('update:is-add-new-building-sidebar-active', val)"
+    @change="(val) => $emit('update:is-add-new-building-category-sidebar-active', val)"
   >
     <template #default="{ hide }">
       <!-- Header -->
@@ -50,60 +50,60 @@
             >
               <b-form-input
                 id="code"
-                v-model="buildingData.code"
+                v-model="buildingCategoryData.code"
                 :state="getValidationState(validationContext)"
                 trim
               />
 
-              <b-form-invalid-feedback>
+              <div class="invalid-feedback d-block">
                 {{ validationContext.errors[0] }}
-              </b-form-invalid-feedback>
+              </div>
             </b-form-group>
           </validation-provider>
 
-          <!-- Name ID -->
+          <!-- Name -->
           <validation-provider
             #default="validationContext"
-            name="Name ID"
+            name="Name"
             rules="required"
           >
             <b-form-group
-              label="Indonesian Name"
-              label-for="name-id"
+              label="Name"
+              label-for="name"
             >
               <b-form-input
-                id="nameId"
-                v-model="buildingData.nameId"
+                id="name"
+                v-model="buildingCategoryData.name"
                 :state="getValidationState(validationContext)"
                 trim
               />
 
-              <b-form-invalid-feedback>
+              <div class="invalid-feedback d-block">
                 {{ validationContext.errors[0] }}
-              </b-form-invalid-feedback>
+              </div>
             </b-form-group>
           </validation-provider>
 
-          <!-- Name EN -->
+          <!-- Description -->
           <validation-provider
             #default="validationContext"
-            name="Name En"
+            name="Description"
             rules="required"
           >
             <b-form-group
-              label="English Name"
-              label-for="name-en"
+              label="Description"
+              label-for="description"
             >
               <b-form-input
-                id="nameId"
-                v-model="buildingData.nameEn"
+                id="description"
+                v-model="buildingCategoryData.description"
                 :state="getValidationState(validationContext)"
                 trim
               />
 
-              <b-form-invalid-feedback>
+              <div class="invalid-feedback d-block">
                 {{ validationContext.errors[0] }}
-              </b-form-invalid-feedback>
+              </div>
             </b-form-group>
           </validation-provider>
 
@@ -135,7 +135,7 @@
 
 <script>
 import {
-  BSidebar, BForm, BFormGroup, BFormInput, BFormInvalidFeedback, BButton,
+  BSidebar, BForm, BFormGroup, BFormInput, BButton,
 } from 'bootstrap-vue'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import { ref } from '@vue/composition-api'
@@ -150,9 +150,7 @@ export default {
     BForm,
     BFormGroup,
     BFormInput,
-    BFormInvalidFeedback,
     BButton,
-
     // Form Validation
     ValidationProvider,
     ValidationObserver,
@@ -161,11 +159,11 @@ export default {
     Ripple,
   },
   model: {
-    prop: 'isAddNewBuildingSidebarActive',
-    event: 'update:is-add-new-building-sidebar-active',
+    prop: 'isAddNewBuildingCategorySidebarActive',
+    event: 'update:is-add-new-building-category-sidebar-active',
   },
   props: {
-    isAddNewBuildingSidebarActive: {
+    isAddNewBuildingCategorySidebarActive: {
       type: Boolean,
       required: true,
     },
@@ -178,22 +176,22 @@ export default {
     }
   },
   setup(props, { emit }) {
-    const blankBuildingData = {
+    const blankBuildingCategoryData = {
       code: '',
-      nameId: '',
-      nameEn: '',
+      name: '',
+      description: '',
     }
 
-    const buildingData = ref(JSON.parse(JSON.stringify(blankBuildingData)))
-    const resetbuildingData = () => {
-      buildingData.value = JSON.parse(JSON.stringify(blankBuildingData))
+    const buildingCategoryData = ref(JSON.parse(JSON.stringify(blankBuildingCategoryData)))
+    const resetbuildingCategoryData = () => {
+      buildingCategoryData.value = JSON.parse(JSON.stringify(blankBuildingCategoryData))
     }
 
     const onSubmit = () => {
-      store.dispatch('app-building/addBuilding', buildingData.value)
+      store.dispatch('app-building-category/addBuildingCategory', buildingCategoryData.value)
         .then(() => {
           emit('refetch-data')
-          emit('update:is-add-new-building-sidebar-active', false)
+          emit('update:is-add-new-building-category-sidebar-active', false)
         })
     }
 
@@ -201,10 +199,10 @@ export default {
       refFormObserver,
       getValidationState,
       resetForm,
-    } = formValidation(resetbuildingData)
+    } = formValidation(resetbuildingCategoryData)
 
     return {
-      buildingData,
+      buildingCategoryData,
       onSubmit,
 
       refFormObserver,

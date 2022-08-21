@@ -54,9 +54,9 @@
                     :clearable="false"
                     input-id="project-type"
                   />
-                  <b-form-invalid-feedback>
+                  <div class="invalid-feedback d-block">
                     {{ validationContext.errors[0] }}
-                  </b-form-invalid-feedback>
+                  </div>
                 </b-form-group>
               </validation-provider>
             </b-col>
@@ -79,9 +79,9 @@
                     id="project-version"
                     v-model="templateData.project_version"
                   />
-                  <b-form-invalid-feedback>
+                  <div class="invalid-feedback d-block">
                     {{ validationContext.errors[0] }}
-                  </b-form-invalid-feedback>
+                  </div>
                 </b-form-group>
               </validation-provider>
             </b-col>
@@ -107,9 +107,9 @@
                   >
                     Active
                   </b-form-checkbox>
-                  <b-form-invalid-feedback>
+                  <div class="invalid-feedback d-block">
                     {{ validationContext.errors[0] }}
-                  </b-form-invalid-feedback>
+                  </div>
                 </b-form-group>
               </validation-provider>
             </b-col>
@@ -141,7 +141,7 @@
 
 <script>
 import {
-  BTab, BTabs, BCard, BAlert, BLink, BFormInput, BButton, BCol, BFormGroup, BRow, BForm, BFormInvalidFeedback, BFormCheckbox,
+  BTab, BTabs, BCard, BAlert, BLink, BFormInput, BButton, BCol, BFormGroup, BRow, BForm, BFormCheckbox,
 } from 'bootstrap-vue'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import { ref, onUnmounted } from '@vue/composition-api'
@@ -167,7 +167,6 @@ export default {
     BFormGroup,
     BRow,
     BForm,
-    BFormInvalidFeedback,
     ValidationProvider,
     ValidationObserver,
     vSelect,

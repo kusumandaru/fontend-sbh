@@ -1,28 +1,28 @@
 <template>
-  <component :is="buildingDocumentData === undefined ? 'div' : 'b-card'">
+  <component :is="generateDocumentData === undefined ? 'div' : 'b-card'">
 
     <!-- Alert: No item found -->
     <b-alert
       variant="danger"
-      :show="buildingDocumentData === undefined"
+      :show="generateDocumentData === undefined"
     >
       <h4 class="alert-heading">
-        Error fetching building document data
+        Error fetching generate document data
       </h4>
       <div class="alert-body">
-        No building document found with this building document id. Check
+        No generate document found with this generate document id. Check
         <b-link
           class="alert-link"
-          :to="{ name: 'admin-building-document-list'}"
+          :to="{ name: 'admin-generate-document-list'}"
         >
-          Building Document List
+          Generate Document List
         </b-link>
-        for other building documents.
+        for other generate documents.
       </div>
     </b-alert>
 
     <div>
-      <!-- Building Documnet Info: Input Fields -->
+      <!-- Generate Documnet Info: Input Fields -->
       <validation-observer
         #default="{ handleSubmit }"
         ref="refFormObserver"
@@ -32,23 +32,23 @@
           @reset.prevent="resetForm"
         >
           <b-row>
-            <!-- Field: Building Document Name-->
+            <!-- Field: Generate Document Name-->
             <b-col
               cols="12"
               md="4"
             >
               <validation-provider
                 #default="validationContext"
-                name="Building Document Name"
+                name="Generate Document Name"
                 rules="required"
               >
                 <b-form-group
-                  label="Building Document Name"
-                  label-for="building-document-name"
+                  label="Generate Document Name"
+                  label-for="generate-document-name"
                 >
                   <b-form-input
-                    id="building-document-name"
-                    v-model="buildingDocumentData.name"
+                    id="generate-document-name"
+                    v-model="generateDocumentData.name"
                   />
                   <div class="invalid-feedback d-block">
                     {{ validationContext.errors[0] }}
@@ -57,77 +57,30 @@
               </validation-provider>
             </b-col>
 
-            <!-- Field: Building Document Code-->
+            <!-- Field: Generate Document Code-->
             <b-col
               cols="12"
               md="4"
             >
               <validation-provider
                 #default="validationContext"
-                name="Building Document Code"
+                name="Generate Document Code"
               >
                 <b-form-group
-                  label="Building Document Code"
-                  label-for="building-document-code"
+                  label="Generate Document Code"
+                  label-for="generate-document-code"
                 >
-                  <b-form-input
-                    id="building-document-code"
-                    v-model="buildingDocumentData.code"
-                    :readonly="readOnly"
+                  <v-select
+                    v-model="generateDocumentData.code"
+                    :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                    :options="generateCategoryOptions"
+                    :reduce="val => val.code"
+                    :clearable="false"
+                    :required="true"
+                    input-id="code"
+                    label="name"
+                    code="code"
                   />
-                  <div class="invalid-feedback d-block">
-                    {{ validationContext.errors[0] }}
-                  </div>
-                </b-form-group>
-              </validation-provider>
-            </b-col>
-
-            <!-- Field: Building Document Placeholder-->
-            <b-col
-              cols="12"
-              md="4"
-            >
-              <validation-provider
-                #default="validationContext"
-                name="Building Document Placeholder"
-                rules="required"
-              >
-                <b-form-group
-                  label="Building Document Placeholder"
-                  label-for="building-document-placeholder"
-                >
-                  <b-form-input
-                    id="building-document-placeholder"
-                    v-model="buildingDocumentData.placeholder"
-                  />
-                  <div class="invalid-feedback d-block">
-                    {{ validationContext.errors[0] }}
-                  </div>
-                </b-form-group>
-              </validation-provider>
-            </b-col>
-
-            <!-- Field: Building Document Mandatory-->
-            <b-col
-              cols="12"
-              md="4"
-            >
-              <validation-provider
-                #default="validationContext"
-                name="Building Document Mandatory"
-              >
-                <b-form-group
-                  label="Building Document Mandatory"
-                  label-for="building-document-mandatory"
-                >
-                  <b-form-checkbox
-                    id="building-document-mandatory"
-                    v-model="buildingDocumentData.mandatory"
-                    switch
-                    inline
-                  >
-                    Mandatory
-                  </b-form-checkbox>
                   <div class="invalid-feedback d-block">
                     {{ validationContext.errors[0] }}
                   </div>
@@ -142,20 +95,20 @@
             >
               <validation-provider
                 #default="validationContext"
-                name="Category Type"
+                name="Category Type Mandatory"
                 rules="required"
               >
                 <b-form-group
                   label="Category Type"
-                  label-for="building-category-type"
+                  label-for="category-type"
                 >
                   <v-select
-                    v-model="buildingDocumentData.project_document_category_id"
+                    v-model="generateDocumentData.project_document_category_id"
                     :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
                     :options="categoryOptions"
                     :reduce="val => val.id"
                     :clearable="false"
-                    :required="!buildingDocumentData.project_document_category_id"
+                    :required="!generateDocumentData.project_document_category_id"
                     input-id="project_document_category_id"
                     label="name"
                     code="id"
@@ -167,22 +120,22 @@
               </validation-provider>
             </b-col>
 
-            <!-- Field: Building Document Active-->
+            <!-- Field: Generate Document Active-->
             <b-col
               cols="12"
               md="4"
             >
               <validation-provider
                 #default="validationContext"
-                name="Building Document Active"
+                name="Generate Document Active"
               >
                 <b-form-group
-                  label="Building Document Active"
-                  label-for="building-document-active"
+                  label="Generate Document Active"
+                  label-for="generate-document-active"
                 >
                   <b-form-checkbox
-                    id="building-document-active"
-                    v-model="buildingDocumentData.active"
+                    id="generate-document-active"
+                    v-model="generateDocumentData.active"
                     switch
                     inline
                   >
@@ -267,30 +220,29 @@ export default {
     Ripple,
   },
   setup() {
-    const blankBuildingDocumentData = {
+    const blankGenerateDocumentData = {
       name: null,
       active: null,
-      mandatory: null,
       code: null,
-      placeholder: null,
       object_type: null,
       master_certification_id: null,
 
     }
-    const buildingDocumentData = ref(JSON.parse(JSON.stringify(blankBuildingDocumentData)))
-    const resetbuildingDocumentData = () => {
-      buildingDocumentData.value = JSON.parse(JSON.stringify(blankBuildingDocumentData))
+    const generateDocumentData = ref(JSON.parse(JSON.stringify(blankGenerateDocumentData)))
+    const resetgenerateDocumentData = () => {
+      generateDocumentData.value = JSON.parse(JSON.stringify(blankGenerateDocumentData))
     }
-    const BUILDING_DOCUMENT_APP_STORE_MODULE_NAME = 'app-building-document'
+    const BUILDING_DOCUMENT_APP_STORE_MODULE_NAME = 'app-generate-document'
     const readOnly = true
-    const categoryOptions = ref(JSON.parse('[]'))
+    const categoryOptions = ref([])
+    const generateCategoryOptions = ref(JSON.parse('[]'))
 
     const onSubmit = () => {
-      buildingDocumentData.value.masterCertificationTypeID = buildingDocumentData.value.master_certification_type_id
-      buildingDocumentData.value.objectType = buildingDocumentData.value.object_type
-      buildingDocumentData.value.projectDocumentCategoryID = buildingDocumentData.value.project_document_category_id
+      generateDocumentData.value.masterCertificationTypeID = generateDocumentData.value.master_certification_type_id
+      generateDocumentData.value.objectType = generateDocumentData.value.object_type
+      generateDocumentData.value.projectDocumentCategoryID = generateDocumentData.value.project_document_category_id
 
-      store.dispatch('app-building-document/editBuildingDocument', { buildingDocumentId: router.currentRoute.params.buildingDocumentId, buildingDocumentData: buildingDocumentData.value })
+      store.dispatch('app-generate-document/editGenerateDocument', { generateDocumentId: router.currentRoute.params.generateDocumentId, generateDocumentData: generateDocumentData.value })
         .then(() => {
           router.push({ name: 'admin-template-list' })
         })
@@ -304,7 +256,7 @@ export default {
       if (store.hasModule(BUILDING_DOCUMENT_APP_STORE_MODULE_NAME)) store.unregisterModule(BUILDING_DOCUMENT_APP_STORE_MODULE_NAME)
     })
 
-    store.dispatch('app-building-document/allBuildingDocumentCategory')
+    store.dispatch('app-generate-document/allBuildingDocumentCategory')
       .then(response => { categoryOptions.value = response.data })
       .catch(error => {
         if (error.response.status === 404) {
@@ -312,13 +264,21 @@ export default {
         }
       })
 
-    store.dispatch('app-building-document/fetchBuildingDocument', { buildingDocumentId: router.currentRoute.params.buildingDocumentId })
+    store.dispatch('app-generate-document/allGenerateDocumentCategory')
+      .then(response => { generateCategoryOptions.value = response.data })
+      .catch(error => {
+        if (error.response.status === 404) {
+          generateCategoryOptions.value = undefined
+        }
+      })
+
+    store.dispatch('app-generate-document/fetchGenerateDocument', { generateDocumentId: router.currentRoute.params.generateDocumentId })
       .then(response => {
-        buildingDocumentData.value = response.data
+        generateDocumentData.value = response.data
       })
       .catch(error => {
         if (error.response.status === 404) {
-          buildingDocumentData.value = undefined
+          generateDocumentData.value = undefined
         }
       })
 
@@ -326,17 +286,18 @@ export default {
       refFormObserver,
       getValidationState,
       resetForm,
-    } = formValidation(resetbuildingDocumentData)
+    } = formValidation(resetgenerateDocumentData)
     return {
-      blankBuildingDocumentData,
-      buildingDocumentData,
+      blankGenerateDocumentData,
+      generateDocumentData,
       onSubmit,
-      resetbuildingDocumentData,
+      resetgenerateDocumentData,
       refFormObserver,
       getValidationState,
       resetForm,
       readOnly,
       categoryOptions,
+      generateCategoryOptions,
     }
   },
   methods: {

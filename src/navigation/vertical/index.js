@@ -129,6 +129,13 @@ export default [
         action: 'manage',
       },
       {
+        title: 'Master Building Category',
+        route: 'admin-building-category-list',
+        icon: 'MapIcon',
+        resource: 'admin-master-data',
+        action: 'manage',
+      },
+      {
         title: 'Admin Data',
         route: 'admin-data',
         icon: 'MapIcon',

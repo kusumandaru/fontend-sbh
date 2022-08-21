@@ -55,9 +55,9 @@
                     input-id="exercise-type"
                   />
 
-                  <b-form-invalid-feedback>
+                  <div class="invalid-feedback d-block">
                     {{ validationContext.errors[0] }}
-                  </b-form-invalid-feedback>
+                  </div>
                 </b-form-group>
               </validation-provider>
             </b-col>
@@ -84,9 +84,9 @@
                     trim
                   />
 
-                  <b-form-invalid-feedback>
+                  <div class="invalid-feedback d-block">
                     {{ validationContext.errors[0] }}
-                  </b-form-invalid-feedback>
+                  </div>
                 </b-form-group>
               </validation-provider>
             </b-col>
@@ -114,9 +114,9 @@
                     trim
                   />
 
-                  <b-form-invalid-feedback>
+                  <div class="invalid-feedback d-block">
                     {{ validationContext.errors[0] }}
-                  </b-form-invalid-feedback>
+                  </div>
                 </b-form-group>
               </validation-provider>
             </b-col>
@@ -139,9 +139,9 @@
                     v-model="criteriaData.description"
                     :options="editorOption"
                   />
-                  <b-form-invalid-feedback>
+                  <div class="invalid-feedback d-block">
                     {{ validationContext.errors[0] }}
-                  </b-form-invalid-feedback>
+                  </div>
                 </b-form-group>
               </validation-provider>
             </b-col>
@@ -164,9 +164,9 @@
                     v-model="criteriaData.additional_notes"
                     :options="editorOption"
                   />
-                  <b-form-invalid-feedback>
+                  <div class="invalid-feedback d-block">
                     {{ validationContext.errors[0] }}
-                  </b-form-invalid-feedback>
+                  </div>
                 </b-form-group>
               </validation-provider>
             </b-col>
@@ -190,9 +190,9 @@
                   >
                     No Available / Hide
                   </b-form-checkbox>
-                  <b-form-invalid-feedback>
+                  <div class="invalid-feedback d-block">
                     {{ validationContext.errors[0] }}
-                  </b-form-invalid-feedback>
+                  </div>
                 </b-form-group>
               </validation-provider>
             </b-col>
@@ -218,9 +218,9 @@
                   >
                     Active
                   </b-form-checkbox>
-                  <b-form-invalid-feedback>
+                  <div class="invalid-feedback d-block">
                     {{ validationContext.errors[0] }}
-                  </b-form-invalid-feedback>
+                  </div>
                 </b-form-group>
               </validation-provider>
             </b-col>
@@ -252,7 +252,7 @@
 
 <script>
 import {
-  BTab, BTabs, BCard, BAlert, BLink, BFormInput, BButton, BCol, BFormGroup, BRow, BForm, BFormCheckbox, BFormInvalidFeedback,
+  BTab, BTabs, BCard, BAlert, BLink, BFormInput, BButton, BCol, BFormGroup, BRow, BForm, BFormCheckbox,
 } from 'bootstrap-vue'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import { ref, onUnmounted } from '@vue/composition-api'
@@ -285,7 +285,7 @@ export default {
     BRow,
     BForm,
     BFormCheckbox,
-    BFormInvalidFeedback,
+
     ValidationProvider,
     ValidationObserver,
     vSelect,

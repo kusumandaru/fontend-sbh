@@ -55,9 +55,9 @@
                 trim
               />
 
-              <b-form-invalid-feedback>
+              <div class="invalid-feedback d-block">
                 {{ validationContext.errors[0] }}
-              </b-form-invalid-feedback>
+              </div>
             </b-form-group>
           </validation-provider>
 
@@ -78,9 +78,9 @@
               >
                 Active
               </b-form-checkbox>
-              <b-form-invalid-feedback>
+              <div class="invalid-feedback d-block">
                 {{ validationContext.errors[0] }}
-              </b-form-invalid-feedback>
+              </div>
             </b-form-group>
           </validation-provider>
 
@@ -112,7 +112,7 @@
 
 <script>
 import {
-  BSidebar, BForm, BFormCheckbox, BFormGroup, BFormInput, BFormInvalidFeedback, BButton,
+  BSidebar, BForm, BFormCheckbox, BFormGroup, BFormInput, BButton,
 } from 'bootstrap-vue'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import { ref } from '@vue/composition-api'
@@ -129,7 +129,7 @@ export default {
     BFormCheckbox,
     BFormGroup,
     BFormInput,
-    BFormInvalidFeedback,
+
     BButton,
     // Form Validation
     ValidationProvider,

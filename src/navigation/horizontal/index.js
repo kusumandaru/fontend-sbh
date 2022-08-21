@@ -58,6 +58,11 @@ export default [
             icon: 'MapIcon',
           },
           {
+            title: 'Master Building Category',
+            route: 'admin-building-category-list',
+            icon: 'MapIcon',
+          },
+          {
             title: 'Admin Data',
             route: 'admin-data',
             icon: 'MapIcon',

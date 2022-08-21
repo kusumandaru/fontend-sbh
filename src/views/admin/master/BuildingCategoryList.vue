@@ -1,7 +1,7 @@
 <template>
   <div>
-    <building-list-add-new
-      :is-add-new-building-sidebar-active.sync="isAddNewBuildingSidebarActive"
+    <building-category-list-add-new
+      :is-add-new-building-category-sidebar-active.sync="isAddNewBuildingCategorySidebarActive"
       @refetch-data="refetchData"
     />
     <!-- input search -->
@@ -13,9 +13,9 @@
       />
       <b-button
         variant="primary"
-        @click="isAddNewBuildingSidebarActive = true"
+        @click="isAddNewBuildingCategorySidebarActive = true"
       >
-        <span class="text-nowrap">Add Building</span>
+        <span class="text-nowrap">Add Building Category</span>
       </b-button>
     </div>
     <!-- table -->
@@ -35,22 +35,11 @@
         slot="table-row"
         slot-scope="props"
       >
-
         <!-- Column: Name -->
         <div
-          v-if="props.column.field === 'name_en'"
+          v-if="props.column.field === 'name'"
           class="text-nowrap"
-        >
-          <!-- <span class="text-nowrap">{{ props.row.name }}</span> -->
-        </div>
-
-        <!-- Column: Name -->
-        <div
-          v-if="props.column.field === 'name_id'"
-          class="text-nowrap"
-        >
-          <!-- <span class="text-nowrap">{{ props.row.name }}</span> -->
-        </div>
+        />
 
         <!-- Column: Action -->
         <span v-if="props.column.field === 'action'">
@@ -62,26 +51,26 @@
             >
               <template v-slot:button-content>
                 <feather-icon
-                  :id="`master-row-${props.row.id}-building-icon-edit`"
+                  :id="`master-row-${props.row.id}-building-category-icon-edit`"
                   icon="EditIcon"
                   size="16"
                   class="mx-1"
-                  @click="$router.push({ name: 'admin-building-edit', params: { buildingId: props.row.id }})"
+                  @click="$router.push({ name: 'admin-building-category-edit', params: { categoryId: props.row.id }})"
                 />
                 <b-tooltip
-                  title="Building Type Update"
-                  :target="`master-row-${props.row.id}-building-icon-edit`"
+                  title="Building Category Type Update"
+                  :target="`master-row-${props.row.id}-building-category-icon-edit`"
                 />
                 <feather-icon
-                  :id="`master-row-${props.row.id}-building-icon-delete`"
+                  :id="`master-row-${props.row.id}-building-category-icon-delete`"
                   icon="TrashIcon"
                   size="16"
                   class="mx-1"
-                  @click="deleteBuilding(props.row.id)"
+                  @click="deleteBuildingCategory(props.row.id)"
                 />
                 <b-tooltip
-                  title="Delete Building Type"
-                  :target="`master-row-${props.row.id}-building-icon-delete`"
+                  title="Delete Building Category Type"
+                  :target="`master-row-${props.row.id}-building-category-icon-delete`"
                 />
               </template>
             </b-dropdown>
@@ -158,9 +147,9 @@ import { useToast } from 'vue-toastification/composition'
 import Vue from 'vue'
 import VueSweetalert2 from 'vue-sweetalert2'
 import 'vue-good-table/dist/vue-good-table.css'
-import useBuildingsList from './useBuildingsList'
+import useBuildingCategoriesList from './useBuildingCategoriesList'
 import masterStoreModule from './masterStoreModule'
-import BuildingListAddNew from './BuildingTypeListAddNew.vue'
+import BuildingCategoryListAddNew from './BuildingCategoryListAddNew.vue'
 
 Vue.use(VueSweetalert2)
 
@@ -173,10 +162,10 @@ export default {
     BFormSelect,
     BButton,
     BTooltip,
-    BuildingListAddNew,
+    BuildingCategoryListAddNew,
   },
   setup() {
-    const BUILDING_APP_STORE_MODULE_NAME = 'app-building'
+    const BUILDING_APP_STORE_MODULE_NAME = 'app-building-category'
 
     // Register module
     if (!store.hasModule(BUILDING_APP_STORE_MODULE_NAME)) store.registerModule(BUILDING_APP_STORE_MODULE_NAME, masterStoreModule)
@@ -188,7 +177,7 @@ export default {
 
     const isLoading = ref(null)
     const toast = useToast()
-    const deleteBuilding = buildingId => {
+    const deleteBuildingCategory = categoryId => {
       Vue.swal({
         title: 'Are you sure?',
         text: 'Delete this document building',
@@ -204,8 +193,8 @@ export default {
         if (result.value) {
           isLoading.value = true
 
-          store.dispatch('app-building/deleteBuilding', {
-            buildingId,
+          store.dispatch('app-building-category/deleteBuildingCategory', {
+            categoryId,
           })
             .then(() => {
               isLoading.value = false
@@ -236,18 +225,18 @@ export default {
       })
     }
 
-    const isAddNewBuildingSidebarActive = ref(false)
+    const isAddNewBuildingCategorySidebarActive = ref(false)
 
     const {
       refetchData,
-      refBuildingListTable,
-    } = useBuildingsList()
+      refBuildingCategoryListTable,
+    } = useBuildingCategoriesList()
     return {
       // Sidebar
-      isAddNewBuildingSidebarActive,
-      refBuildingListTable,
+      isAddNewBuildingCategorySidebarActive,
+      refBuildingCategoryListTable,
       refetchData,
-      deleteBuilding,
+      deleteBuildingCategory,
       isLoading,
     }
   },
@@ -258,19 +247,11 @@ export default {
       searchTerm: '',
       columns: [
         {
-          label: 'English Name',
-          field: 'name_en',
+          label: 'Name',
+          field: 'name',
           filterOptions: {
             enabled: true,
-            placeholder: 'Search Building Type',
-          },
-        },
-        {
-          label: 'Indonesia Name',
-          field: 'name_id',
-          filterOptions: {
-            enabled: true,
-            placeholder: 'Search Building Type',
+            placeholder: 'Search Building Category Name',
           },
         },
         {
@@ -303,11 +284,11 @@ export default {
     },
   },
   created() {
-    this.retrieveBuildingTypes()
+    this.retrieveBuildingCategoryTypes()
   },
   methods: {
-    retrieveBuildingTypes() {
-      this.$http.get('engine-rest/master/building_types')
+    retrieveBuildingCategoryTypes() {
+      this.$http.get('engine-rest/new-building/project/document_building_categories')
         .then(res => { this.rows = res.data })
     },
     showToast(variant, titleToast, description) {

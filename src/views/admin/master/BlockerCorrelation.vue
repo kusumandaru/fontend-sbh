@@ -75,9 +75,9 @@
                     text-field="code"
                   />
 
-                  <b-form-invalid-feedback>
+                  <div class="invalid-feedback d-block">
                     {{ validationContext.errors[0] }}
-                  </b-form-invalid-feedback>
+                  </div>
                 </b-form-group>
               </validation-provider>
             </b-col>
@@ -108,7 +108,7 @@
 
 <script>
 import {
-  BTab, BTabs, BCard, BAlert, BLink, BFormInput, BButton, BCol, BFormGroup, BRow, BForm, BFormInvalidFeedback, BFormCheckbox, BFormCheckboxGroup, BCardText,
+  BTab, BTabs, BCard, BAlert, BLink, BFormInput, BButton, BCol, BFormGroup, BRow, BForm, BFormCheckbox, BFormCheckboxGroup, BCardText,
 } from 'bootstrap-vue'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import { ref, onUnmounted } from '@vue/composition-api'
@@ -135,7 +135,7 @@ export default {
     BForm,
     BFormCheckbox,
     BFormCheckboxGroup,
-    BFormInvalidFeedback,
+
     ValidationProvider,
     ValidationObserver,
     required,

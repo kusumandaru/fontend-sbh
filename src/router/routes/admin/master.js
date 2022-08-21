@@ -90,7 +90,7 @@ export default [
   {
     path: '/admin/master/building-type/:buildingId/edit',
     name: 'admin-building-edit',
-    component: () => import('@/views/admin/master/BuildingEdit.vue'),
+    component: () => import('@/views/admin/master/BuildingTypeEdit.vue'),
     meta: {
       pageTitle: 'Update Building Type',
       breadcrumb: [
@@ -100,6 +100,42 @@ export default [
         },
         {
           text: 'Update Building Type',
+          active: true,
+        },
+      ],
+      action: 'read',
+      resource: 'admin-master-data',
+    },
+  },
+  {
+    path: '/admin/master/building-category',
+    name: 'admin-building-category-list',
+    component: () => import('@/views/admin/master/BuildingCategoryList.vue'),
+    meta: {
+      pageTitle: 'List Building Category',
+      breadcrumb: [
+        {
+          text: 'List Building Category',
+          active: true,
+        },
+      ],
+      action: 'manage',
+      resource: 'admin-master-data',
+    },
+  },
+  {
+    path: '/admin/master/building-category/:categoryId/edit',
+    name: 'admin-building-category-edit',
+    component: () => import('@/views/admin/master/BuildingCategoryEdit.vue'),
+    meta: {
+      pageTitle: 'Update Building Category',
+      breadcrumb: [
+        {
+          text: 'List Building Category',
+          to: '/admin/master/building-category',
+        },
+        {
+          text: 'Update Building Category',
           active: true,
         },
       ],
@@ -275,11 +311,49 @@ export default [
       pageTitle: 'Update Building Document',
       breadcrumb: [
         {
+          text: 'List Vendor',
+          to: '/admin/master/vendor',
+        },
+        {
+          text: 'List Certification',
+        },
+        {
+          text: 'List Template',
+        },
+        {
           text: 'List Building Document',
-          to: '/admin/master/building_document',
         },
         {
           text: 'Update Building Document',
+          active: true,
+        },
+      ],
+      action: 'read',
+      resource: 'admin-master-data',
+    },
+  },
+  {
+    path: '/admin/master/vendor/:vendorId/certifications/:certificationTypeId/generate_document/:generateDocumentId/edit',
+    name: 'admin-generate-document-edit',
+    component: () => import('@/views/admin/master/GenerateDocumentEdit.vue'),
+    meta: {
+      pageTitle: 'Update Building Document',
+      breadcrumb: [
+        {
+          text: 'List Vendor',
+          to: '/admin/master/vendor',
+        },
+        {
+          text: 'List Certification',
+        },
+        {
+          text: 'List Template',
+        },
+        {
+          text: 'List Generate Document',
+        },
+        {
+          text: 'Update Generate Document',
           active: true,
         },
       ],

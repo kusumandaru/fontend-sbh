@@ -375,7 +375,7 @@ export default {
         'final-assessment-review': 'verificator',
         'on-site-verification': 'verificator',
         'on-site-revision-submission': 'client',
-        'final-assessment-evaluation-assessment': 'verificator',
+        'final-assessment-evaluation-assessment': 'admin',
         'final-assessment-trial-revision': 'client',
         'final-assessment-revision-review': 'verificator',
         'final-assessment-letter': 'client',

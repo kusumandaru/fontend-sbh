@@ -50,9 +50,9 @@
                     id="code"
                     v-model="evaluationData.code"
                   />
-                  <b-form-invalid-feedback>
+                  <div class="invalid-feedback d-block">
                     {{ validationContext.errors[0] }}
-                  </b-form-invalid-feedback>
+                  </div>
                 </b-form-group>
               </validation-provider>
             </b-col>
@@ -75,9 +75,9 @@
                     id="name"
                     v-model="evaluationData.name"
                   />
-                  <b-form-invalid-feedback>
+                  <div class="invalid-feedback d-block">
                     {{ validationContext.errors[0] }}
-                  </b-form-invalid-feedback>
+                  </div>
                 </b-form-group>
               </validation-provider>
             </b-col>
@@ -103,9 +103,9 @@
                   >
                     Active
                   </b-form-checkbox>
-                  <b-form-invalid-feedback>
+                  <div class="invalid-feedback d-block">
                     {{ validationContext.errors[0] }}
-                  </b-form-invalid-feedback>
+                  </div>
                 </b-form-group>
               </validation-provider>
             </b-col>
@@ -137,7 +137,7 @@
 
 <script>
 import {
-  BTab, BTabs, BCard, BAlert, BLink, BFormInput, BButton, BCol, BFormCheckbox, BFormGroup, BRow, BForm, BFormInvalidFeedback,
+  BTab, BTabs, BCard, BAlert, BLink, BFormInput, BButton, BCol, BFormCheckbox, BFormGroup, BRow, BForm,
 } from 'bootstrap-vue'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import { ref, onUnmounted } from '@vue/composition-api'
@@ -163,7 +163,7 @@ export default {
     BFormGroup,
     BRow,
     BForm,
-    BFormInvalidFeedback,
+
     ValidationProvider,
     ValidationObserver,
     vSelect,

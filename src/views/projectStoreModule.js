@@ -166,10 +166,26 @@ export default {
           .catch(error => reject(error))
       })
     },
+    allBuildingDocumentCategory() {
+      return new Promise((resolve, reject) => {
+        axios
+          .get('/engine-rest/new-building/project/document_building_categories')
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
     fetchBuildingDocumentsByMasterCertificationTypeID(ctx, { masterCertificationTypeID }) {
       return new Promise((resolve, reject) => {
         axios
           .get(`/engine-rest/new-building/project/active_document_buildings/${masterCertificationTypeID}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    fetchGenerateDocumentsByMasterCertificationTypeID(ctx, { masterCertificationTypeID }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/engine-rest/new-building/project/active_document_generates/${masterCertificationTypeID}`)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })

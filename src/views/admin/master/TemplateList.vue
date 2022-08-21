@@ -9,6 +9,10 @@
       :is-add-new-building-document-sidebar-active.sync="isAddNewBuildingDocumentSidebarActive"
       @refetch-data="refetchData"
     />
+    <generate-document-list-add-new
+      :is-add-new-generate-document-sidebar-active.sync="isAddNewGenerateDocumentSidebarActive"
+      @refetch-data="refetchData"
+    />
 
     <!-- card 3 -->
     <b-col
@@ -256,6 +260,14 @@
           </b-badge>
         </div>
 
+        <!-- Column: Category -->
+        <div
+          v-if="props.column.field === 'category'"
+          class="text-nowrap"
+        >
+          <span class="text-nowrap">{{ props.row.category.name }}</span>
+        </div>
+
         <!-- Column: Action -->
         <span v-else-if="props.column.field === 'action'">
           <span>
@@ -347,6 +359,163 @@
         </div>
       </template>
     </vue-good-table>
+
+    <!-- Generate Document -->
+    <b-card-body>
+      <b-card-title>Generate Document</b-card-title>
+      <b-card-sub-title>Field for upload generate document</b-card-sub-title>
+    </b-card-body>
+    <!-- input search -->
+    <div class="custom-search d-flex justify-content-end">
+      <b-form-group>
+        <!-- Search -->
+        <b-col
+          cols="18"
+          md="18"
+        >
+          <div class="d-flex align-items-center justify-content-end">
+            <b-form-input
+              v-model="searchTerm"
+              class="d-inline-block mr-1"
+              placeholder="Search..."
+            />
+            <b-button
+              variant="primary"
+              @click="isAddNewGenerateDocumentSidebarActive = true"
+            >
+              <span class="text-nowrap">Add Generate Document</span>
+            </b-button>
+          </div>
+        </b-col>
+      </b-form-group>
+    </div>
+    <!-- table -->
+    <vue-good-table
+      :ref="refGenerateDocumentListTable"
+      :columns="generateDocumentColumns"
+      :rows="generateDocumentRows"
+      :rtl="direction"
+      :search-options="{
+        enabled: true,
+        externalQuery: searchTerm }"
+      :pagination-options="{
+        enabled: true,
+        perPage:pageLength
+      }"
+    >
+      <template
+        slot="table-row"
+        slot-scope="props"
+      >
+        <!-- Column: Project Type -->
+        <div
+          v-if="props.column.field === 'project_type'"
+          class="text-nowrap"
+        >
+          <b-badge :variant="resolveProjectTypeVariant(props.row.project_type)">
+            {{ resolveProjectTypeTranslation(props.row.project_type) }}
+          </b-badge>
+        </div>
+
+        <!-- Column: Category -->
+        <div
+          v-if="props.column.field === 'category'"
+          class="text-nowrap"
+        >
+          <span class="text-nowrap">{{ props.row.category.name }}</span>
+        </div>
+
+        <!-- Column: Action -->
+        <span v-else-if="props.column.field === 'action'">
+          <span>
+            <b-dropdown
+              variant="link"
+              toggle-class="text-decoration-none"
+              no-caret
+            >
+              <template v-slot:button-content>
+                <feather-icon
+                  :id="`project-row-${props.row.id}-generate-document-icon-edit`"
+                  icon="EditIcon"
+                  size="16"
+                  class="mx-1"
+                  @click="$router.push({ name: 'admin-generate-document-edit', params: { generateDocumentId: props.row.id }})"
+                />
+                <b-tooltip
+                  title="Generate Document Update"
+                  :target="`project-row-${props.row.id}-generate-document-icon-edit`"
+                />
+
+                <feather-icon
+                  :id="`project-row-${props.row.id}-generate-document-icon-delete`"
+                  icon="TrashIcon"
+                  size="16"
+                  class="mx-1"
+                  @click="deleteGenerateDocument(props.row.id)"
+                />
+                <b-tooltip
+                  title="Delete Generate Document"
+                  :target="`project-row-${props.row.id}-generate-document-icon-delete`"
+                />
+              </template>
+            </b-dropdown>
+          </span>
+        </span>
+
+        <!-- Column: Common -->
+        <span v-else>
+          {{ props.formattedRow[props.column.field] }}
+        </span>
+      </template>
+
+      <!-- pagination -->
+      <template
+        slot="pagination-bottom"
+        slot-scope="props"
+      >
+        <div class="d-flex justify-content-between flex-wrap">
+          <div class="d-flex align-items-center mb-0 mt-1">
+            <span class="text-nowrap">
+              Showing 1 to
+            </span>
+            <b-form-select
+              v-model="pageLength"
+              :options="['10','20','50']"
+              class="mx-1"
+              @input="(value)=>props.perPageChanged({currentPerPage:value})"
+            />
+            <span class="text-nowrap "> of {{ props.total }} entries </span>
+          </div>
+          <div>
+            <b-pagination
+              :value="1"
+              :total-rows="props.total"
+              :per-page="pageLength"
+              first-number
+              last-number
+              align="right"
+              prev-class="prev-item"
+              next-class="next-item"
+              class="mt-1 mb-0"
+              @input="(value)=>props.pageChanged({currentPage:value})"
+            >
+              <template #prev-text>
+                <feather-icon
+                  icon="ChevronLeftIcon"
+                  size="18"
+                />
+              </template>
+              <template #next-text>
+                <feather-icon
+                  icon="ChevronRightIcon"
+                  size="18"
+                />
+              </template>
+            </b-pagination>
+          </div>
+        </div>
+      </template>
+    </vue-good-table>
   </div>
 </template>
 
@@ -368,6 +537,7 @@ import useTemplatesList from './useTemplatesList'
 import masterStoreModule from './masterStoreModule'
 import TemplateListAddNew from './TemplateListAddNew.vue'
 import BuildingDocumentListAddNew from './BuildingDocumentListAddNew.vue'
+import GenerateDocumentListAddNew from './GenerateDocumentListAddNew.vue'
 
 Vue.use(VueSweetalert2)
 
@@ -390,6 +560,7 @@ export default {
     BTooltip,
     TemplateListAddNew,
     BuildingDocumentListAddNew,
+    GenerateDocumentListAddNew,
   },
   setup() {
     const TEMPLATE_APP_STORE_MODULE_NAME = 'app-template'
@@ -404,6 +575,7 @@ export default {
 
     const isAddNewTemplateSidebarActive = ref(false)
     const isAddNewBuildingDocumentSidebarActive = ref(false)
+    const isAddNewGenerateDocumentSidebarActive = ref(false)
     const toast = useToast()
     const isLoading = ref(null)
 
@@ -503,6 +675,54 @@ export default {
       })
     }
 
+    const deleteGenerateDocument = generateDocumentId => {
+      Vue.swal({
+        title: 'Are you sure?',
+        text: 'Delete this generate document',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Delete',
+        customClass: {
+          confirmButton: 'btn btn-danger',
+          cancelButton: 'btn btn-outline-primary ml-1',
+        },
+        buttonsStyling: false,
+      }).then(result => {
+        if (result.value) {
+          isLoading.value = true
+
+          store.dispatch('app-template/deleteGenerateDocument', {
+            generateDocumentId,
+          })
+            .then(() => {
+              isLoading.value = false
+              toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Success',
+                  icon: 'InfoIcon',
+                  text: 'Successfully delete generate document',
+                  variant: 'success',
+                },
+              })
+              router.go()
+            })
+            .catch(error => {
+              isLoading.value = false
+              toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Cannot delete',
+                  icon: 'AlertTriangleIcon',
+                  text: error.response.data.message,
+                  variant: 'danger',
+                },
+              })
+            })
+        }
+      })
+    }
+
     const projectTypeOptions = [
       { label: 'Design Recognition', value: 'design_recognition' },
       { label: 'Final Assessment', value: 'final_assessment' },
@@ -515,20 +735,24 @@ export default {
       refetchData,
       refTemplateListTable,
       refBuildingDocumentListTable,
+      refGenerateDocumentListTable,
     } = useTemplatesList()
     return {
       // Sidebar
       projectTypeOptions,
       isAddNewTemplateSidebarActive,
       isAddNewBuildingDocumentSidebarActive,
+      isAddNewGenerateDocumentSidebarActive,
       refTemplateListTable,
       refBuildingDocumentListTable,
+      refGenerateDocumentListTable,
       resolveProjectTypeIcon,
       resolveProjectTypeVariant,
       resolveProjectTypeTranslation,
       refetchData,
       deleteTemplate,
       deleteBuildingDocument,
+      deleteGenerateDocument,
       isLoading,
     }
   },
@@ -584,6 +808,10 @@ export default {
           },
         },
         {
+          label: 'Category',
+          field: 'category',
+        },
+        {
           label: 'Mandatory',
           field: 'mandatory',
         },
@@ -592,8 +820,30 @@ export default {
           field: 'active',
         },
         {
-          label: 'Created At',
-          field: 'created_at',
+          label: 'Action',
+          field: 'action',
+        },
+      ],
+      generateDocumentColumns: [
+        {
+          label: 'Code',
+          field: 'code',
+        },
+        {
+          label: 'Generate Document Name',
+          field: 'name',
+          filterOptions: {
+            enabled: true,
+            placeholder: 'Search Generate Document',
+          },
+        },
+        {
+          label: 'Category',
+          field: 'category',
+        },
+        {
+          label: 'Active',
+          field: 'active',
         },
         {
           label: 'Action',
@@ -601,6 +851,7 @@ export default {
         },
       ],
       buildingDocumentRows: [],
+      generateDocumentRows: [],
       options: {
         propertiesPanel: {},
         additionalModules: [],
@@ -625,6 +876,7 @@ export default {
     this.retrieveCertification()
     this.retrieveTemplates()
     this.retrieveBuildingDocument()
+    this.retrieveGenerateDocument()
   },
   methods: {
     retrieveVendor() {
@@ -662,6 +914,10 @@ export default {
     retrieveBuildingDocument() {
       this.$http.get(`engine-rest/new-building/project/document_buildings/${router.currentRoute.params.certificationTypeId}/master_certification_type`)
         .then(res => { this.buildingDocumentRows = res.data })
+    },
+    retrieveGenerateDocument() {
+      this.$http.get(`engine-rest/new-building/project/document_generates/${router.currentRoute.params.certificationTypeId}/master_certification_type`)
+        .then(res => { this.generateDocumentRows = res.data })
     },
     /* eslint-disable object-shorthand */
     handleError(err) {

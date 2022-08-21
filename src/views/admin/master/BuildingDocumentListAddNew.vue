@@ -55,9 +55,9 @@
                 trim
               />
 
-              <b-form-invalid-feedback>
+              <div class="invalid-feedback d-block">
                 {{ validationContext.errors[0] }}
-              </b-form-invalid-feedback>
+              </div>
             </b-form-group>
           </validation-provider>
 
@@ -79,9 +79,9 @@
                 trim
               />
 
-              <b-form-invalid-feedback>
+              <div class="invalid-feedback d-block">
                 {{ validationContext.errors[0] }}
-              </b-form-invalid-feedback>
+              </div>
             </b-form-group>
           </validation-provider>
 
@@ -102,9 +102,9 @@
                 trim
               />
 
-              <b-form-invalid-feedback>
+              <div class="invalid-feedback d-block">
                 {{ validationContext.errors[0] }}
-              </b-form-invalid-feedback>
+              </div>
             </b-form-group>
           </validation-provider>
 
@@ -127,9 +127,37 @@
                 Mandatory
               </b-form-checkbox>
 
-              <b-form-invalid-feedback>
+              <div class="invalid-feedback d-block">
                 {{ validationContext.errors[0] }}
-              </b-form-invalid-feedback>
+              </div>
+            </b-form-group>
+          </validation-provider>
+
+          <!-- Category Code -->
+          <validation-provider
+            #default="validationContext"
+            name="Category Code"
+            rules="required"
+          >
+            <b-form-group
+              label="Building Document Category Code"
+              label-for="category-code"
+            >
+              <v-select
+                v-model="buildingDocumentData.projectDocumentCategoryID"
+                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
+                :options="categoryOptions"
+                :reduce="val => val.id"
+                :clearable="false"
+                :required="!buildingDocumentData.projectDocumentCategoryID"
+                input-id="project_document_category_id"
+                label="name"
+                code="id"
+              />
+
+              <div class="invalid-feedback d-block">
+                {{ validationContext.errors[0] }}
+              </div>
             </b-form-group>
           </validation-provider>
 
@@ -137,7 +165,6 @@
           <validation-provider
             #default="validationContext"
             name="Active"
-            rules="required"
           >
             <b-form-group
               label="Building Document Active"
@@ -152,9 +179,9 @@
                 Active
               </b-form-checkbox>
 
-              <b-form-invalid-feedback>
+              <div class="invalid-feedback d-block">
                 {{ validationContext.errors[0] }}
-              </b-form-invalid-feedback>
+              </div>
             </b-form-group>
           </validation-provider>
 
@@ -186,10 +213,10 @@
 
 <script>
 import {
-  BSidebar, BForm, BFormCheckbox, BFormGroup, BFormInput, BFormInvalidFeedback, BButton,
+  BSidebar, BForm, BFormCheckbox, BFormGroup, BFormInput, BButton,
 } from 'bootstrap-vue'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
-import { ref } from '@vue/composition-api'
+import { ref, onUnmounted } from '@vue/composition-api'
 import {
   required,
   regex,
@@ -201,6 +228,8 @@ import router from '@/router'
 import formValidation from '@core/comp-functions/forms/form-validation'
 import Ripple from 'vue-ripple-directive'
 import store from '@/store'
+import vSelect from 'vue-select'
+import masterStoreModule from './masterStoreModule'
 
 export default {
   components: {
@@ -209,12 +238,11 @@ export default {
     BFormCheckbox,
     BFormGroup,
     BFormInput,
-    BFormInvalidFeedback,
     BButton,
-
     // Form Validation
     ValidationProvider,
     ValidationObserver,
+    vSelect,
   },
   directives: {
     Ripple,
@@ -244,12 +272,31 @@ export default {
       code: '',
       placeholder: '',
       masterCertificationTypeID: router.currentRoute.params.certificationTypeId,
+      projectDocumentCategoryID: null,
       objectType: 'file',
-      mandatory: null,
-      active: null,
+      mandatory: false,
+      active: false,
     }
     const provinceOptions = ref(JSON.parse('[]'))
+    const categoryOptions = ref(JSON.parse('[]'))
     const buildingDocumentData = ref(JSON.parse(JSON.stringify(blankBuildingDocumentData)))
+    const BUILDING_DOCUMENT_APP_STORE_MODULE_NAME = 'app-building-document'
+
+    // Register module
+    if (!store.hasModule(BUILDING_DOCUMENT_APP_STORE_MODULE_NAME)) store.registerModule(BUILDING_DOCUMENT_APP_STORE_MODULE_NAME, masterStoreModule)
+
+    // UnRegister on leave
+    onUnmounted(() => {
+      if (store.hasModule(BUILDING_DOCUMENT_APP_STORE_MODULE_NAME)) store.unregisterModule(BUILDING_DOCUMENT_APP_STORE_MODULE_NAME)
+    })
+
+    store.dispatch('app-building-document/allBuildingDocumentCategory')
+      .then(response => { categoryOptions.value = response.data })
+      .catch(error => {
+        if (error.response.status === 404) {
+          categoryOptions.value = undefined
+        }
+      })
 
     const resetBuildingData = () => {
       buildingDocumentData.value = JSON.parse(JSON.stringify(blankBuildingDocumentData))
@@ -271,6 +318,7 @@ export default {
 
     return {
       buildingDocumentData,
+      categoryOptions,
       onSubmit,
 
       refFormObserver,
