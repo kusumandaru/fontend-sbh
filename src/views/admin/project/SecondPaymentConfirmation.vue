@@ -224,6 +224,7 @@ export default {
     return {
       projectHeaderKey: 0,
       drScoringFormInput: null,
+      faScoringFormInput: null,
       firstPaymentDocument: null,
       maxChar: 200,
       successShow: false,
@@ -373,6 +374,7 @@ export default {
     return {
       projectData,
       drScoringForm,
+      faScoringForm,
       secondPaymentData,
       downloadFileByAttachment,
       selectedApproved,

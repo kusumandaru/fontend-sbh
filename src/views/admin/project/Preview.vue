@@ -531,20 +531,19 @@ export default {
         { task: 'design-recognition-letter', role: 'admin', title: 'Proyek ini sudah dinyatakan lulus dalam sidang tahap design recognition, selanjutnya PT. Sertifikasi Bangunan Hijau akan mengirimkan surat pernyataan design recognition.' },
         { task: 'on-site-verification', role: 'verificator', title: 'Proyek ini sudah dapat melanjutkan tahap on site verification, silahkan menghubungi admin melalui email untuk pendjadwalan' },
       ],
-      userData: JSON.parse(localStorage.getItem('userData')),
       alertKey: 0,
       errorKey: 0,
     }
   },
   computed: {
     approveShow() {
-      return (this.adminTasks.includes(this.projectData.definition_key) && this.userData.roles.join() !== 'verificator') || (this.verificatorTasks.includes(this.projectData.definition_key) && this.userData.roles.join() === 'verificator')
+      return (this.adminTasks.includes(this.projectData.definition_key) && this.userData.group.id !== 'verificator') || (this.verificatorTasks.includes(this.projectData.definition_key) && this.userData.group.id === 'verificator')
     },
     rejectShow() {
-      return (this.adminTasks.includes(this.projectData.definition_key) && this.userData.roles.join() !== 'verificator') || (this.verificatorTasks.includes(this.projectData.definition_key) && this.userData.roles.join() === 'verificator')
+      return (this.adminTasks.includes(this.projectData.definition_key) && this.userData.group.id !== 'verificator') || (this.verificatorTasks.includes(this.projectData.definition_key) && this.userData.group.id === 'verificator')
     },
     continueFAShow() {
-      return (['design-recognition-letter'].includes(this.projectData.definition_key) && this.userData.roles.join() !== 'verificator')
+      return (['design-recognition-letter'].includes(this.projectData.definition_key) && this.userData.group.id !== 'verificator')
     },
     agreementShow() {
       return this.agreementTasks.includes(this.projectData.definition_key)
@@ -556,31 +555,31 @@ export default {
       return ['check-second-payment'].includes(this.projectData.definition_key)
     },
     onSiteVerificationShow() {
-      return ['on-site-verification'].includes(this.projectData.definition_key) && this.userData.roles.join() === 'verificator'
+      return ['on-site-verification'].includes(this.projectData.definition_key) && this.userData.group.id === 'verificator'
     },
     designRecognitionReviewShow() {
-      return ['design-recognition-review', 'design-recognition-revision-review'].includes(this.projectData.definition_key) && this.userData.roles.join() === 'verificator'
+      return ['design-recognition-review', 'design-recognition-revision-review'].includes(this.projectData.definition_key) && this.userData.group.id === 'verificator'
     },
     designRecognitionHistoryShow() {
       return this.designRecognitionHistoryTasks.includes(this.projectData.definition_key) && this.projectData.design_recognition
     },
     designRecognitionEvaluationAssessmentShow() {
-      return (['design-recognition-evaluation-assessment'].includes(this.projectData.definition_key) && this.userData.roles.join() !== 'verificator')
+      return (['design-recognition-evaluation-assessment'].includes(this.projectData.definition_key) && this.userData.group.id !== 'verificator')
     },
     finalAssessmentReviewShow() {
-      return ['final-assessment-review', 'final-assessment-revision-review'].includes(this.projectData.definition_key) && this.userData.roles.join() === 'verificator'
+      return ['final-assessment-review', 'final-assessment-revision-review'].includes(this.projectData.definition_key) && this.userData.group.id === 'verificator'
     },
     finalAssessmentHistoryShow() {
       return this.finalAssessmentHistoryTasks.includes(this.projectData.definition_key)
     },
     finalAssessmentEvaluationAssessmentShow() {
-      return (['final-assessment-evaluation-assessment'].includes(this.projectData.definition_key) && this.userData.roles.join() !== 'verificator')
+      return (['final-assessment-evaluation-assessment'].includes(this.projectData.definition_key) && this.userData.group.id !== 'verificator')
     },
     deleteShow() {
-      return !['final-assessment-letter'].includes(this.projectData.definition_key) && this.userData.roles.join() === 'camunda-admin'
+      return !['final-assessment-letter'].includes(this.projectData.definition_key) && this.userData.group.id === 'camunda-admin'
     },
     rollbackShow() {
-      return !['final-assessment-letter'].includes(this.projectData.definition_key) && this.userData.roles.join() === 'camunda-admin'
+      return !['final-assessment-letter'].includes(this.projectData.definition_key) && this.userData.group.id === 'camunda-admin'
     },
     taskDescriptionBody() {
       // eslint-disable-next-line
@@ -596,6 +595,7 @@ export default {
   },
   setup() {
     const projectData = ref(null)
+    const userData = ref({})
     const reason = ref(null)
 
     const claim = ref(null)
@@ -621,6 +621,16 @@ export default {
     onUnmounted(() => {
       if (store.hasModule(PROJECT_APP_STORE_MODULE_NAME)) store.unregisterModule(PROJECT_APP_STORE_MODULE_NAME)
     })
+
+    store.dispatch('app-project/fetchUser')
+      .then(response => {
+        userData.value = response.data
+      })
+      .catch(error => {
+        if (error.response.status === 404) {
+          userData.value = undefined
+        }
+      })
 
     store.dispatch('app-project/fetchHistory', { id: router.currentRoute.params.id })
       .then(response => {
@@ -767,7 +777,7 @@ export default {
           }
         })
         .finally(() => {
-          if (this.userData.roles.join() === 'verificator') {
+          if (userData.value.group.id === 'verificator') {
             router.push({ name: 'verificator-project-list' })
           } else {
             router.push({ name: 'admin-project-list' })
@@ -923,7 +933,7 @@ export default {
       router.push({ name: 'admin-project-fa-evaluation-assessment', params: { id: router.currentRoute.params.id } })
     }
 
-    const adminTasks = ['check-registration-project', 'check-document-building', 'check-first-payment', 'check-third-payment', 'check-third-payment-fa', 'design-recognition-trial', 'final-assessment-trial', 'final-assessment-revision-review']
+    const adminTasks = ['check-registration-project', 'check-document-building', 'check-first-payment', 'check-third-payment', 'check-third-payment-fa', 'design-recognition-trial', 'final-assessment-trial']
     const agreementTasks = ['agreement']
     const workshopTasks = ['workshop']
     const designRecognitionHistoryTasks = ['third-payment', 'check-third-payment', 'design-recognition-evaluation-assessment', 'design-recognition-trial-revision', 'design-recognition-revision-review', 'design-recognition-letter', 'final-assessment-submission', 'final-assessment-review', 'third-payment-fa', 'check-third-payment-fa', 'on-site-verification', 'on-site-revision-submission', 'final-assessment-evaluation-assessment', 'final-assessment-trial-revision', 'final-assessment-revision-review', 'final-assessment-letter']
@@ -938,6 +948,7 @@ export default {
 
     return {
       projectData,
+      userData,
       eligibilityAttachments,
       registeredAttachments,
       evaluationAttachments,

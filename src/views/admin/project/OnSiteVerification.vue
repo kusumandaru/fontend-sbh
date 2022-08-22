@@ -298,11 +298,11 @@ export default {
         length,
         alphaDash,
       },
-      userData: JSON.parse(localStorage.getItem('userData')),
     }
   },
   setup() {
     const projectData = ref({})
+    const userData = ref({})
     const onSiteVerificationData = ref([])
     const PROJECT_APP_STORE_MODULE_NAME = 'app-project'
     const selectedApproved = ref(false)
@@ -321,6 +321,16 @@ export default {
     onUnmounted(() => {
       if (store.hasModule(PROJECT_APP_STORE_MODULE_NAME)) store.unregisterModule(PROJECT_APP_STORE_MODULE_NAME)
     })
+
+    store.dispatch('app-project/fetchUser')
+      .then(response => {
+        userData.value = response.data
+      })
+      .catch(error => {
+        if (error.response.status === 404) {
+          userData.value = undefined
+        }
+      })
 
     store.dispatch('app-project/fetchAdminProject', { id: router.currentRoute.params.id })
       .then(response => {
@@ -395,6 +405,7 @@ export default {
 
     return {
       projectData,
+      userData,
       onSiteVerificationData,
       downloadFileByAttachment,
       selectedApproved,
@@ -484,7 +495,7 @@ export default {
       })
     },
     gotoIndex() {
-      if (this.userData.roles.join() === 'verificator') {
+      if (this.userData.group.id === 'verificator') {
         router.push({ name: 'verificator-project-list' })
       } else {
         router.push({ name: 'admin-project-list' })
