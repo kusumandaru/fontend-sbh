@@ -88,16 +88,22 @@ export default {
   directives: {
     Ripple,
   },
-  data() {
-    return {
-      userData: JSON.parse(localStorage.getItem('userData')),
-    }
-  },
   setup() {
     const rejectionData = ref({
       rejectionNote: '',
     })
     const claim = ref(null)
+    const userData = ref(null)
+
+    store.dispatch('app-project/fetchUser')
+      .then(response => {
+        userData.value = response.data
+      })
+      .catch(error => {
+        if (error.response.status === 404) {
+          userData.value = undefined
+        }
+      })
 
     const rejectTask = () => {
       store.dispatch('app-project/rejectTask', { id: router.currentRoute.params.id, rejectionReason: rejectionData.value.rejectionNote })
@@ -113,7 +119,7 @@ export default {
           }
         })
         .finally(() => {
-          if (this.userData.roles.join() === 'verificator') {
+          if (userData.value.group.id === 'verificator') {
             router.push({ name: 'verificator-project-list' })
           } else {
             router.push({ name: 'admin-project-list' })
@@ -123,6 +129,7 @@ export default {
 
     return {
       rejectionData,
+      userData,
       rejectTask,
     }
   },
