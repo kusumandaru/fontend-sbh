@@ -362,6 +362,35 @@ export default [
     },
   },
   {
+    path: '/admin/master/vendor/:vendorId/certifications/:certificationTypeId/activity_name/:activityNameId/edit',
+    name: 'admin-activity-name-edit',
+    component: () => import('@/views/admin/master/ActivityNameEdit.vue'),
+    meta: {
+      pageTitle: 'Update Activity Name',
+      breadcrumb: [
+        {
+          text: 'List Vendor',
+          to: '/admin/master/vendor',
+        },
+        {
+          text: 'List Certification',
+        },
+        {
+          text: 'List Template',
+        },
+        {
+          text: 'List Activity Name',
+        },
+        {
+          text: 'Update Activity Name',
+          active: true,
+        },
+      ],
+      action: 'read',
+      resource: 'admin-master-data',
+    },
+  },
+  {
     path: '/admin/master/vendor/:vendorId/certifications/:certificationTypeId/templates/:templateId/evaluations',
     name: 'admin-evaluation-list',
     component: () => import('@/views/admin/master/EvaluationList.vue'),
