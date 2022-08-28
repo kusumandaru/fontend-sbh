@@ -13,6 +13,10 @@
       :is-add-new-generate-document-sidebar-active.sync="isAddNewGenerateDocumentSidebarActive"
       @refetch-data="refetchData"
     />
+    <activity-name-list-add-new
+      :is-add-new-activity-name-sidebar-active.sync="isAddNewActivityNameSidebarActive"
+      @refetch-data="refetchData"
+    />
 
     <!-- card 3 -->
     <b-col
@@ -206,7 +210,7 @@
     <!-- Building Document -->
     <b-card-body>
       <b-card-title>Building Document</b-card-title>
-      <b-card-sub-title>Field for upload building document</b-card-sub-title>
+      <b-card-sub-title>Field for setup building document</b-card-sub-title>
     </b-card-body>
     <!-- input search -->
     <div class="custom-search d-flex justify-content-end">
@@ -363,7 +367,7 @@
     <!-- Generate Document -->
     <b-card-body>
       <b-card-title>Generate Document</b-card-title>
-      <b-card-sub-title>Field for upload generate document</b-card-sub-title>
+      <b-card-sub-title>Field for setup generate document</b-card-sub-title>
     </b-card-body>
     <!-- input search -->
     <div class="custom-search d-flex justify-content-end">
@@ -516,6 +520,163 @@
         </div>
       </template>
     </vue-good-table>
+
+    <!-- Activity Name -->
+    <b-card-body>
+      <b-card-title>Activity Name</b-card-title>
+      <b-card-sub-title>Field for setup activity name</b-card-sub-title>
+    </b-card-body>
+    <!-- input search -->
+    <div class="custom-search d-flex justify-content-end">
+      <b-form-group>
+        <!-- Search -->
+        <b-col
+          cols="18"
+          md="18"
+        >
+          <div class="d-flex align-items-center justify-content-end">
+            <b-form-input
+              v-model="searchTerm"
+              class="d-inline-block mr-1"
+              placeholder="Search..."
+            />
+            <b-button
+              variant="primary"
+              @click="isAddNewActivityNameSidebarActive = true"
+            >
+              <span class="text-nowrap">Add Activity Name</span>
+            </b-button>
+          </div>
+        </b-col>
+      </b-form-group>
+    </div>
+    <!-- table -->
+    <vue-good-table
+      :ref="refActivityNameListTable"
+      :columns="activityNameColumns"
+      :rows="activityNameRows"
+      :rtl="direction"
+      :search-options="{
+        enabled: true,
+        externalQuery: searchTerm }"
+      :pagination-options="{
+        enabled: true,
+        perPage:pageLength
+      }"
+    >
+      <template
+        slot="table-row"
+        slot-scope="props"
+      >
+        <!-- Column: Project Type -->
+        <div
+          v-if="props.column.field === 'project_type'"
+          class="text-nowrap"
+        >
+          <b-badge :variant="resolveProjectTypeVariant(props.row.project_type)">
+            {{ resolveProjectTypeTranslation(props.row.project_type) }}
+          </b-badge>
+        </div>
+
+        <!-- Column: Category -->
+        <div
+          v-if="props.column.field === 'category'"
+          class="text-nowrap"
+        >
+          <span class="text-nowrap">{{ props.row.category.name }}</span>
+        </div>
+
+        <!-- Column: Action -->
+        <span v-else-if="props.column.field === 'action'">
+          <span>
+            <b-dropdown
+              variant="link"
+              toggle-class="text-decoration-none"
+              no-caret
+            >
+              <template v-slot:button-content>
+                <feather-icon
+                  :id="`project-row-${props.row.id}-activity-name-icon-edit`"
+                  icon="EditIcon"
+                  size="16"
+                  class="mx-1"
+                  @click="$router.push({ name: 'admin-activity-name-edit', params: { activityNameId: props.row.id }})"
+                />
+                <b-tooltip
+                  title="Activity Name Update"
+                  :target="`project-row-${props.row.id}-activity-name-icon-edit`"
+                />
+
+                <feather-icon
+                  :id="`project-row-${props.row.id}-activity-name-icon-delete`"
+                  icon="TrashIcon"
+                  size="16"
+                  class="mx-1"
+                  @click="deleteActivityName(props.row.id)"
+                />
+                <b-tooltip
+                  title="Delete Generate Document"
+                  :target="`project-row-${props.row.id}-activity-name-icon-delete`"
+                />
+              </template>
+            </b-dropdown>
+          </span>
+        </span>
+
+        <!-- Column: Common -->
+        <span v-else>
+          {{ props.formattedRow[props.column.field] }}
+        </span>
+      </template>
+
+      <!-- pagination -->
+      <template
+        slot="pagination-bottom"
+        slot-scope="props"
+      >
+        <div class="d-flex justify-content-between flex-wrap">
+          <div class="d-flex align-items-center mb-0 mt-1">
+            <span class="text-nowrap">
+              Showing 1 to
+            </span>
+            <b-form-select
+              v-model="pageLength"
+              :options="['10','20','50']"
+              class="mx-1"
+              @input="(value)=>props.perPageChanged({currentPerPage:value})"
+            />
+            <span class="text-nowrap "> of {{ props.total }} entries </span>
+          </div>
+          <div>
+            <b-pagination
+              :value="1"
+              :total-rows="props.total"
+              :per-page="pageLength"
+              first-number
+              last-number
+              align="right"
+              prev-class="prev-item"
+              next-class="next-item"
+              class="mt-1 mb-0"
+              @input="(value)=>props.pageChanged({currentPage:value})"
+            >
+              <template #prev-text>
+                <feather-icon
+                  icon="ChevronLeftIcon"
+                  size="18"
+                />
+              </template>
+              <template #next-text>
+                <feather-icon
+                  icon="ChevronRightIcon"
+                  size="18"
+                />
+              </template>
+            </b-pagination>
+          </div>
+        </div>
+      </template>
+    </vue-good-table>
   </div>
 </template>
 
@@ -538,6 +699,7 @@ import masterStoreModule from './masterStoreModule'
 import TemplateListAddNew from './TemplateListAddNew.vue'
 import BuildingDocumentListAddNew from './BuildingDocumentListAddNew.vue'
 import GenerateDocumentListAddNew from './GenerateDocumentListAddNew.vue'
+import ActivityNameListAddNew from './ActivityNameListAddNew.vue'
 
 Vue.use(VueSweetalert2)
 
@@ -561,6 +723,7 @@ export default {
     TemplateListAddNew,
     BuildingDocumentListAddNew,
     GenerateDocumentListAddNew,
+    ActivityNameListAddNew,
   },
   setup() {
     const TEMPLATE_APP_STORE_MODULE_NAME = 'app-template'
@@ -576,6 +739,7 @@ export default {
     const isAddNewTemplateSidebarActive = ref(false)
     const isAddNewBuildingDocumentSidebarActive = ref(false)
     const isAddNewGenerateDocumentSidebarActive = ref(false)
+    const isAddNewActivityNameSidebarActive = ref(false)
     const toast = useToast()
     const isLoading = ref(null)
 
@@ -723,6 +887,54 @@ export default {
       })
     }
 
+    const deleteActivityName = activityNameId => {
+      Vue.swal({
+        title: 'Are you sure?',
+        text: 'Delete this activity document',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Delete',
+        customClass: {
+          confirmButton: 'btn btn-danger',
+          cancelButton: 'btn btn-outline-primary ml-1',
+        },
+        buttonsStyling: false,
+      }).then(result => {
+        if (result.value) {
+          isLoading.value = true
+
+          store.dispatch('app-template/deleteActivityName', {
+            activityNameId,
+          })
+            .then(() => {
+              isLoading.value = false
+              toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Success',
+                  icon: 'InfoIcon',
+                  text: 'Successfully delete activity document',
+                  variant: 'success',
+                },
+              })
+              router.go()
+            })
+            .catch(error => {
+              isLoading.value = false
+              toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Cannot delete',
+                  icon: 'AlertTriangleIcon',
+                  text: error.response.data.message,
+                  variant: 'danger',
+                },
+              })
+            })
+        }
+      })
+    }
+
     const projectTypeOptions = [
       { label: 'Design Recognition', value: 'design_recognition' },
       { label: 'Final Assessment', value: 'final_assessment' },
@@ -736,6 +948,7 @@ export default {
       refTemplateListTable,
       refBuildingDocumentListTable,
       refGenerateDocumentListTable,
+      refActivityNameListTable,
     } = useTemplatesList()
     return {
       // Sidebar
@@ -743,9 +956,11 @@ export default {
       isAddNewTemplateSidebarActive,
       isAddNewBuildingDocumentSidebarActive,
       isAddNewGenerateDocumentSidebarActive,
+      isAddNewActivityNameSidebarActive,
       refTemplateListTable,
       refBuildingDocumentListTable,
       refGenerateDocumentListTable,
+      refActivityNameListTable,
       resolveProjectTypeIcon,
       resolveProjectTypeVariant,
       resolveProjectTypeTranslation,
@@ -753,6 +968,7 @@ export default {
       deleteTemplate,
       deleteBuildingDocument,
       deleteGenerateDocument,
+      deleteActivityName,
       isLoading,
     }
   },
@@ -850,8 +1066,31 @@ export default {
           field: 'action',
         },
       ],
+      activityNameColumns: [
+        {
+          label: 'Activity ID',
+          field: 'activity_id',
+        },
+        {
+          label: 'Activity Name',
+          field: 'name',
+          filterOptions: {
+            enabled: true,
+            placeholder: 'Search Activity Name',
+          },
+        },
+        {
+          label: 'Active',
+          field: 'active',
+        },
+        {
+          label: 'Action',
+          field: 'action',
+        },
+      ],
       buildingDocumentRows: [],
       generateDocumentRows: [],
+      activityNameRows: [],
       options: {
         propertiesPanel: {},
         additionalModules: [],
@@ -877,6 +1116,7 @@ export default {
     this.retrieveTemplates()
     this.retrieveBuildingDocument()
     this.retrieveGenerateDocument()
+    this.retrieveActivityName()
   },
   methods: {
     retrieveVendor() {
@@ -918,6 +1158,10 @@ export default {
     retrieveGenerateDocument() {
       this.$http.get(`engine-rest/new-building/project/document_generates/${router.currentRoute.params.certificationTypeId}/master_certification_type`)
         .then(res => { this.generateDocumentRows = res.data })
+    },
+    retrieveActivityName() {
+      this.$http.get(`engine-rest/master-project/activity_names/${router.currentRoute.params.certificationTypeId}/master_certification_type`)
+        .then(res => { this.activityNameRows = res.data })
     },
     /* eslint-disable object-shorthand */
     handleError(err) {

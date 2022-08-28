@@ -102,14 +102,6 @@ export default {
           .catch(error => reject(error))
       })
     },
-    allGenerateDocumentCategory() {
-      return new Promise((resolve, reject) => {
-        axios
-          .get('/engine-rest/new-building/project/generate_building_categories')
-          .then(response => resolve(response))
-          .catch(error => reject(error))
-      })
-    },
     fetchBuildingDocument(ctx, { buildingDocumentId }) {
       return new Promise((resolve, reject) => {
         axios
@@ -142,6 +134,14 @@ export default {
           .catch(error => reject(error))
       })
     },
+    allGenerateDocumentCategory() {
+      return new Promise((resolve, reject) => {
+        axios
+          .get('/engine-rest/new-building/project/generate_building_categories')
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
     fetchGenerateDocument(ctx, { generateDocumentId }) {
       return new Promise((resolve, reject) => {
         axios
@@ -170,6 +170,54 @@ export default {
       return new Promise((resolve, reject) => {
         axios
           .patch(`/engine-rest/new-building/project/document_generates/${generateDocumentId}`, generateDocumentData)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    allActivityName() {
+      return new Promise((resolve, reject) => {
+        axios
+          .get('/engine-rest/master-project/activity_names')
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    fetchActivityName(ctx, { activityNameId }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/engine-rest/master-project/activity_names/${activityNameId}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    editActivityName(ctx, { activityNameId, activityNameData }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .patch(`/engine-rest/master-project/activity_names/${activityNameId}`, activityNameData)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    deleteActivityName(ctx, { activityNameId }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .delete(`/engine-rest/master-project/activity_names/${activityNameId}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    addActivityName(ctx, activityNameData) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post('/engine-rest/master-project/activity_names', activityNameData)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    ediActivityName(ctx, { activityNameId, activityNameData }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .patch(`/engine-rest/master-project/activity_names/${activityNameId}`, activityNameData)
           .then(response => resolve(response))
           .catch(error => reject(error))
       })
