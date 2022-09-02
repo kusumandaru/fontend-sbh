@@ -354,7 +354,7 @@ export default {
         'check-registration-project': 'admin',
         'fill-document-building': 'client',
         'check-document-building': 'admin',
-        agreement: 'admin',
+        agreement: 'client',
         'first-payment': 'client',
         'check-first-payment': 'admin',
         workshop: 'admin',
