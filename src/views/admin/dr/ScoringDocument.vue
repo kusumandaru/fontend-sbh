@@ -35,7 +35,7 @@
           @click="initDownloadAllFiles()"
         >
           <feather-icon icon="ArchiveIcon" />
-          Archived All Final Assessment Document
+          Archived All Design Recognition Document
         </b-button>
 
         <b-button
