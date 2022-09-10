@@ -315,7 +315,7 @@
             variant="success"
             class="mb-75"
             block
-            @click="approveTask"
+            @click="continueToFinalAssessment"
           >
             Continue To Final Assessment
           </b-button>
@@ -764,25 +764,40 @@ export default {
     }
 
     const approveTask = () => {
-      store.dispatch('app-project/approveTask', { id: router.currentRoute.params.id })
-        .then(response => {
-          claim.value = response.data
-        })
-        .catch(error => {
-          if (error.response.status === 404) {
-            claim.value = undefined
-          }
-          if (error.response.status === 500) {
-            claim.value = undefined
-          }
-        })
-        .finally(() => {
-          if (userData.value.group.id === 'verificator') {
-            router.push({ name: 'verificator-project-list' })
-          } else {
-            router.push({ name: 'admin-project-list' })
-          }
-        })
+      Vue.swal({
+        title: 'Are you sure?',
+        text: 'Approve this task',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Approve',
+        customClass: {
+          confirmButton: 'btn btn-primary',
+          cancelButton: 'btn btn-outline-primary ml-1',
+        },
+        buttonsStyling: false,
+      }).then(result => {
+        if (result.value) {
+          store.dispatch('app-project/approveTask', { id: router.currentRoute.params.id })
+            .then(response => {
+              claim.value = response.data
+            })
+            .catch(error => {
+              if (error.response.status === 404) {
+                claim.value = undefined
+              }
+              if (error.response.status === 500) {
+                claim.value = undefined
+              }
+            })
+            .finally(() => {
+              if (userData.value.group.id === 'verificator') {
+                router.push({ name: 'verificator-project-list' })
+              } else {
+                router.push({ name: 'admin-project-list' })
+              }
+            })
+        }
+      })
     }
 
     const downloadFileByAttachment = attachmentId => {
@@ -893,6 +908,27 @@ export default {
       })
     }
 
+    const continueToFinalAssessment = () => {
+      Vue.swal({
+        title: 'Are you sure?',
+        text: 'Continue to Final Assessment',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Continue',
+        customClass: {
+          confirmButton: 'btn btn-secondary',
+          cancelButton: 'btn btn-outline-primary ml-1',
+        },
+        buttonsStyling: false,
+      }).then(result => {
+        if (result.value) {
+          isLoading.value = true
+
+          approveTask()
+        }
+      })
+    }
+
     const agreementPage = () => {
       router.push({ name: 'admin-project-agreement', params: { id: router.currentRoute.params.id } })
     }
@@ -965,6 +1001,7 @@ export default {
       printProject,
       deleteProject,
       approveTask,
+      continueToFinalAssessment,
       downloadFileByAttachment,
       downloadAllFiles,
       registeredProject,

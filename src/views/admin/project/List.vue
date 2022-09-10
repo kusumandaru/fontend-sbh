@@ -118,6 +118,17 @@
                 title="Activity Process"
                 :target="`project-row-${props.row.id}-activity-icon`"
               />
+              <feather-icon
+                :id="`project-row-${props.row.id}-verificator-icon`"
+                icon="UserIcon"
+                size="16"
+                class="mx-1"
+                @click="assignVerificator(props.row.id)"
+              />
+              <b-tooltip
+                title="Assign Verificator"
+                :target="`project-row-${props.row.id}-verificator-icon`"
+              />
             </div>
           </span>
         </span>
@@ -399,6 +410,8 @@ export default {
         'third-payment-fa': 'primary',
         'check-third-payment-fa': 'secondary',
         'final-assessment-review': 'secondary',
+        'on-site-verification': 'secondary',
+        'on-site-revision-submission': 'primary',
         'final-assessment-evaluation-assessment': 'secondary',
         'final-assessment-trial-revision': 'primary',
         'final-assessment-revision-review': 'secondary',
@@ -449,6 +462,9 @@ export default {
       }
       this.$http.post('engine-rest/new-building/read-task', request, config)
       router.push({ name: 'admin-project-preview', params: { id: id } })
+    },
+    assignVerificator(id) {
+      router.push({ name: 'admin-project-assign-verificator', params: { id: id } })
     },
     updateParams(newProps) {
       // eslint-disable-next-line prefer-object-spread

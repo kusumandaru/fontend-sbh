@@ -5,7 +5,7 @@
   >
     <!-- review FA -->
     <b-col
-      v-if="eligibleApprove.fa_approved === undefined"
+      v-if="eligibleApprove.fa_approved === undefined || eligibleApprove.fa_approved === false"
       md="12"
     >
       <div class="pricing-free-trial">

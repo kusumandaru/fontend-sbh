@@ -390,7 +390,7 @@ export default {
         'check-registration-project': 'secondary',
         'fill-document-building': 'primary',
         'check-document-building': 'secondary',
-        agreement: 'secondary',
+        agreement: 'primary',
         'first-payment': 'primary',
         'check-first-payment': 'secondary',
         workshop: 'secondary',

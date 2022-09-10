@@ -163,6 +163,7 @@ import {
   BSpinner,
   BLink,
   BTable,
+  BCard,
 } from 'bootstrap-vue'
 import {
   ref, onUnmounted, reactive,
@@ -191,6 +192,7 @@ export default {
     BSpinner,
     BLink,
     BTable,
+    BCard,
     ValidationObserver,
     ValidationProvider,
     ProjectHeader,
@@ -411,6 +413,24 @@ export default {
         case 'false': case 'no': case '0': case null: return false
         default: return Boolean(value)
       }
+    },
+    getAttachment(attachment) {
+      this.isLoading = true
+      this.$http.get(`/engine-rest/new-building/assessment_attachment/${attachment.id}`).then(response => {
+        // window.open(response.data.url)
+        const downloadLink = document.createElement('a')
+        downloadLink.href = response.data.url
+        downloadLink.download = response.data.filename
+
+        document.body.appendChild(downloadLink)
+        downloadLink.click()
+        document.body.removeChild(downloadLink)
+
+        this.isLoading = false
+      }).catch(() => {
+        this.isLoading = false
+        this.showToast('danger', 'Cannot Load Attachment', 'There is error when load attachment, contact administrator')
+      })
     },
   },
 }
