@@ -5,7 +5,7 @@
   >
     <!-- review DR -->
     <b-col
-      v-if="eligibleApprove.dr_approved === undefined"
+      v-if="eligibleApprove.dr_approved === undefined || eligibleApprove.dr_approved === false"
       md="12"
     >
       <div class="pricing-free-trial">

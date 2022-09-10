@@ -384,7 +384,7 @@
 
           <!-- Button: Upload Plang dan Persetujuan Pemuatan-->
           <b-button
-            v-if="workshopShow && eligibleAccess"
+            v-if="uploadSignPostShow && eligibleAccess"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
             variant="success"
             class="mb-75"
@@ -608,6 +608,9 @@ export default {
     },
     workshopShow() {
       return ['workshop'].includes(this.projectData.definition_key)
+    },
+    uploadSignPostShow() {
+      return ['workshop', 'second-payment', 'check-second-payment'].includes(this.projectData.definition_key)
     },
     onSiteRevisionSubmissionShow() {
       return ['on-site-revision-submission'].includes(this.projectData.definition_key)

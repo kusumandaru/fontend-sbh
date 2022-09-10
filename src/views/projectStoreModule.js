@@ -272,5 +272,37 @@ export default {
           .catch(error => reject(error))
       })
     },
+    fetchVerificators() {
+      return new Promise((resolve, reject) => {
+        axios
+          .get('engine-rest/user/verificators')
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    fetchVerificator(ctx, { id }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`engine-rest/user/project_verificators_by_process_instance_id/${id}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    deleteVerificator(ctx, { userId }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .delete(`/engine-rest/user/project_verificators/${userId}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    addVerificator(ctx, { id, verificatorData }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post(`/engine-rest/user/project_verificators/${id}`, verificatorData)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
   },
 }

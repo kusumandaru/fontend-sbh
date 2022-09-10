@@ -69,6 +69,11 @@ export default [
     component: () => import('@/views/admin/project/Preview.vue'),
   },
   {
+    path: '/admin/project/verificator/:id',
+    name: 'admin-project-assign-verificator',
+    component: () => import('@/views/admin/project/AssignVerificator.vue'),
+  },
+  {
     path: '/admin/project/agreement/:id',
     name: 'admin-project-agreement',
     component: () => import('@/views/admin/project/Agreement.vue'),
