@@ -73,7 +73,7 @@
 
         <b-card-body class="text-center">
           <h1 class="text-primary">
-            Design Recognition
+            Final Assessment
           </h1>
           <b-card-text class="mb-2">
             <h2 class="text-primary">
