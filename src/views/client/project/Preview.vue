@@ -346,6 +346,18 @@
             Upload Document Building
           </b-button>
 
+          <!-- Button: Upload Plang dan Persetujuan Pemuatan-->
+          <b-button
+            v-if="uploadSignPostShow && eligibleAccess"
+            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+            variant="success"
+            class="mb-75"
+            block
+            @click="signPostAndLoadApprovalSubmission"
+          >
+            Upload pemesanan plang dan persetujuan pemuatan
+          </b-button>
+
           <!-- Button: FirstPayment-->
           <b-button
             v-if="firstPaymentShow && eligibleAccess"
@@ -380,18 +392,6 @@
             @click="thirdPaymentTask"
           >
             Third Payment
-          </b-button>
-
-          <!-- Button: Upload Plang dan Persetujuan Pemuatan-->
-          <b-button
-            v-if="uploadSignPostShow && eligibleAccess"
-            v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-            variant="success"
-            class="mb-75"
-            block
-            @click="signPostAndLoadApprovalSubmission"
-          >
-            Upload pemesanan plang dan persetujuan pemuatan
           </b-button>
 
           <!-- Button: Design Recognition-->
