@@ -45,7 +45,7 @@
                       v-ripple.400="'rgba(255, 255, 255, 0.15)'"
                       variant="primary"
                       class="mt-2 mt-lg-3"
-                      :disabled="!eligibleApprove.eligible"
+                      :disabled="!eligibleApprove.eligible || !eligibleApprove.eligible_approved"
                       @click="reviewProjectFA('approved')"
                     >
                       Approve
