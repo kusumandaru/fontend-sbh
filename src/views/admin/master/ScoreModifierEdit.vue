@@ -1,28 +1,28 @@
 <template>
-  <component :is="exerciseData === undefined ? 'div' : 'b-card'">
+  <component :is="scoreModifierData === undefined ? 'div' : 'b-card'">
 
     <!-- Alert: No item found -->
     <b-alert
       variant="danger"
-      :show="exerciseData === undefined"
+      :show="scoreModifierData === undefined"
     >
       <h4 class="alert-heading">
-        Error fetching exercise data
+        Error fetching score modidifer data
       </h4>
       <div class="alert-body">
-        No exercise found with this exercise id. Check
+        No score modidifer found with this score modidifer id. Check
         <b-link
           class="alert-link"
-          :to="{ name: 'admin-exercise-list'}"
+          :to="{ name: 'admin-criteria-list'}"
         >
-          Exercise List
+          Score Modifier List
         </b-link>
-        for other exercises.
+        for other score modifiers.
       </div>
     </b-alert>
 
     <div>
-      <!-- Exercise Info: Input Fields -->
+      <!-- Score Modifier Info: Input Fields -->
       <validation-observer
         #default="{ handleSubmit }"
         ref="refFormObserver"
@@ -32,77 +32,25 @@
           @reset.prevent="resetForm"
         >
           <b-row>
-            <!-- Field: Code -->
+            <!-- Title -->
             <b-col
               cols="12"
               md="4"
             >
               <validation-provider
                 #default="validationContext"
-                name="Code"
+                name="Title"
                 rules="required"
               >
                 <b-form-group
-                  label="Code"
-                  label-for="code"
+                  label="Title"
+                  label-for="title"
                 >
                   <b-form-input
-                    id="code"
-                    v-model="exerciseData.code"
-                  />
-                  <div class="invalid-feedback d-block">
-                    {{ validationContext.errors[0] }}
-                  </div>
-                </b-form-group>
-              </validation-provider>
-            </b-col>
-
-            <!-- Field: Name -->
-            <b-col
-              cols="12"
-              md="4"
-            >
-              <validation-provider
-                #default="validationContext"
-                name="Name"
-                rules="required"
-              >
-                <b-form-group
-                  label="Name"
-                  label-for="name"
-                >
-                  <b-form-input
-                    id="name"
-                    v-model="exerciseData.name"
-                  />
-                  <div class="invalid-feedback d-block">
-                    {{ validationContext.errors[0] }}
-                  </div>
-                </b-form-group>
-              </validation-provider>
-            </b-col>
-
-            <!-- Exercise Type -->
-            <b-col
-              cols="12"
-              md="4"
-            >
-              <validation-provider
-                #default="validationContext"
-                name="Exercise Type"
-                rules="required"
-              >
-                <b-form-group
-                  label="Exercise Type"
-                  label-for="exercise-type"
-                >
-                  <v-select
-                    v-model="exerciseData.exercise_type"
-                    :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                    :options="exerciseTypeOptions"
-                    :reduce="val => val.value"
-                    :clearable="false"
-                    input-id="exercise-type"
+                    id="title"
+                    v-model="scoreModifierData.title"
+                    :state="getValidationState(validationContext)"
+                    trim
                   />
 
                   <div class="invalid-feedback d-block">
@@ -112,29 +60,53 @@
               </validation-provider>
             </b-col>
 
-            <!-- Max Score -->
+            <!-- Score Modifier -->
             <b-col
               cols="12"
               md="4"
             >
               <validation-provider
-                v-if="validationMaxScore"
                 #default="validationContext"
-                name="Score"
-                :rules="validationMaxScore ? 'required' : ''"
+                name="Score Modifier"
+                rules="required"
               >
                 <b-form-group
-                  label="Max Score"
-                  label-for="max-score"
+                  label="Score Modifier"
+                  label-for="score_modifier"
                 >
                   <b-form-input
-                    id="score"
-                    v-model="exerciseData.max_score"
+                    id="score_modifier"
+                    v-model="scoreModifierData.score_modifier"
                     :state="getValidationState(validationContext)"
                     type="number"
                     trim
                   />
 
+                  <div class="invalid-feedback d-block">
+                    {{ validationContext.errors[0] }}
+                  </div>
+                </b-form-group>
+              </validation-provider>
+            </b-col>
+
+            <!-- Description -->
+            <b-col
+              cols="12"
+              md="4"
+            >
+              <validation-provider
+                #default="validationContext"
+                name="Description"
+                rules="required"
+              >
+                <b-form-group
+                  label="Description"
+                  label-for="description"
+                >
+                  <quill-editor
+                    v-model="scoreModifierData.description"
+                    :options="editorOption"
+                  />
                   <div class="invalid-feedback d-block">
                     {{ validationContext.errors[0] }}
                   </div>
@@ -149,15 +121,15 @@
             >
               <validation-provider
                 #default="validationContext"
-                name="Exercise Active"
+                name="Score Modifier Active"
               >
                 <b-form-group
-                  label="Exercise Active"
-                  label-for="exercise-active"
+                  label="Score Modifier Active"
+                  label-for="score-modifier-active"
                 >
                   <b-form-checkbox
-                    id="exercise-active"
-                    v-model="exerciseData.active"
+                    id="score-modifier-active"
+                    v-model="scoreModifierData.active"
                     switch
                     inline
                   >
@@ -197,7 +169,7 @@
 
 <script>
 import {
-  BTab, BTabs, BCard, BAlert, BLink, BFormInput, BButton, BCol, BFormCheckbox, BFormGroup, BRow, BForm,
+  BTab, BTabs, BCard, BAlert, BLink, BFormInput, BButton, BCol, BFormGroup, BRow, BForm, BFormCheckbox,
 } from 'bootstrap-vue'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import { ref, onUnmounted } from '@vue/composition-api'
@@ -207,6 +179,13 @@ import Ripple from 'vue-ripple-directive'
 import { required } from '@validations'
 import vSelect from 'vue-select'
 import formValidation from '@core/comp-functions/forms/form-validation'
+// eslint-disable-next-line
+import 'quill/dist/quill.core.css'
+// eslint-disable-next-line
+import 'quill/dist/quill.snow.css'
+// eslint-disable-next-line
+import 'quill/dist/quill.bubble.css'
+import { quillEditor } from 'vue-quill-editor'
 import masterStoreModule from './masterStoreModule'
 
 export default {
@@ -216,50 +195,47 @@ export default {
     BCard,
     BAlert,
     BLink,
-    BFormCheckbox,
     BFormInput,
     BButton,
     BCol,
     BFormGroup,
     BRow,
     BForm,
+    BFormCheckbox,
 
     ValidationProvider,
     ValidationObserver,
     vSelect,
     required,
+    quillEditor,
   },
   directives: {
     Ripple,
   },
   setup() {
-    const blankExerciseData = {
-      code: '',
-      name: '',
-      master_evaluation_id: '',
+    const blankCriteriaData = {
+      scoreModifier: '',
+      description: '',
+      title: '',
+      masterExerciseID: `${router.currentRoute.params.exerciseId}`,
       active: true,
-      max_score: null,
-      exercise_type: '',
     }
 
-    const exerciseData = ref(JSON.parse(JSON.stringify(blankExerciseData)))
-    const resetexerciseData = () => {
-      exerciseData.value = JSON.parse(JSON.stringify(blankExerciseData))
+    const editorOption = {
+      theme: 'snow',
     }
-    const exerciseTypeOptions = [
-      { label: 'Prequisite', value: 'prequisite' },
-      { label: 'Score', value: 'score' },
-    ]
-    const USER_APP_STORE_MODULE_NAME = 'app-exercise'
+    const scoreModifierData = ref(JSON.parse(JSON.stringify(blankCriteriaData)))
+    const resetscoreModifierData = () => {
+      scoreModifierData.value = JSON.parse(JSON.stringify(blankCriteriaData))
+    }
+    const USER_APP_STORE_MODULE_NAME = 'app-score-modifier'
     const onSubmit = () => {
-      exerciseData.value.masterEvaluationID = exerciseData.value.master_evaluation_id
-      exerciseData.value.exerciseType = exerciseData.value.exercise_type
-      exerciseData.value.maxScore = exerciseData.value.max_score
-      exerciseData.value.createdBy = 'system'
+      scoreModifierData.value.scoreModifier = scoreModifierData.value.score_modifier
+      scoreModifierData.value.masterExerciseID = scoreModifierData.value.master_exercise_id
 
-      store.dispatch('app-exercise/editExercise', { exerciseId: router.currentRoute.params.exerciseId, exerciseData: exerciseData.value })
+      store.dispatch('app-score-modifier/editScoreModifier', { scoreModifierId: router.currentRoute.params.scoreModifierId, scoreModifierData: scoreModifierData.value })
         .then(() => {
-          router.push({ name: 'admin-exercise-list' })
+          router.push({ name: 'admin-criteria-list' })
         })
     }
 
@@ -271,11 +247,11 @@ export default {
       if (store.hasModule(USER_APP_STORE_MODULE_NAME)) store.unregisterModule(USER_APP_STORE_MODULE_NAME)
     })
 
-    store.dispatch('app-exercise/fetchExercise', { exerciseId: router.currentRoute.params.exerciseId })
-      .then(response => { exerciseData.value = response.data })
+    store.dispatch('app-score-modifier/fetchScoreModifier', { scoreModifierId: router.currentRoute.params.scoreModifierId })
+      .then(response => { scoreModifierData.value = response.data })
       .catch(error => {
         if (error.response.status === 404) {
-          exerciseData.value = undefined
+          scoreModifierData.value = undefined
         }
       })
 
@@ -283,26 +259,23 @@ export default {
       refFormObserver,
       getValidationState,
       resetForm,
-    } = formValidation(resetexerciseData)
+    } = formValidation(resetscoreModifierData)
     return {
-      blankExerciseData,
-      exerciseData,
-      exerciseTypeOptions,
+      blankCriteriaData,
+      scoreModifierData,
       onSubmit,
-      resetexerciseData,
+      resetscoreModifierData,
       refFormObserver,
       getValidationState,
       resetForm,
+      editorOption,
     }
   },
   computed: {
-    validationMaxScore() {
-      return this.exerciseData.exercise_type !== 'prequisite'
-    },
   },
   methods: {
     cancel() {
-      router.push({ name: 'admin-exercise-list' })
+      router.push({ name: 'admin-criteria-list' })
     },
   },
 }
@@ -311,7 +284,7 @@ export default {
 <style lang="scss">
 @import '@core/scss/vue/libs/vue-select.scss';
 
-#add-new-exercise-sidebar {
+#add-new-score-modifier-sidebar {
   .vs__dropdown-menu {
     max-height: 200px !important;
   }

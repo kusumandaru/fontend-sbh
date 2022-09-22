@@ -510,6 +510,38 @@ export default {
           .catch(error => reject(error))
       })
     },
+    fetchScoreModifier(ctx, { scoreModifierId }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`/engine-rest/master-project/score_modifiers/${scoreModifierId}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    deleteScoreModifier(ctx, { scoreModifierId }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .delete(`/engine-rest/master-project/score_modifiers/${scoreModifierId}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    addScoreModifier(ctx, scoreModifierData) {
+      return new Promise((resolve, reject) => {
+        axios
+          .post('/engine-rest/master-project/score_modifiers', scoreModifierData)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    editScoreModifier(ctx, { scoreModifierId, scoreModifierData }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .patch(`/engine-rest/master-project/score_modifiers/${scoreModifierId}`, scoreModifierData)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
     fetchDocument(ctx, { documentId }) {
       return new Promise((resolve, reject) => {
         axios
