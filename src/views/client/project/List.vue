@@ -33,6 +33,7 @@
       :columns="columns"
       :rows="rows"
       :rtl="direction"
+      :theme="skinLayout"
       :search-options="{
         enabled: true,
         externalQuery: searchTerm }"
@@ -316,6 +317,15 @@ export default {
     }
   },
   computed: {
+    skinLayout() {
+      const statusColor = {
+        /* eslint-disable key-spacing */
+        light: 'default',
+        dark: 'nocturnal',
+        /* eslint-enable key-spacing */
+      }
+      return statusColor[store.state.appConfig.layout.skin]
+    },
     statusVariant() {
       const statusColor = {
         /* eslint-disable key-spacing */

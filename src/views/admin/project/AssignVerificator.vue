@@ -164,6 +164,7 @@
               :columns="columns"
               :rows="rows"
               :rtl="direction"
+              :theme="skinLayout"
               :search-options="{
                 enabled: true,
                 externalQuery: searchTerm }"
@@ -378,6 +379,16 @@ export default {
     }
   },
   computed: {
+    skinLayout() {
+      console.log(store.state.appConfig.layout.skin)
+      const statusColor = {
+        /* eslint-disable key-spacing */
+        light: 'default',
+        dark: 'nocturnal',
+        /* eslint-enable key-spacing */
+      }
+      return statusColor[store.state.appConfig.layout.skin]
+    },
     direction() {
       if (store.state.appConfig.isRTL) {
         // eslint-disable-next-line vue/no-side-effects-in-computed-properties
