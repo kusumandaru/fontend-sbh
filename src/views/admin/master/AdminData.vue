@@ -34,54 +34,6 @@
               <tr>
                 <th class="pb-50">
                   <feather-icon
-                    icon="UserIcon"
-                    class="mr-75"
-                  />
-                  <span class="font-weight-bold">Default Design Recognition Template</span>
-                </th>
-                <td class="pb-50">
-                  {{ drTemplate.project_type }} - {{ drTemplate.project_version }}
-                </td>
-              </tr>
-              <tr>
-                <th class="pb-50">
-                  <feather-icon
-                    icon="UserIcon"
-                    class="mr-75"
-                  />
-                  <span class="font-weight-bold">Default Final Assessment Template</span>
-                </th>
-                <td class="pb-50">
-                  {{ faTemplate.project_type }} - {{ faTemplate.project_version }}
-                </td>
-              </tr>
-              <tr>
-                <th class="pb-50">
-                  <feather-icon
-                    icon="UserIcon"
-                    class="mr-75"
-                  />
-                  <span class="font-weight-bold">Default Design Recognition Level</span>
-                </th>
-                <td class="pb-50">
-                  {{ drLevel.name }}
-                </td>
-              </tr>
-              <tr>
-                <th class="pb-50">
-                  <feather-icon
-                    icon="UserIcon"
-                    class="mr-75"
-                  />
-                  <span class="font-weight-bold">Default Final Assessment Level</span>
-                </th>
-                <td class="pb-50">
-                  {{ faLevel.name }}
-                </td>
-              </tr>
-              <tr>
-                <th class="pb-50">
-                  <feather-icon
                     icon="UserCheckIcon"
                     class="mr-75"
                   />

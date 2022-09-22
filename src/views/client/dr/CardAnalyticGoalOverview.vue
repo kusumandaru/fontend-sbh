@@ -17,7 +17,7 @@
       class="d-flex flex-column flex-wrap text-center"
     >
       <h1 class="font-large-2 font-weight-bolder mt-2 mb-0">
-        {{ [Math.round(projectAssessment.approved_score + projectAssessment.submitted_score + projectAssessment.score_modifier)] }}
+        {{ [Math.round(projectAssessment.approved_score + projectAssessment.submitted_score)] }}
       </h1>
       <b-card-text>Point Taken from minimum {{ projectAssessment.proposed_level.minimum_score }} score</b-card-text>
     </b-col>
@@ -218,7 +218,7 @@ export default {
         // eslint-disable-next-line prefer-destructuring
         projectAssessment.value = response.data[0]
         // goalOverviewRadialBar.value.series = [Math.round(projectAssessment.value.approved_score + projectAssessment.value.submitted_score)]
-        let scoreSeries = Math.round(((projectAssessment.value.approved_score + projectAssessment.value.submitted_score + projectAssessment.value.score_modifier) / projectAssessment.value.proposed_level.minimum_score) * 100)
+        let scoreSeries = Math.round(((projectAssessment.value.approved_score + projectAssessment.value.submitted_score) / projectAssessment.value.proposed_level.minimum_score) * 100)
         scoreSeries = scoreSeries > 100.0 ? 100.0 : scoreSeries
         goalOverviewRadialBar.value.series = [scoreSeries]
       })

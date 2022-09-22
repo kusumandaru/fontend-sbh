@@ -33,7 +33,7 @@
                 {{ translateExerciseType(exercise) }}
               </p>
               <h6 class="mb-0">
-                {{ exercise.exercise.max_score }}
+                {{ exerciseMaxScore(exercise) }}
               </h6>
             </div>
           </div>
@@ -41,7 +41,27 @@
       </b-card>
 
       <b-card v-if="eligibleScoreModifier(exercise)">
-        Apabila memilih penilaian ini akan mengakibatkan total score berubah {{ exercise.exercise.score_modifier }}
+        <h6 class="section-label">
+          Checklist
+        </h6>
+        <b-card
+          v-for="(modifier, midx) in exercise.modifiers"
+          :key="midx"
+        >
+          <b-media no-body>
+            <b-media-body>
+              <h6 class="font-weight-bolder mb-25">
+                {{ modifier.master_score_modifier.title }}
+              </h6>
+              <b-form-checkbox
+                v-model="modifier.enabled"
+                @change="takeModifier(modifier, exercise)"
+              >
+                <div v-html="modifier.master_score_modifier.description" />
+              </b-form-checkbox>
+            </b-media-body>
+          </b-media>
+        </b-card>
       </b-card>
 
       <!-- collapse -->
@@ -673,6 +693,28 @@ export default {
         this.showToast('danger', 'Cannot Untake Score', error.response.data.message)
       })
     },
+    takeModifier(modifier, exercise) {
+      this.isLoading = true
+      this.updateCriteriaId(exercise.criterias[0])
+
+      const request = new FormData()
+      request.append('enabled', modifier.enabled)
+      const config = {
+        header: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+
+      this.$http.post(`/engine-rest/new-building/exercise_score_modifier/${modifier.id}/enabled`, request, config).then(() => {
+        this.isLoading = false
+        this.rerenderCriteria()
+        this.rerenderScoreParent()
+        this.showToast('success', 'Saved', 'Update checklist successfully')
+      }).catch(error => {
+        this.isLoading = false
+        this.showToast('danger', 'Cannot Update checklist', error.response.data.message)
+      })
+    },
     rerenderScore() {
       this.rerenderScoreParent()
     },
@@ -717,7 +759,19 @@ export default {
       }
     },
     eligibleScoreModifier(exercise) {
-      return exercise.exercise.score_modifier !== 0
+      return exercise.modifiers.length > 0
+    },
+    exerciseMaxScore(exercise) {
+      if (exercise.exercise.max_score === undefined) {
+        return undefined
+      }
+      const filtered = exercise.modifiers.filter(m => m.enabled === true)
+
+      let modifiedScore = 0.0
+      filtered.forEach(f => {
+        modifiedScore += f.master_score_modifier.score_modifier
+      })
+      return exercise.exercise.max_score + modifiedScore
     },
   },
 }

@@ -29,114 +29,6 @@
           </b-form-group>
         </b-col>
 
-        <!-- design recognition template -->
-        <b-col cols="12">
-          <b-form-group
-            label="Design Recognition Template"
-            label-for="design_recognition_template"
-          >
-            <validation-provider
-              #default="{ errors }"
-              name="Design Recognition Template"
-              rules="required"
-            >
-              <v-select
-                v-model="adminData.dr_template_id"
-                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                :options="drTemplateOptions"
-                :reduce="val => val.id"
-                :clearable="false"
-                :required="!adminData.dr_template_id"
-                input-id="dr-template"
-                label="project_version"
-                code="id"
-              />
-              <small class="text-danger">{{ errors[0] }}</small>
-            </validation-provider>
-          </b-form-group>
-        </b-col>
-
-        <!-- final assessment template -->
-        <b-col cols="12">
-          <b-form-group
-            label="Final Assessment Template"
-            label-for="final)assessment_template"
-          >
-            <validation-provider
-              #default="{ errors }"
-              name="Final Assessment Template"
-              rules="required"
-            >
-              <v-select
-                v-model="adminData.fa_template_id"
-                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                :options="faTemplateOptions"
-                :reduce="val => val.id"
-                :clearable="false"
-                :required="!adminData.fa_template_id"
-                input-id="fa-template"
-                label="project_version"
-                code="id"
-              />
-              <small class="text-danger">{{ errors[0] }}</small>
-            </validation-provider>
-          </b-form-group>
-        </b-col>
-
-        <!-- design recognition level -->
-        <b-col cols="12">
-          <b-form-group
-            label="Design Recognition Default Level"
-            label-for="design_recognition_level"
-          >
-            <validation-provider
-              #default="{ errors }"
-              name="Design Recognition DefaultLevel"
-              rules="required"
-            >
-              <v-select
-                v-model="adminData.default_dr_level"
-                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                :options="levelOptions"
-                :reduce="val => val.id"
-                :clearable="false"
-                :required="!adminData.default_dr_level"
-                input-id="dr-level"
-                label="name"
-                code="id"
-              />
-              <small class="text-danger">{{ errors[0] }}</small>
-            </validation-provider>
-          </b-form-group>
-        </b-col>
-
-        <!-- final assessment level -->
-        <b-col cols="12">
-          <b-form-group
-            label="Final Assessment Defailt Level"
-            label-for="final)assessment_level"
-          >
-            <validation-provider
-              #default="{ errors }"
-              name="Final Assessment Default Level"
-              rules="required"
-            >
-              <v-select
-                v-model="adminData.default_fa_level"
-                :dir="$store.state.appConfig.isRTL ? 'rtl' : 'ltr'"
-                :options="levelOptions"
-                :reduce="val => val.id"
-                :clearable="false"
-                :required="!adminData.default_fa_level"
-                input-id="fa-level"
-                label="name"
-                code="id"
-              />
-              <small class="text-danger">{{ errors[0] }}</small>
-            </validation-provider>
-          </b-form-group>
-        </b-col>
-
         <!--Manager Signature -->
         <b-col md="12">
           <b-form-group>
@@ -395,7 +287,6 @@ import {
 import Ripple from 'vue-ripple-directive'
 import projectStoreModule from '@/views/projectStoreModule'
 import router from '@/router'
-import vSelect from 'vue-select'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 import {
   required, confirmed,
@@ -418,7 +309,6 @@ export default {
     BFormInput,
     BForm,
     BModal,
-    vSelect,
     ValidationProvider,
     ValidationObserver,
   },
@@ -467,10 +357,6 @@ export default {
       second_attachment: '',
       third_attachment: '',
       scoring_form: '',
-      dr_template_id: '',
-      fa_template_id: '',
-      default_dr_level: '',
-      default_fa_level: '',
     }
     const adminData = ref(JSON.parse(JSON.stringify(blankAdminData)))
     const drTemplateOptions = ref(JSON.parse('[]'))
@@ -595,10 +481,6 @@ export default {
           request.append('second_attachment', this.secondAttachment)
           request.append('third_attachment', this.thirdAttachment)
           request.append('scoring_form', this.scoringForm)
-          request.append('dr_template_id', this.adminData.dr_template_id)
-          request.append('fa_template_id', this.adminData.fa_template_id)
-          request.append('default_dr_level', this.adminData.default_dr_level)
-          request.append('default_fa_level', this.adminData.default_fa_level)
 
           const config = {
             header: {

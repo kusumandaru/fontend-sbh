@@ -573,7 +573,39 @@ export default [
           text: 'List Criteria',
         },
         {
-          text: 'Update Exercise',
+          text: 'Update Criteria',
+          active: true,
+        },
+      ],
+      action: 'read',
+      resource: 'admin-master-data',
+    },
+  },
+  {
+    path: '/admin/master/vendor/:vendorId/certifications/:certificationTypeId/templates/:templateId/evaluations/:evaluationId/exercises/:exerciseId/score_modifiers/:scoreModifierId/edit',
+    name: 'admin-score-modifier-edit',
+    component: () => import('@/views/admin/master/ScoreModifierEdit.vue'),
+    meta: {
+      pageTitle: 'Update Score Modifier',
+      breadcrumb: [
+        {
+          text: 'List Vendor',
+          to: '/admin/master/vendor',
+        },
+        {
+          text: 'List Template',
+        },
+        {
+          text: 'List Evaluation',
+        },
+        {
+          text: 'List Exercise',
+        },
+        {
+          text: 'List Score Modifier',
+        },
+        {
+          text: 'Update Score Modifier',
           active: true,
         },
       ],
