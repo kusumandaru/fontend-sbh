@@ -6,9 +6,14 @@
       </h4>
       <b-card-text class="font-medium-5 mb-0">
         <feather-icon
+          id="goalOverview"
           icon="HelpCircleIcon"
           size="21"
           class="text-muted cursor-pointer"
+        />
+        <b-tooltip
+          target="goalOverview"
+          title="Kebutuhan total score yang diambil bergantung pada level sertfikasi yang dipilih. Silahkan pilih level sertifikasi yang ingin diambil kemudian lengkapi persyaratan minimal yang perlu dicapai dan persyaratan lainnya hingga score maksimal level yang dipilih terpenuhi."
         />
       </b-card-text>
     </b-card-header>
@@ -82,7 +87,7 @@
 
 <script>
 import {
-  BCard, BCardHeader, BRow, BCol, BCardText, BDropdown, BDropdownItem,
+  BCard, BCardHeader, BRow, BCol, BCardText, BDropdown, BDropdownItem, BTooltip,
 } from 'bootstrap-vue'
 import VueApexCharts from 'vue-apexcharts'
 import {
@@ -105,6 +110,7 @@ export default {
     BCol,
     BDropdown,
     BDropdownItem,
+    BTooltip,
   },
   directives: {
     Ripple,
