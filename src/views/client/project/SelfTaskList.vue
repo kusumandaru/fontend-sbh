@@ -315,7 +315,7 @@ export default {
     statusVariant() {
       const statusColor = {
         /* eslint-disable key-spacing */
-        approved: 'light-primary',
+        approved: 'light-secondary',
         rejected: 'light-danger',
         pending: 'light-warning',
         /* eslint-enable key-spacing */

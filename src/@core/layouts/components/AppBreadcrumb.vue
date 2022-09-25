@@ -61,6 +61,14 @@
           </b-button>
         </template>
 
+        <b-dropdown-item @click="reloadPage">
+          <feather-icon
+            icon="CheckSquareIcon"
+            size="16"
+          />
+          <span class="align-middle ml-50">Reload Page</span>
+        </b-dropdown-item>
+
       </b-dropdown>
     </b-col>
   </b-row>
@@ -68,8 +76,9 @@
 
 <script>
 import {
-  BBreadcrumb, BBreadcrumbItem, BRow, BCol, BDropdown, BButton,
+  BBreadcrumb, BBreadcrumbItem, BRow, BCol, BDropdown, BButton, BDropdownItem,
 } from 'bootstrap-vue'
+import router from '@/router'
 import Ripple from 'vue-ripple-directive'
 
 export default {
@@ -82,7 +91,13 @@ export default {
     BRow,
     BCol,
     BDropdown,
+    BDropdownItem,
     BButton,
+  },
+  methods: {
+    reloadPage() {
+      router.go()
+    },
   },
 }
 </script>
