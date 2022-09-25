@@ -42,7 +42,7 @@
                 >
                   <template #cell(filename)="doc">
                     <b-link
-                      class="font-weight-bold d-block text-nowrap"
+                      class="font-weight-bold d-block text-nowrap text-muted"
                       @click="getAttachment(doc.item)"
                     >
                       {{ doc.value }}
@@ -89,7 +89,7 @@
                 >
                   <template #cell(filename)="doc">
                     <b-link
-                      class="font-weight-bold d-block text-nowrap"
+                      class="font-weight-bold d-block text-nowrap text-muted"
                       @click="getAttachment(doc.item)"
                     >
                       {{ doc.value }}

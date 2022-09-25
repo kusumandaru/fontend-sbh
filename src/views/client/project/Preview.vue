@@ -190,7 +190,7 @@
                         >
                           <template #cell(filename)="doc">
                             <b-link
-                              class="font-weight-bold d-block text-nowrap"
+                              class="font-weight-bold d-block text-nowrap text-muted"
                               @click="downloadFileByAttachment(doc.item.id)"
                             >
                               {{ doc.value }}
