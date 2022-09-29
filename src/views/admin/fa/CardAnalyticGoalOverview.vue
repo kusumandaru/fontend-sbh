@@ -74,7 +74,7 @@
 
 <script>
 import {
-  BCard, BCardHeader, BRow, BCol, BCardText, BButton,
+  BCard, BCardHeader, BRow, BCol, BCardText, BButton, BTooltip,
 } from 'bootstrap-vue'
 import VueApexCharts from 'vue-apexcharts'
 import {
@@ -95,6 +95,7 @@ export default {
     BCardText,
     BCol,
     BButton,
+    BTooltip,
   },
   directives: {
     Ripple,
