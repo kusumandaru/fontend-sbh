@@ -61,29 +61,6 @@
             </b-form-group>
           </validation-provider>
 
-          <!-- Minimum Score -->
-          <validation-provider
-            #default="validationContext"
-            name="Minimum Score"
-            rules="required|integer"
-          >
-            <b-form-group
-              label="Minimum Score"
-              label-for="minimum-score"
-            >
-              <b-form-input
-                id="minimum-score"
-                v-model="levelData.minimumScore"
-                :state="getValidationState(validationContext)"
-                trim
-              />
-
-              <div class="invalid-feedback d-block">
-                {{ validationContext.errors[0] }}
-              </div>
-            </b-form-group>
-          </validation-provider>
-
           <!-- Percentage -->
           <validation-provider
             #default="validationContext"
@@ -101,6 +78,29 @@
                 trim
               />
 
+              <div class="invalid-feedback d-block">
+                {{ validationContext.errors[0] }}
+              </div>
+            </b-form-group>
+          </validation-provider>
+
+          <!-- Rounddown score -->
+          <validation-provider
+            #default="validationContext"
+            name="Rounddown score"
+          >
+            <b-form-group
+              label="Rounddown score"
+              label-for="rounddown"
+            >
+              <b-form-checkbox
+                id="Level-rounddown"
+                v-model="levelData.rounddown"
+                switch
+                inline
+              >
+                Rounddown score
+              </b-form-checkbox>
               <div class="invalid-feedback d-block">
                 {{ validationContext.errors[0] }}
               </div>
@@ -208,10 +208,10 @@ export default {
   setup(props, { emit }) {
     const blankLevelData = {
       name: '',
-      minimumScore: 0,
       percentage: 0,
       masterTemplateID: `${router.currentRoute.params.templateId}`,
       active: true,
+      rounddown: false,
     }
 
     const levelData = ref(JSON.parse(JSON.stringify(blankLevelData)))

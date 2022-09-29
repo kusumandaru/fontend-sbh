@@ -160,6 +160,29 @@
             </b-form-group>
           </validation-provider>
 
+          <!-- Bonus Point -->
+          <validation-provider
+            #default="validationContext"
+            name="Bonus Point"
+          >
+            <b-form-group
+              label="Bonus Point"
+              label-for="bonus-point"
+            >
+              <b-form-checkbox
+                id="exercise-bonus-point"
+                v-model="exerciseData.bonusPoint"
+                switch
+                inline
+              >
+                Bonus Point
+              </b-form-checkbox>
+              <div class="invalid-feedback d-block">
+                {{ validationContext.errors[0] }}
+              </div>
+            </b-form-group>
+          </validation-provider>
+
           <!-- Active -->
           <validation-provider
             #default="validationContext"
@@ -265,6 +288,7 @@ export default {
       name: '',
       masterEvaluationID: `${router.currentRoute.params.evaluationId}`,
       active: true,
+      bonusPoint: false,
       maxScore: null,
       exerciseType: 'score',
       scoreModifier: 0,
