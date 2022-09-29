@@ -142,6 +142,34 @@
               </validation-provider>
             </b-col>
 
+            <!-- Field: Bonus Point-->
+            <b-col
+              cols="12"
+              md="4"
+            >
+              <validation-provider
+                #default="validationContext"
+                name="Exercise Bonus Point"
+              >
+                <b-form-group
+                  label="Exercise Bonus Point"
+                  label-for="exercise-bonus-point"
+                >
+                  <b-form-checkbox
+                    id="exercise-bonus-point"
+                    v-model="exerciseData.bonus_point"
+                    switch
+                    inline
+                  >
+                    Bonus Point
+                  </b-form-checkbox>
+                  <div class="invalid-feedback d-block">
+                    {{ validationContext.errors[0] }}
+                  </div>
+                </b-form-group>
+              </validation-provider>
+            </b-col>
+
             <!-- Field: Active-->
             <b-col
               cols="12"
@@ -240,6 +268,7 @@ export default {
       active: true,
       max_score: null,
       exercise_type: '',
+      bonus_point: false,
     }
 
     const exerciseData = ref(JSON.parse(JSON.stringify(blankExerciseData)))
@@ -255,6 +284,8 @@ export default {
       exerciseData.value.masterEvaluationID = exerciseData.value.master_evaluation_id
       exerciseData.value.exerciseType = exerciseData.value.exercise_type
       exerciseData.value.maxScore = exerciseData.value.max_score
+      exerciseData.value.bonusPoint = exerciseData.value.bonus_point
+
       exerciseData.value.createdBy = 'system'
 
       store.dispatch('app-exercise/editExercise', { exerciseId: router.currentRoute.params.exerciseId, exerciseData: exerciseData.value })

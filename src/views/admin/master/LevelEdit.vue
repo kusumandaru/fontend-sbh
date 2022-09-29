@@ -56,31 +56,6 @@
               </validation-provider>
             </b-col>
 
-            <!-- Field: Minimum Score -->
-            <b-col
-              cols="12"
-              md="4"
-            >
-              <validation-provider
-                #default="validationContext"
-                name="Minimum Score"
-                rules="required|integer"
-              >
-                <b-form-group
-                  label="Minimum Score"
-                  label-for="minimum_score"
-                >
-                  <b-form-input
-                    id="minimum_score"
-                    v-model="levelData.minimum_score"
-                  />
-                  <div class="invalid-feedback d-block">
-                    {{ validationContext.errors[0] }}
-                  </div>
-                </b-form-group>
-              </validation-provider>
-            </b-col>
-
             <!-- Field: Percentage -->
             <b-col
               cols="12"
@@ -99,6 +74,34 @@
                     id="percentage"
                     v-model="levelData.percentage"
                   />
+                  <div class="invalid-feedback d-block">
+                    {{ validationContext.errors[0] }}
+                  </div>
+                </b-form-group>
+              </validation-provider>
+            </b-col>
+
+            <!-- Field: Rounddown score-->
+            <b-col
+              cols="12"
+              md="4"
+            >
+              <validation-provider
+                #default="validationContext"
+                name="Rounddown score"
+              >
+                <b-form-group
+                  label="Rounddown score"
+                  label-for="level-active"
+                >
+                  <b-form-checkbox
+                    id="level-rounddown"
+                    v-model="levelData.rounddown"
+                    switch
+                    inline
+                  >
+                    Round down score
+                  </b-form-checkbox>
                   <div class="invalid-feedback d-block">
                     {{ validationContext.errors[0] }}
                   </div>
@@ -199,9 +202,9 @@ export default {
     const blankLevelData = {
       name: '',
       percentage: 0,
-      minimum_score: 0,
       master_template_id: `${router.currentRoute.params.templateId}`,
       active: true,
+      rounddown: false,
     }
 
     const levelData = ref(JSON.parse(JSON.stringify(blankLevelData)))
@@ -211,8 +214,6 @@ export default {
     const USER_APP_STORE_MODULE_NAME = 'app-level'
     const onSubmit = () => {
       levelData.value.masterTemplateID = levelData.value.master_template_id
-      levelData.value.minimumScore = levelData.value.minimum_score
-
       store.dispatch('app-level/editLevel', { levelId: router.currentRoute.params.levelId, levelData: levelData.value })
         .then(() => {
           router.push({ name: 'admin-evaluation-list' })

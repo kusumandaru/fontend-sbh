@@ -293,7 +293,6 @@ export default {
   },
   computed: {
     skinLayout() {
-      console.log(store.state.appConfig.layout.skin)
       const statusColor = {
         /* eslint-disable key-spacing */
         light: 'default',
