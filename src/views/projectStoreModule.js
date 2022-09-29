@@ -304,5 +304,21 @@ export default {
           .catch(error => reject(error))
       })
     },
+    fetchCertificationTypes() {
+      return new Promise((resolve, reject) => {
+        axios
+          .get('engine-rest/master-project/certification_types')
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
+    fetchCertificationType(ctx, { id }) {
+      return new Promise((resolve, reject) => {
+        axios
+          .get(`engine-rest/master-project/certification_types/${id}`)
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
   },
 }

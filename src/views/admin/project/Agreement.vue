@@ -16,7 +16,7 @@
               <b-form-input
                 v-model.lazy="projectData.agreement_number"
                 :state="errors.length > 0 ? false:null"
-                placeholder="Enter Agreement Letter BNumber"
+                placeholder="Enter Agreement Letter Number"
                 :raw="false"
               />
               <small class="text-danger">{{ errors[0] }}</small>
@@ -25,7 +25,10 @@
         </b-col>
 
         <!--Design Recognition-->
-        <b-col cols="12">
+        <b-col
+          v-if="certificationTypeData.design_recognition"
+          cols="12"
+        >
           <b-form-group
             label="Use Design Recognition Phase ?"
             label-for="designRecognition"
@@ -232,6 +235,7 @@ export default {
   },
   setup() {
     const projectData = ref({})
+    const certificationTypeData = ref({})
     const agreementLetterDocument = ref({})
     const PROJECT_APP_STORE_MODULE_NAME = 'app-project'
     const selectedDesignRecognition = reactive({
@@ -256,6 +260,11 @@ export default {
         projectData.value = response.data
         selectedDesignRecognition.id = response.data.design_recognition.toString()
         selectedDesignRecognition.name = response.data.design_recognition ? 'Need Design Recognition' : 'Skip Design Recognition'
+
+        store.dispatch('app-project/fetchCertificationType', { id: response.data.certification_type_id })
+          .then(resp => {
+            certificationTypeData.value = resp.data
+          })
       })
       .catch(error => {
         if (error.response.status === 404) {
@@ -306,6 +315,7 @@ export default {
 
     return {
       projectData,
+      certificationTypeData,
       agreementLetterDocument,
       downloadFileByAttachment,
       selectedDesignRecognition,
