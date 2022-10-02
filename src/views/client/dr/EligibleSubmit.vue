@@ -30,7 +30,7 @@
                   Form Penilaian belum diupload
                 </h5>
                 <h5 v-if="!eligibleSubmission.score">
-                  Skor minimal bronze belum terpenuhi
+                  Skor minimal {{ eligibleSubmission.level_name }} belum terpenuhi
                 </h5>
                 <h5 v-if="!eligibleSubmission.prequisite">
                   Prequisite code harus dipilih {{ prequisiteCodes }}
