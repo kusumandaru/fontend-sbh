@@ -350,7 +350,7 @@
           <b-button
             v-if="uploadSignPostShow && eligibleAccess"
             v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-            variant="success"
+            :variant="projectData.any_sign_post ? 'success' : 'secondary'"
             class="mb-75"
             block
             @click="signPostAndLoadApprovalSubmission"
