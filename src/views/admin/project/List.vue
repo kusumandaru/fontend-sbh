@@ -383,7 +383,7 @@ export default {
         'third-payment-fa': 'client',
         'check-third-payment-fa': 'admin',
         'final-assessment-review': 'verificator',
-        'on-site-verification': 'verificator',
+        'on-site-verification': 'admin',
         'on-site-revision-submission': 'client',
         'final-assessment-evaluation-assessment': 'admin',
         'final-assessment-trial-revision': 'client',
