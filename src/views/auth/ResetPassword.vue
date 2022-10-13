@@ -218,7 +218,7 @@ export default {
       userToken: null,
       newPassword: '',
       repeatPassword: '',
-      sideImg: require('@/assets/images/pages/login-v3.webp'),
+      sideImg: require('@/assets/images/pages/login-v3.png'),
       // validation
       required,
       email,
@@ -232,7 +232,7 @@ export default {
     imgUrl() {
       if (store.state.appConfig.layout.skin === 'dark') {
         // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-        this.sideImg = require('@/assets/images/pages/login-v3.webp')
+        this.sideImg = require('@/assets/images/pages/login-v3.png')
         return this.sideImg
       }
       return this.sideImg
