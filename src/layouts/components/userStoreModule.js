@@ -22,5 +22,13 @@ export default {
           .catch(error => reject(error))
       })
     },
+    getNewToken() {
+      return new Promise((resolve, reject) => {
+        axios
+          .get('engine-rest/user/refresh_token')
+          .then(response => resolve(response))
+          .catch(error => reject(error))
+      })
+    },
   },
 }
