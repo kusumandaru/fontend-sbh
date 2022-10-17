@@ -284,9 +284,6 @@ export default {
       const expiredTime = payload.exp
       const limitTime = (this.addMinutes(-2).getTime() / 1000)
       const expired = (limitTime > expiredTime)
-      console.log(expiredTime)
-      console.log(limitTime)
-      console.log(expired)
 
       return expired
     },
