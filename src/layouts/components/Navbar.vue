@@ -175,6 +175,10 @@ export default {
               if (error.response.status === 404) {
                 avatarUrl.value = undefined
               }
+              if (error.response.status === 401) {
+                // Redirect to login page
+                router.push({ name: 'auth-login' })
+              }
             })
         }
       })
@@ -186,11 +190,8 @@ export default {
           // Remove userData from localStorage
           localStorage.removeItem('userData')
 
-          // Reset ability
-          this.$ability.update(initialAbility)
-
           // Redirect to login page
-          this.$router.push({ name: 'auth-login' })
+          router.push({ name: 'auth-login' })
         }
         if (error.response.status === 404) {
           userData.value = undefined
