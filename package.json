@@ -23,7 +23,7 @@
     "apexcharts": "3.27.3",
     "axios": "0.21.1",
     "axios-mock-adapter": "1.19.0",
-    "bootstrap": "4.6.0",
+    "bootstrap": "5.0.0",
     "bootstrap-vue": "2.21.1",
     "bpmn-js": "^8.7.1",
     "chart.js": "2.9.4",
